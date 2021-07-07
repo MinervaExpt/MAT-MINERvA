@@ -72,7 +72,7 @@ add_definitions(-DFORM -DMNVROOT6 -DPLOTUTILS_STANDALONE "-DBUILD_SHARED_LIBS=OF
 #From Heidi: do this or mac will make it dylib
 set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 
-include_directories(${PROJECT_NAME} $ENV{PLOTUTILSROOT} $ENV{BOOSTDIR}/include $ENV{BOOSTDIR})
+include_directories(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/weighters ${CMAKE_SOURCE_DIR}/utilities ${CMAKE_SOURCE_DIR}/style ${CMAKE_SOURCE_DIR}/universes ${CMAKE_SOURCE_DIR}/calculators $ENV{PLOTUTILSROOT} $ENV{BOOSTDIR}/include $ENV{BOOSTDIR})
 
 #Find the source and header files.  This isn't great practice because you have to
 #rerun cmake to detect new files to link.
