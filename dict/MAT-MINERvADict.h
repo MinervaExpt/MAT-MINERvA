@@ -46,7 +46,6 @@
 
 //PlotUtils systematic universes classes (new sys framework)
 #include "universes/MinervaUniverse.h"
-#include "universes/FluxSystematics.h"
 #include "universes/GenieSystematics.h"
 #include "universes/GeantHadronSystematics.h"
 #include "universes/MnvTuneSystematics.h"
