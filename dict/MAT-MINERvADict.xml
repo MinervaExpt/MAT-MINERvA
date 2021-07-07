@@ -94,26 +94,8 @@
   -->
 
   <!-- PlotUtils systematic universes classes (new sys framework)-->
-  <class name="PlotUtils::DefaultCVUniverse" />
   <class name="PlotUtils::BaseUniverse" />
   <class name="PlotUtils::MinervaUniverse" />
-  <!--<class name="PlotUtils::HistWrapper<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::Hist2DWrapper<PlotUtils::DefaultCVUniverse>" />-->
-  <class name="PlotUtils::FluxUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::GenieUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::GenieRvx1piUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::GenieFaCCQEUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::MuonUniverseMinerva<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::MuonUniverseMinos<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::MuonResolutionUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::ResponseUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::BeamAngleXUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::BeamAngleYUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::Universe2p2h<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::RPAUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::LowQ2PionUniverse<PlotUtils::DefaultCVUniverse>" />
-  <class name="PlotUtils::MinosEfficiencyUniverse<PlotUtils::DefaultCVUniverse>" />
-  
 
   <!-- PlotUtils standalone systematics functions (new sys framework)-->	
   <function name="PlotUtils::flux_reweighter" />

@@ -45,7 +45,6 @@
 #include "weighters/weightZExp.h"
 
 //PlotUtils systematic universes classes (new sys framework)
-#include "universes/DefaultCVUniverse.h"
 #include "universes/MinervaUniverse.h"
 #include "universes/FluxSystematics.h"
 #include "universes/GenieSystematics.h"
@@ -72,27 +71,6 @@ template class std::pair<std::string, std::vector<PlotUtils::MnvEVD::Event> >;  
 
 template class std::map<std::string, std::vector<std::string> >;
 template class std::pair<std::string, std::vector<std::string> >;*/
-
-template class PlotUtils::BeamAngleXUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::BeamAngleYUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::FluxUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::GenieUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::GenieRvx1piUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::GenieFaCCQEUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::ResponseUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MinosEfficiencyUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MuonAngleXResolutionUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MuonAngleYResolutionUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MuonResolutionUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MichelEfficiencyUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::LowQ2PionUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MuonUniverseMinerva<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::MuonUniverseMinos<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::RPAUniverse<PlotUtils::DefaultCVUniverse>;
-template class PlotUtils::Universe2p2h<PlotUtils::DefaultCVUniverse>;
-
-//template class PlotUtils::HistWrapper<PlotUtils::DefaultCVUniverse>;
-//template class PlotUtils::Hist2DWrapper<PlotUtils::DefaultCVUniverse>;
 
 // The std::pair<>s for those std::map<>s don't seem to be generated though.
 /*template class std::pair< std::string, PlotUtils::MnvLatErrorBand* >;

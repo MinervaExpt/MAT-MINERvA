@@ -58,7 +58,9 @@ endif()
 include(${ROOT_USE_FILE})
 
 find_package(MAT REQUIRED)
-include(${MAT_INCLUDE_DIR})
+include_directories(${MAT_INCLUDE_DIR})
+include_directories(${MAT_INCLUDE_DIR}/PlotUtils) #Legacy include paths
+message("Including the MAT from ${MAT_INCLUDE_DIR}/PlotUtils")
 
 #All components in this project can refer to other components by
 #relative path from the root source code directory.
