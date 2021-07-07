@@ -13,7 +13,7 @@
 #include "PlotUtils/weightSusaValenciaClass.h"
 
 //Reweighter includes
-#include "PlotUtils/reweighters/Reweighter.h"
+#include "PlotUtils/Reweighter.h"
 
 namespace PlotUtils
 {

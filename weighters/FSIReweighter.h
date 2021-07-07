@@ -10,7 +10,7 @@
 #include "PlotUtils/weight_fsi.h"
 
 //Reweighter includes
-#include "PlotUtils/reweighters/Reweighter.h"
+#include "PlotUtils/Reweighter.h"
 
 //c++ includes
 #include <cassert>
