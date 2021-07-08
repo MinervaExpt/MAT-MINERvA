@@ -27,20 +27,21 @@ ExternalProject_Add(MAT
                     GIT_REPOSITORY git@github.com:MinervaExpt/MAT.git
                     GIT_TAG main
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
+                    UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 
 ExternalProject_Add(MAT-MINERvA
-                    GIT_REPOSITORY git@github.com:MinervaExpt/MAT-MINERvA.git
-                    GIT_TAG main
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+                    UPDATE_COMMAND ""
                     DEPENDS MAT)
 
 ExternalProject_Add(UnfoldUtils
-                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
-                    CVS_MODULE Ana/UnfoldUtils
+                    GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
+                    GIT_TAG master
                     ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/UnfoldUtils"
+                    UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     DEPENDS MAT MAT-MINERvA)
 
@@ -63,17 +64,19 @@ ExternalProject_Add(MParamFiles
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
                     INSTALL_COMMAND ""
+                    UPDATE_COMMAND "" #TODO: Turn updates back on for this package?
                     )
 
-ExternalProject_Add(MATFluxAndReweightFiles
-                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
-                    CVS_MODULE Ana/MATFluxAndReweightFiles
-                    ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles"
-                    CONFIGURE_COMMAND ""
-                    BUILD_COMMAND ""
-                    INSTALL_COMMAND ""
-                    )
+#TODO: Figure out why I can't seem to download this correctly.
+#ExternalProject_Add(MATFluxAndReweightFiles
+#                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
+#                    CVS_MODULE Ana/MATFluxAndReweightFiles
+#                    ${CVS_DOWNLOAD_COMMAND}
+#                    SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles"
+#                    CONFIGURE_COMMAND ""
+#                    BUILD_COMMAND ""
+#                    INSTALL_COMMAND ""
+#                    )
 
 #Put MParamFiles into the directory structure
 install(DIRECTORY ${SOURCE_CODE_DIR}/MParamFiles DESTINATION etc)
