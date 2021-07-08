@@ -80,8 +80,8 @@ ExternalProject_Add(UnfoldUtils
 #                    )
 
 #Put MParamFiles into the directory structure
-install(DIRECTORY ${SOURCE_CODE_DIR}/MParamFiles DESTINATION etc)
-install(DIRECTORY ${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles DESTINATION etc)
+#install(DIRECTORY ${SOURCE_CODE_DIR}/MParamFiles DESTINATION etc)
+#install(DIRECTORY ${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles DESTINATION etc)
 
 #Tell setup.sh about the installation directory of this package
 configure_file(setup.sh.in setup.sh @ONLY)
