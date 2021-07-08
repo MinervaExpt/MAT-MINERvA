@@ -27,12 +27,14 @@ ExternalProject_Add(MAT
                     GIT_REPOSITORY git@github.com:MinervaExpt/MAT.git
                     GIT_TAG main
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
+                    #UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 
 ExternalProject_Add(MAT-MINERvA
-                    GIT_REPOSITORY git@github.com:MinervaExpt/MAT-MINERvA.git
-                    GIT_TAG main
+                    #GIT_REPOSITORY git@github.com:MinervaExpt/MAT-MINERvA.git
+                    #GIT_TAG main
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
+                    #UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     DEPENDS MAT)
 
@@ -41,6 +43,7 @@ ExternalProject_Add(UnfoldUtils
                     CVS_MODULE Ana/UnfoldUtils
                     ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/UnfoldUtils"
+                    UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     DEPENDS MAT MAT-MINERvA)
 
@@ -55,25 +58,25 @@ ExternalProject_Add(UnfoldUtils
 
 #MParamFiles doesn't need to be built or installed.  It's a bunch of text and .root files that programs need to be able to find.
 #Nothing depends on MParamFiles to build, but it does need to be installed before much of libPlotUtils can be used.
-ExternalProject_Add(MParamFiles
-                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
-                    CVS_MODULE MParamFiles
-                    ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/MParamFiles"
-                    CONFIGURE_COMMAND ""
-                    BUILD_COMMAND ""
-                    INSTALL_COMMAND ""
-                    )
-
-ExternalProject_Add(MATFluxAndReweightFiles
-                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
-                    CVS_MODULE Ana/MATFluxAndReweightFiles
-                    ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles"
-                    CONFIGURE_COMMAND ""
-                    BUILD_COMMAND ""
-                    INSTALL_COMMAND ""
-                    )
+#ExternalProject_Add(MParamFiles
+#                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
+#                    CVS_MODULE MParamFiles
+#                    ${CVS_DOWNLOAD_COMMAND}
+#                    SOURCE_DIR "${SOURCE_CODE_DIR}/MParamFiles"
+#                    CONFIGURE_COMMAND ""
+#                    BUILD_COMMAND ""
+#                    INSTALL_COMMAND ""
+#                    )
+#
+#ExternalProject_Add(MATFluxAndReweightFiles
+#                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
+#                    CVS_MODULE Ana/MATFluxAndReweightFiles
+#                    ${CVS_DOWNLOAD_COMMAND}
+#                    SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles"
+#                    CONFIGURE_COMMAND ""
+#                    BUILD_COMMAND ""
+#                    INSTALL_COMMAND ""
+#                    )
 
 #Put MParamFiles into the directory structure
 install(DIRECTORY ${SOURCE_CODE_DIR}/MParamFiles DESTINATION etc)
