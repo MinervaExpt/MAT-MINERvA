@@ -63,7 +63,7 @@ ExternalProject_Add(MParamFiles
                     CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
                     CVS_MODULE MParamFiles
                     ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/MParamFiles"
+                    SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/etc/MParamFiles" #Check out directly into install prefix
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
                     INSTALL_COMMAND ""
@@ -75,16 +75,13 @@ ExternalProject_Add(MATFluxAndReweightFiles
                     CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
                     CVS_MODULE AnalysisFramework/Ana/MATFluxAndReweightFiles
                     ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles"
+                    SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles" #Check out directly into install prefix
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
                     INSTALL_COMMAND ""
                     UPDATE_COMMAND ""
                     )
 
-#Put MParamFiles into the directory structure
-install(DIRECTORY ${SOURCE_CODE_DIR}/MParamFiles DESTINATION etc)
-install(DIRECTORY ${SOURCE_CODE_DIR}/Ana/MATFluxAndReweightFiles DESTINATION etc)
 #Make a symbolic link to MATFluxAndReweightFiles because Andrew didn't think about
 #naming it "data" before he created a bunch of CVS directories that only Rob can remove :(
 #Nota Bene: This may not work well on Windows.  If you need to do that one day, read https://stackoverflow.com/questions/35765106/symbolic-links-cmake/41037224
