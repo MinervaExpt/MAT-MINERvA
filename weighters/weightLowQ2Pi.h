@@ -12,7 +12,7 @@
 //For Compatibility with ROOT compiler uncomment the following:
 //#define ROOT
 
-namespace PlotUtils{
+namespace Minerva{
 
   //Class for getting the low Q2 suppression weights
   class weightLowQ2Pi
@@ -46,7 +46,7 @@ namespace PlotUtils{
   };
 
   // Static instance of lowq2pi weighter
-  PlotUtils::weightLowQ2Pi& weight_lowq2pi();
+  Minerva::weightLowQ2Pi& weight_lowq2pi();
 
 }
 

@@ -18,9 +18,12 @@
 #include <Rtypes.h>
 #include <vector>
 
-namespace PlotUtils {
-
+namespace MAT
+{
   class TreeWrapper;
+}
+
+namespace Minerva {
 
   //Class for getting the ratios of MK model/GENIE
   //The Weight is based in Single pion production in neutrino-nucleon interactions
@@ -65,7 +68,7 @@ namespace PlotUtils {
 		       const std::vector<int>& mc_er_ID, 
 		       const std::vector<int>& mc_er_status); // in GeV
 
-      double getWeight(PlotUtils::TreeWrapper* chw,
+      double getWeight(MAT::TreeWrapper* chw,
 		       Long64_t entry);
 
 
@@ -78,7 +81,7 @@ namespace PlotUtils {
   };
 
   // Static instance of MK weighter
-  PlotUtils::weightMK& weight_mk();
+  Minerva::weightMK& weight_mk();
 
 }
 

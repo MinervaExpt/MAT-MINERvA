@@ -10,7 +10,7 @@ Currently Neutron Systematics is supposed to handled by Hadron Reweight systemat
 If Hadron Reweight systematics is not used, neutron systematics should be turned on. 
 Further decision on this case pending (based on Conversation with Trung Jan 17, 2020)
 */
-namespace PlotUtils
+namespace Minerva
 {
   //=================================================================================
   // Response 

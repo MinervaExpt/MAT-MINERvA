@@ -23,7 +23,7 @@ Bhubanjyoti Bhattacharya, Richard J. Hill, and Gil Paz Phys. Rev. D 84, 073006 â
 Aaron S. Meyer, Minerba Betancourt, Richard Gran, and Richard J. Hill Phys. Rev. D 93, 113015 â€“ Published 23 June 2016
  */
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weightZExp
   {
@@ -33,8 +33,8 @@ namespace PlotUtils{
       
       TString  filename;
       TFile* fZExpRatioCov;
-      PlotUtils::MnvH1D *hZExpRatioCov;
-      PlotUtils::MnvVertErrorBand *hZExpRatioBand;
+      MAT::MnvH1D *hZExpRatioCov;
+      MAT::MnvVertErrorBand *hZExpRatioBand;
 
       // MINERvA holds kinematics in MeV, but all these functions require GeV
       // So make sure you pass them in GeV.

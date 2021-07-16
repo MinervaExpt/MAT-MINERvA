@@ -1,7 +1,7 @@
  
 #include "weight_fsi_cai.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 
 
@@ -59,7 +59,7 @@ int weight_fsi_cai::getQEFSIMode( int mc_intType, int mc_targetA, int mc_targetZ
   if (mc_intType != 1) return -999; //not QE
   if (mc_targetA == 1) return -999; // no FSI
 
-  genie_particle fsi_part, prefsi_part;
+  MAT::genie_particle fsi_part, prefsi_part;
   int fsi_npart = 0;
   int prefsi_npart = 0;
 
@@ -84,7 +84,7 @@ int weight_fsi_cai::getQEFSIMode( int mc_intType, int mc_targetA, int mc_targetZ
 
     //if (abs(pdg) == 14 || pdg == 22) m = 0;
 
-    genie_particle pobj(i,pdg,status,fd,ld,fm);
+    MAT::genie_particle pobj(i,pdg,status,fd,ld,fm);
     pobj.SetMomentumEnergy( p4 );
     //cout<<"pobj defined"<<endl;
     
@@ -124,7 +124,7 @@ int weight_fsi_cai::getQEFSIMode( int mc_intType, int mc_targetA, int mc_targetZ
 
   TLorentzVector p4p( pxp, pyp,pzp,Ep);
   
-  genie_particle be_part = prefsi_part;
+  MAT::genie_particle be_part = prefsi_part;
   be_part.SetMomentumEnergy( p4p );
 
   //part = fsi_part.p4();
@@ -144,9 +144,9 @@ int weight_fsi_cai::getResFSIMode( int mc_intType, int mc_targetA, int mc_target
   if (mc_intType ==4 ) return 0;
   if (mc_targetA == 1) return 0;
 
-  std::map<int, genie_particle> particle_map;
-  genie_particle nofsi_pi;
-  genie_particle fsi_pi;
+  std::map<int, MAT::genie_particle> particle_map;
+  MAT::genie_particle nofsi_pi;
+  MAT::genie_particle fsi_pi;
   int fsi_npi = 0;
   for (int i = 0; i < mc_er_nPart; ++i) 
   {
@@ -165,7 +165,7 @@ int weight_fsi_cai::getResFSIMode( int mc_intType, int mc_targetA, int mc_target
 
     //if (pdg == -14 || pdg == 22) m = 0.0;
     
-    genie_particle pobj(i,pdg,status,fd,ld,fm);
+    MAT::genie_particle pobj(i,pdg,status,fd,ld,fm);
     TLorentzVector p4(px,py,pz,e);
     p4.RotateX(-theta_b);
     pobj.SetMomentumEnergy(p4);
@@ -194,16 +194,16 @@ int weight_fsi_cai::getResFSIMode( int mc_intType, int mc_targetA, int mc_target
 
   if (nofsi_pi.default_particle()) return 0; // pi- not come from pi- as in cex or pi prod
 
-  std::vector<genie_particle> pim_ancestry;
+  std::vector<MAT::genie_particle> pim_ancestry;
   if (!fsi_pi.default_particle()) 
   {
-    genie_particle last_particle = fsi_pi;
+    MAT::genie_particle last_particle = fsi_pi;
     pim_ancestry.push_back(last_particle);
     for (;;) 
     {
       int mother_id = last_particle.GetMother();
       if (mother_id < 1) break;
-      genie_particle mother = particle_map[mother_id];
+      MAT::genie_particle mother = particle_map[mother_id];
       pim_ancestry.push_back(mother);
       last_particle = mother;
     }

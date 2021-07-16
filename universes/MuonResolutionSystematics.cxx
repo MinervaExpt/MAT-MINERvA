@@ -6,14 +6,14 @@
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils {
+namespace Minerva {
 
   template <class T>
   std::vector<T*> GetMuonResolutionSystematics(typename T::config_t chain,  double fracUncertainty=NSFDefaults::muonResolution_Err) {
     std::vector<T*> ret;
     std::cout << "Muon Resolution Systematics created with fractional uncertainty " << fracUncertainty << std::endl;
-    ret.push_back(new PlotUtils::MuonResolutionUniverse<T>(chain, -1., fracUncertainty));
-    ret.push_back(new PlotUtils::MuonResolutionUniverse<T>(chain, 1., fracUncertainty));
+    ret.push_back(new Minerva::MuonResolutionUniverse<T>(chain, -1., fracUncertainty));
+    ret.push_back(new Minerva::MuonResolutionUniverse<T>(chain, 1., fracUncertainty));
     return ret;
   }
 
@@ -23,8 +23,8 @@ namespace PlotUtils {
     std::cout << "Muon Resolution Systematics created with fractional uncertainty " << fracUncertainty << std::endl;
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["MuonResolution"].push_back(new PlotUtils::MuonResolutionUniverse<T>(chain, -1., fracUncertainty));
-    ret["MuonResolution"].push_back(new PlotUtils::MuonResolutionUniverse<T>(chain, 1., fracUncertainty));
+    ret["MuonResolution"].push_back(new Minerva::MuonResolutionUniverse<T>(chain, -1., fracUncertainty));
+    ret["MuonResolution"].push_back(new Minerva::MuonResolutionUniverse<T>(chain, 1., fracUncertainty));
 
     return ret;
   }
@@ -32,10 +32,10 @@ namespace PlotUtils {
   template <class T>
   std::vector<T*> GetMuonAngleResolutionSystematics(typename T::config_t chain, double fracUncertainty=NSFDefaults::muon_angle_frac_res) {
     std::vector<T*> ret;
-    ret.push_back(new PlotUtils::MuonAngleXResolutionUniverse<T>(chain, -1.,fracUncertainty));
-    ret.push_back(new PlotUtils::MuonAngleXResolutionUniverse<T>(chain, 1., fracUncertainty));
-    ret.push_back(new PlotUtils::MuonAngleYResolutionUniverse<T>(chain, -1.,fracUncertainty));
-    ret.push_back(new PlotUtils::MuonAngleYResolutionUniverse<T>(chain, 1., fracUncertainty));
+    ret.push_back(new Minerva::MuonAngleXResolutionUniverse<T>(chain, -1.,fracUncertainty));
+    ret.push_back(new Minerva::MuonAngleXResolutionUniverse<T>(chain, 1., fracUncertainty));
+    ret.push_back(new Minerva::MuonAngleYResolutionUniverse<T>(chain, -1.,fracUncertainty));
+    ret.push_back(new Minerva::MuonAngleYResolutionUniverse<T>(chain, 1., fracUncertainty));
 
     return ret;
   }
@@ -44,10 +44,10 @@ namespace PlotUtils {
   std::map< std::string, std::vector<T*> > GetMuonAngleResolutionSystematicsMap(typename T::config_t chain,  double fracUncertainty=NSFDefaults::muon_angle_frac_res) {
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["MuonAngleXResolution"].push_back(new PlotUtils::MuonAngleXResolutionUniverse<T>(chain, -1., fracUncertainty));
-    ret["MuonAngleXResolution"].push_back(new PlotUtils::MuonAngleXResolutionUniverse<T>(chain, 1.,  fracUncertainty));
-    ret["MuonAngleYResolution"].push_back(new PlotUtils::MuonAngleYResolutionUniverse<T>(chain, -1., fracUncertainty));
-    ret["MuonAngleYResolution"].push_back(new PlotUtils::MuonAngleYResolutionUniverse<T>(chain, 1.,  fracUncertainty));
+    ret["MuonAngleXResolution"].push_back(new Minerva::MuonAngleXResolutionUniverse<T>(chain, -1., fracUncertainty));
+    ret["MuonAngleXResolution"].push_back(new Minerva::MuonAngleXResolutionUniverse<T>(chain, 1.,  fracUncertainty));
+    ret["MuonAngleYResolution"].push_back(new Minerva::MuonAngleYResolutionUniverse<T>(chain, -1., fracUncertainty));
+    ret["MuonAngleYResolution"].push_back(new Minerva::MuonAngleYResolutionUniverse<T>(chain, 1.,  fracUncertainty));
 
     return ret;
   }
@@ -58,12 +58,12 @@ namespace PlotUtils {
 // Class Definitions
 // Constructor
 template<typename T>
-PlotUtils::MuonResolutionUniverse<T>::MuonResolutionUniverse(
+Minerva::MuonResolutionUniverse<T>::MuonResolutionUniverse(
     typename T::config_t chw, double nsigma, double fracUncertainty) : T(chw, nsigma), m_fracUncertainty(fracUncertainty) {}
 
 
 template<typename T>
-double PlotUtils::MuonResolutionUniverse<T>::GetMuonResolutionMomentumShift() const {
+double Minerva::MuonResolutionUniverse<T>::GetMuonResolutionMomentumShift() const {
   double modP;
   // Get shift due to muon resolution
   double recoP = T::GetPmu();
@@ -79,7 +79,7 @@ double PlotUtils::MuonResolutionUniverse<T>::GetMuonResolutionMomentumShift() co
 }
 
 template<typename T>
-double PlotUtils::MuonResolutionUniverse<T>::GetPmu() const {
+double Minerva::MuonResolutionUniverse<T>::GetPmu() const {
 
   double shift_val = GetMuonResolutionMomentumShift();
 
@@ -87,17 +87,17 @@ double PlotUtils::MuonResolutionUniverse<T>::GetPmu() const {
 }
 
 template<typename T>
-std::string PlotUtils::MuonResolutionUniverse<T>::ShortName() const { return "Muon_Energy_Resolution"; }
+std::string Minerva::MuonResolutionUniverse<T>::ShortName() const { return "Muon_Energy_Resolution"; }
 
 template<typename T>
-std::string PlotUtils::MuonResolutionUniverse<T>::LatexName() const { return "Muon_Energy_Resolution"; }
+std::string Minerva::MuonResolutionUniverse<T>::LatexName() const { return "Muon_Energy_Resolution"; }
 
 template<typename T>
-PlotUtils::MuonAngleXResolutionUniverse<T>::MuonAngleXResolutionUniverse(
+Minerva::MuonAngleXResolutionUniverse<T>::MuonAngleXResolutionUniverse(
     typename T::config_t chw, double nsigma, double fracUncertainty) : T(chw, nsigma), m_fracUncertainty(fracUncertainty) {}
 
 template<typename T>
-double PlotUtils::MuonAngleXResolutionUniverse<T>::GetTrueThetaXmu() const {
+double Minerva::MuonAngleXResolutionUniverse<T>::GetTrueThetaXmu() const {
   std::vector<double> truePVec = T::GetVecDouble("mc_primFSLepton");
   TVector3 p3mu( truePVec[0], truePVec[1], truePVec[2] );
   p3mu.RotateX(MinervaUnits::numi_beam_angle_rad);
@@ -111,7 +111,7 @@ double PlotUtils::MuonAngleXResolutionUniverse<T>::GetTrueThetaXmu() const {
 }
 
 template<typename T>
-double PlotUtils::MuonAngleXResolutionUniverse<T>::GetThetaXmuShift() const {
+double Minerva::MuonAngleXResolutionUniverse<T>::GetThetaXmuShift() const {
 
   double recoThetaX = T::GetThetaXmu();
   double trueThetaX = GetTrueThetaXmu();
@@ -121,24 +121,24 @@ double PlotUtils::MuonAngleXResolutionUniverse<T>::GetThetaXmuShift() const {
 }
 
 template<typename T>
-double PlotUtils::MuonAngleXResolutionUniverse<T>::GetThetaXmu() const {
+double Minerva::MuonAngleXResolutionUniverse<T>::GetThetaXmu() const {
   double shift_val = GetThetaXmuShift();
 
   return shift_val+T::GetThetaXmu();
 }
 
 template<typename T>
-std::string PlotUtils::MuonAngleXResolutionUniverse<T>::ShortName() const { return "MuonAngleXResolution"; }
+std::string Minerva::MuonAngleXResolutionUniverse<T>::ShortName() const { return "MuonAngleXResolution"; }
 
 template<typename T>
-std::string PlotUtils::MuonAngleXResolutionUniverse<T>::LatexName() const { return "Muon Track Angle X Resolution (rad.)"; }
+std::string Minerva::MuonAngleXResolutionUniverse<T>::LatexName() const { return "Muon Track Angle X Resolution (rad.)"; }
 
 template<typename T>
-PlotUtils::MuonAngleYResolutionUniverse<T>::MuonAngleYResolutionUniverse(
+Minerva::MuonAngleYResolutionUniverse<T>::MuonAngleYResolutionUniverse(
     typename T::config_t chw, double nsigma, double fracUncertainty) : T(chw, nsigma), m_fracUncertainty(fracUncertainty) {}
 
 template<typename T>
-double PlotUtils::MuonAngleYResolutionUniverse<T>::GetTrueThetaYmu() const {
+double Minerva::MuonAngleYResolutionUniverse<T>::GetTrueThetaYmu() const {
   std::vector<double> truePVec = T::GetVecDouble("mc_primFSLepton");
   TVector3 p3mu( truePVec[0], truePVec[1], truePVec[2] );
   p3mu.RotateX(MinervaUnits::numi_beam_angle_rad);
@@ -152,7 +152,7 @@ double PlotUtils::MuonAngleYResolutionUniverse<T>::GetTrueThetaYmu() const {
 }
 
 template<typename T>
-double PlotUtils::MuonAngleYResolutionUniverse<T>::GetThetaYmuShift() const {
+double Minerva::MuonAngleYResolutionUniverse<T>::GetThetaYmuShift() const {
 
   double recoThetaY = T::GetThetaYmu();
   double trueThetaY = GetTrueThetaYmu();
@@ -162,17 +162,17 @@ double PlotUtils::MuonAngleYResolutionUniverse<T>::GetThetaYmuShift() const {
 }
 
 template<typename T>
-double PlotUtils::MuonAngleYResolutionUniverse<T>::GetThetaYmu() const {
+double Minerva::MuonAngleYResolutionUniverse<T>::GetThetaYmu() const {
   double shift_val = GetThetaYmuShift();
 
   return shift_val+T::GetThetaYmu();
 }
 
 template<typename T>
-std::string PlotUtils::MuonAngleYResolutionUniverse<T>::ShortName() const { return "MuonAngleYResolution"; }
+std::string Minerva::MuonAngleYResolutionUniverse<T>::ShortName() const { return "MuonAngleYResolution"; }
 
 template<typename T>
-std::string PlotUtils::MuonAngleYResolutionUniverse<T>::LatexName() const { return "Muon Track Angle X Resolution (rad.)"; }
+std::string Minerva::MuonAngleYResolutionUniverse<T>::LatexName() const { return "Muon Track Angle X Resolution (rad.)"; }
 
 
 #endif // MuonResolutionSYSTEMATICS_CXX

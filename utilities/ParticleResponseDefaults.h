@@ -5,7 +5,7 @@
 //Placing the standard particle response fractional uncertainties here
 // $ANAUTILSROOT/src/ParticleResponseUtils.cpp has the standard responses used by the Anatool
 // https://cdcvs.fnal.gov/redmine/projects/minerva/wiki/NX_systematics has references on where these comes from
-namespace PlotUtils
+namespace Minerva
 {
   namespace PartRespDefaults
   {

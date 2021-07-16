@@ -12,9 +12,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class MKReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -39,7 +39,7 @@ namespace PlotUtils
       }
 
     private:
-      mutable PlotUtils::weightMK fCalculator; //TODO: Why can't GetWeight() be const here?  I don't see any obvious reasons at first glance, but I'm far from an expert on this.
+      mutable MAT::weightMK fCalculator; //TODO: Why can't GetWeight() be const here?  I don't see any obvious reasons at first glance, but I'm far from an expert on this.
   };
 }
 

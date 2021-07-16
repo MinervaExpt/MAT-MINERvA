@@ -8,7 +8,7 @@
 #include "weight_fsi_absorption.h"
 
 
-double PlotUtils::gethAFSIAbsorptionWeight(int mc_incoming,
+double Minerva::gethAFSIAbsorptionWeight(int mc_incoming,
                                            int mc_primaryLepton,
                                            int mc_charm,
                                            int mc_intType,
@@ -389,7 +389,7 @@ double PlotUtils::gethAFSIAbsorptionWeight(int mc_incoming,
 }
 
 
-double PlotUtils::gethAFSIAbsorptionWeight(PlotUtils::ChainWrapper* chw,
+double Minerva::gethAFSIAbsorptionWeight(MAT::ChainWrapper* chw,
                                            Long64_t entry,
                                            bool verbose)
 {

@@ -4,7 +4,7 @@
 #include "TreeWrapper.h"
 #include "NSFDefaults.h"
 
-namespace PlotUtils{
+namespace Minerva{
   ///////////////////////////////////////////////////////////////
   // Some notes: this is the result of a low nu study
   // which looked at the difference between the residual of MC and Data

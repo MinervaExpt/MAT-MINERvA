@@ -4,7 +4,7 @@
 #include "TreeWrapper.h"
 #include <TH2D.h>
 
-namespace PlotUtils{
+namespace Minerva{
   template<class T>
   class CCQE3DFitsUniverse: public T
   {

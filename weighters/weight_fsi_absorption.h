@@ -4,7 +4,7 @@
 #include <Rtypes.h>
 
 
-namespace PlotUtils {
+namespace Minerva {
 
     class ChainWrapper;
     
@@ -29,7 +29,7 @@ namespace PlotUtils {
 
 
     
-    double gethAFSIAbsorptionWeight(PlotUtils::ChainWrapper* chw,
+    double gethAFSIAbsorptionWeight(MAT::ChainWrapper* chw,
                                     Long64_t entry,
                                     bool verbose = false);
     

@@ -6,10 +6,10 @@
 
 // Get Weights
 virtual double GetGenieWeight() const {
-  double nonResPiWgt = UseNonResPiReweight() && PlotUtils::IsNonResPi(*this)
-                     ? PlotUtils::kNonResPiWeight : 1.;
-  double deutWgt = UseDeuteriumGeniePiTune() && PlotUtils::IsCCRes(*this) ? 
-                   ( PlotUtils::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", 
+  double nonResPiWgt = UseNonResPiReweight() && MAT::IsNonResPi(*this)
+                     ? MAT::kNonResPiWeight : 1.;
+  double deutWgt = UseDeuteriumGeniePiTune() && MAT::IsCCRes(*this) ? 
+                   ( MAT::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", 
                                                   NSFDefaults::DEUTERIUM_MaRES,
                                                   NSFDefaults::GENIE_MaRES, 
                                                   NSFDefaults::GENIE_MaRES_1Sig ) * 
@@ -19,24 +19,24 @@ virtual double GetGenieWeight() const {
 
 virtual double GetRPAWeight() const {
   const int variation = 0;  // CV
-  return PlotUtils::GetRPAWeight(*this, Getq0True() / 1000 /* GeV */,
+  return MAT::GetRPAWeight(*this, Getq0True() / 1000 /* GeV */,
                                  Getq3True() / 1000 /* GeV */, variation,
                                  IsProcessingNX());
 }
 
 virtual double GetLowRecoil2p2hWeight() const {
   const int variation = 0;  // CV
-  return PlotUtils::GetLowRecoil2p2hWeight(*this, Getq0True() / 1000 /* GeV */,
+  return MAT::GetLowRecoil2p2hWeight(*this, Getq0True() / 1000 /* GeV */,
                                            Getq3True() / 1000 /* GeV */,
                                            variation);
 }
 
 virtual double GetLowQ2PiWeight(std::string channel) const {
   int variation = 0;  // CV
-  if (!PlotUtils::IsCCRes(*this))
+  if (!MAT::IsCCRes(*this))
     return 1.;
   else
-    return PlotUtils::weight_lowq2pi().getWeight(GetQ2True() * 1e-6 /*GeV^2*/,
+    return MAT::weight_lowq2pi().getWeight(GetQ2True() * 1e-6 /*GeV^2*/,
                                                  channel, variation);
 }
 
@@ -45,7 +45,7 @@ virtual double GetCoherentPiWeight(double thpi_true /*deg*/,
   if (GetInt("mc_intType") != 4) return 1.;
   assert(tpi_true > 0. && "GetCoherentPiWeight failed with tpi < 0.");
   assert(thpi_true > 0. && "GetCoherentPiWeight failed with thpi < 0.");
-  return PlotUtils::weight_coherent().get_combined_weight(thpi_true, tpi_true);
+  return MAT::weight_coherent().get_combined_weight(thpi_true, tpi_true);
 }
 
 virtual double GetFluxAndCVWeight(double Enu = -99. /*GeV*/,
@@ -59,7 +59,7 @@ virtual double GetFluxAndCVWeight(double Enu = -99. /*GeV*/,
     nu_pdg = 14;
   else if (nu_pdg == -99)
     nu_pdg = GetInt("mc_incoming");
-  return PlotUtils::flux_reweighter(GetPlaylist(), nu_pdg, UseNuEConstraint(),
+  return MAT::flux_reweighter(GetPlaylist(), nu_pdg, UseNuEConstraint(),
                                     GetNFluxUniverses())
       .GetFluxCVWeight(Enu, nu_pdg);
 }
@@ -69,7 +69,7 @@ virtual double GetTargetMassWeight() const {
 }
 
 virtual double GetFSIWeight(int iWeight) const {
-  static PlotUtils::weight_fsi weight_FSI;
+  static MAT::weight_fsi weight_FSI;
   weight_FSI.UseTrackingThreshold();
   weight_FSI.calcWeights(
       GetInt("mc_incoming"), GetInt("mc_primaryLepton"), GetInt("mc_charm"),
@@ -87,7 +87,7 @@ virtual double GetFSIWeight(int iWeight) const {
 }
 
 virtual double GetMKWeight() const { 
-  return PlotUtils::weight_mk().getWeight(m_chw, m_entry);
+  return MAT::weight_mk().getWeight(m_chw, m_entry);
 }
 
 virtual double GetGeantHadronWeight() const {
@@ -96,7 +96,7 @@ virtual double GetGeantHadronWeight() const {
   if( m_use_mhrw_neutronCV_reweight )
   {
     SetupMHRWeighter();
-    return PlotUtils::weight_hadron<PlotUtils::TreeWrapper*>().reweightNeutronCV( *this );
+    return MAT::weight_hadron<MAT::TreeWrapper*>().reweightNeutronCV( *this );
   }
   else return 1.;
 }

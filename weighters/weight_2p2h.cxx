@@ -1,7 +1,7 @@
 #include "weight_2p2h.h"
 #include "TSystem.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weight_2p2h::read(const std::string f)
 //Read in the params doubles from a file
@@ -57,37 +57,37 @@ double weight_2p2h::Gaussian2D(const double q0, const double q3)
 }
 
 // Static instances of 2p2h weighters
-PlotUtils::weight_2p2h& PlotUtils::weight_2p2h_cv() {
+Minerva::weight_2p2h& Minerva::weight_2p2h_cv() {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weight_2p2h* _weight_2p2h_cv = 
-    new PlotUtils::weight_2p2h(directory_data+"/fit-mec-2d-noScaleDown-penalty00300-best-fit");
+  static Minerva::weight_2p2h* _weight_2p2h_cv = 
+    new Minerva::weight_2p2h(directory_data+"/fit-mec-2d-noScaleDown-penalty00300-best-fit");
   return *_weight_2p2h_cv;
 }
 
 
-PlotUtils::weight_2p2h& PlotUtils::weight_2p2h_nn() {
+Minerva::weight_2p2h& Minerva::weight_2p2h_nn() {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weight_2p2h* _weight_2p2h_nn = 
-    new PlotUtils::weight_2p2h(directory_data+"/fit-mec-2d-nn-only-noScaleDown-penalty00300-best-fit");
+  static Minerva::weight_2p2h* _weight_2p2h_nn = 
+    new Minerva::weight_2p2h(directory_data+"/fit-mec-2d-nn-only-noScaleDown-penalty00300-best-fit");
   return *_weight_2p2h_nn;
 }
 
 
-PlotUtils::weight_2p2h& PlotUtils::weight_2p2h_np() {
+Minerva::weight_2p2h& Minerva::weight_2p2h_np() {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weight_2p2h* _weight_2p2h_np = 
-    new PlotUtils::weight_2p2h(directory_data+"/fit-mec-2d-np-only-noScaleDown-penalty02000-best-fit");
+  static Minerva::weight_2p2h* _weight_2p2h_np = 
+    new Minerva::weight_2p2h(directory_data+"/fit-mec-2d-np-only-noScaleDown-penalty02000-best-fit");
   return *_weight_2p2h_np;
 }
 
 
-PlotUtils::weight_2p2h& PlotUtils::weight_2p2h_qe() {
+Minerva::weight_2p2h& Minerva::weight_2p2h_qe() {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weight_2p2h* _weight_2p2h_qe = 
-    new PlotUtils::weight_2p2h(directory_data+"/fit-qe-gaussian-noScaleDown-penalty02000-best-fit");
+  static Minerva::weight_2p2h* _weight_2p2h_qe = 
+    new Minerva::weight_2p2h(directory_data+"/fit-qe-gaussian-noScaleDown-penalty02000-best-fit");
   return *_weight_2p2h_qe;
 }

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace PlotUtils {
+namespace Minerva {
 
 class weightCoherentPi {
  public:
@@ -43,7 +43,7 @@ class weightCoherentPi {
   void read(const std::string f);
 };
 
-PlotUtils::weightCoherentPi& weight_coherent();
-}  // namespace PlotUtils
+Minerva::weightCoherentPi& weight_coherent();
+}  // namespace Minerva
 
 #endif

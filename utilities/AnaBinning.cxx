@@ -4,7 +4,7 @@
 #include "AnaBinning.h"
 #include <iostream>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 AnaBinning& AnaBinning::Get(){
   static AnaBinning singleton;

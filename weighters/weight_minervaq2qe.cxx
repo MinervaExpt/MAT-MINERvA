@@ -1,6 +1,6 @@
 #include "weight_minervaq2qe.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weight_minervaq2qe::read(TString filename)
 //Read in the params doubles from a file

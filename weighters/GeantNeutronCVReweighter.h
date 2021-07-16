@@ -12,9 +12,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class GeantNeutronCVReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -29,7 +29,7 @@ namespace PlotUtils
         if(univ.IsTruth()) return 1; // No efficiency reweighting for truth events
 
         univ.SetupMHRWeighter(); //TODO: do this once in the constructor
-        return PlotUtils::weight_hadron<PlotUtils::TreeWrapper*>().reweightNeutronCV(univ);
+        return MAT::weight_hadron<MAT::TreeWrapper*>().reweightNeutronCV(univ);
       }
 
       std::string GetName() const override { return "GeantNeutronCV"; }

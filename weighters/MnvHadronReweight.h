@@ -18,7 +18,7 @@ struct Int_t;
 struct Double_t;*/
                 //Tar          //nuc          //pdg          //shift
 typedef std::map< int, std::map< int, std::map< int, std::map< int, TH2D* > > > > TruthKineRenormWeights;
-namespace PlotUtils
+namespace Minerva
 {
   const double pion_mass    = 139.570; // MeV
   const double neutron_mass = 939.565; // MeV

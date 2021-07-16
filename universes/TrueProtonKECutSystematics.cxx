@@ -5,15 +5,15 @@
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils {
+namespace Minerva {
 
   template <class T>
   std::vector<T*> GetTrueProtonKECutSystematics(typename T::config_t chain,
                                      double Uncertainty =NSFDefaults::TrueProtonKECutVariation ) {
     std::vector<T*> ret;
     std::cout << "True Proton KE Cut Systematics created with CV cut at" << T::GetTrueProtonKECutCentral() << " and uncertainty "  <<  Uncertainty << " MeV" << std::endl;
-    ret.push_back(new PlotUtils::TrueProtonKECutUniverse<T>(chain, -1., Uncertainty));
-    ret.push_back(new PlotUtils::TrueProtonKECutUniverse<T>(chain, 1., Uncertainty));
+    ret.push_back(new Minerva::TrueProtonKECutUniverse<T>(chain, -1., Uncertainty));
+    ret.push_back(new Minerva::TrueProtonKECutUniverse<T>(chain, 1., Uncertainty));
      return ret;
   }
 
@@ -23,8 +23,8 @@ namespace PlotUtils {
     std::map< std::string, std::vector<T*> > ret;
     std::cout << "True Proton KE Cut Systematics created with CV cut at" << T::GetTrueProtonKECutCentral() << " and uncertainty "  << Uncertainty  <<  " MeV" <<   std::endl;
     
-    ret["TrueProtonKECut"].push_back(new PlotUtils::TrueProtonKECutUniverse<T>(chain, -1., Uncertainty));
-    ret["TrueProtonKECut"].push_back(new PlotUtils::TrueProtonKECutUniverse<T>(chain, 1., Uncertainty));
+    ret["TrueProtonKECut"].push_back(new Minerva::TrueProtonKECutUniverse<T>(chain, -1., Uncertainty));
+    ret["TrueProtonKECut"].push_back(new Minerva::TrueProtonKECutUniverse<T>(chain, 1., Uncertainty));
     
     return ret;
   }
@@ -35,11 +35,11 @@ namespace PlotUtils {
 // Class Definitions
 // Constructor
 template<typename T>
-PlotUtils::TrueProtonKECutUniverse<T>::TrueProtonKECutUniverse(
+Minerva::TrueProtonKECutUniverse<T>::TrueProtonKECutUniverse(
     typename T::config_t chw, double nsigma, double Uncertainty) : T(chw, nsigma), m_Uncertainty(Uncertainty) {}
 
 template<typename T>
-double PlotUtils::TrueProtonKECutUniverse<T>::GetTrueProtonKECut() const {
+double Minerva::TrueProtonKECutUniverse<T>::GetTrueProtonKECut() const {
 
   double shift_val = T::m_nsigma * m_Uncertainty;
   //std::cout << "shift proton" << shift_val << std::endl;
@@ -48,11 +48,11 @@ double PlotUtils::TrueProtonKECutUniverse<T>::GetTrueProtonKECut() const {
 }
 
 template<typename T>
-std::string PlotUtils::TrueProtonKECutUniverse<T>::ShortName() const { return "TrueProtonKECut"; }
+std::string Minerva::TrueProtonKECutUniverse<T>::ShortName() const { return "TrueProtonKECut"; }
 
 
 template<typename T>
-std::string PlotUtils::TrueProtonKECutUniverse<T>::LatexName() const { return "True Proton KE Cut, MeV"; }
+std::string Minerva::TrueProtonKECutUniverse<T>::LatexName() const { return "True Proton KE Cut, MeV"; }
 
 
 

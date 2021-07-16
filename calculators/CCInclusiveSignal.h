@@ -7,10 +7,10 @@
 namespace truth
 {
   template <class UNIVERSE>
-  class IsNeutrino: public PlotUtils::SignalConstraint<UNIVERSE>
+  class IsNeutrino: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      IsNeutrino(): PlotUtils::SignalConstraint<UNIVERSE>("IsNeutrino")
+      IsNeutrino(): MAT::SignalConstraint<UNIVERSE>("IsNeutrino")
       {
       }
 
@@ -22,10 +22,10 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  class IsCC: public PlotUtils::SignalConstraint<UNIVERSE>
+  class IsCC: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      IsCC(): PlotUtils::SignalConstraint<UNIVERSE>("IsCC")
+      IsCC(): MAT::SignalConstraint<UNIVERSE>("IsCC")
       {
       }
 
@@ -37,10 +37,10 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  class MuonAngle: public PlotUtils::SignalConstraint<UNIVERSE>
+  class MuonAngle: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      MuonAngle(const double angleMax): PlotUtils::SignalConstraint<UNIVERSE>(std::string("Muon Angle ") + std::to_string(angleMax)), fMax(angleMax*M_PI/180.)
+      MuonAngle(const double angleMax): MAT::SignalConstraint<UNIVERSE>(std::string("Muon Angle ") + std::to_string(angleMax)), fMax(angleMax*M_PI/180.)
       {
       }
 
@@ -54,10 +54,10 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  class PZMuMin: public PlotUtils::SignalConstraint<UNIVERSE>
+  class PZMuMin: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      PZMuMin(const double min): PlotUtils::SignalConstraint<UNIVERSE>(std::string("PzMu > ") + std::to_string(min)), fMin(min)
+      PZMuMin(const double min): MAT::SignalConstraint<UNIVERSE>(std::string("PzMu > ") + std::to_string(min)), fMin(min)
       {
       }
 
@@ -71,10 +71,10 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  class Apothem: public PlotUtils::SignalConstraint<UNIVERSE>
+  class Apothem: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      Apothem(const double apothem): PlotUtils::SignalConstraint<UNIVERSE>(std::string("Apothem ") + std::to_string(apothem)), fApothem(apothem)
+      Apothem(const double apothem): MAT::SignalConstraint<UNIVERSE>(std::string("Apothem ") + std::to_string(apothem)), fApothem(apothem)
       {
       }
 
@@ -91,10 +91,10 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  class ZRange: public PlotUtils::SignalConstraint<UNIVERSE>
+  class ZRange: public MAT::SignalConstraint<UNIVERSE>
   {
     public:
-      ZRange(const std::string& name, const double zMin, const double zMax): PlotUtils::SignalConstraint<UNIVERSE>(name), fMin(zMin), fMax(zMax)
+      ZRange(const std::string& name, const double zMin, const double zMax): MAT::SignalConstraint<UNIVERSE>(name), fMin(zMin), fMax(zMax)
       {
       }
 
@@ -109,9 +109,9 @@ namespace truth
   };
 
   template <class UNIVERSE>
-  PlotUtils::constraints_t<UNIVERSE> GetCCInclusive2DPhaseSpace()
+  MAT::constraints_t<UNIVERSE> GetCCInclusive2DPhaseSpace()
   {
-    PlotUtils::constraints_t<UNIVERSE> signalDef;
+    MAT::constraints_t<UNIVERSE> signalDef;
 
     signalDef.emplace_back(new ZRange<UNIVERSE>("Tracker", 5980, 8422));
     signalDef.emplace_back(new Apothem<UNIVERSE>(850.));
@@ -122,9 +122,9 @@ namespace truth
   }
 
   template <class UNIVERSE>
-  PlotUtils::constraints_t<UNIVERSE> GetCCInclusive2DSignal()
+  MAT::constraints_t<UNIVERSE> GetCCInclusive2DSignal()
   {
-    PlotUtils::constraints_t<UNIVERSE> signalDef;
+    MAT::constraints_t<UNIVERSE> signalDef;
 
     signalDef.emplace_back(new IsNeutrino<UNIVERSE>());
     signalDef.emplace_back(new IsCC<UNIVERSE>());

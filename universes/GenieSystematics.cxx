@@ -7,10 +7,10 @@
 #include "TDecompChol.h"
 #include <iostream>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 // Helper Functions
-namespace PlotUtils{
+namespace Minerva{
   //=================================================================================
   // Standard Genie
   //=================================================================================
@@ -58,7 +58,7 @@ namespace PlotUtils{
 
     for(std::vector<std::string>::const_iterator syst = genie_systematics.begin(); 
             syst != genie_systematics.end(); ++syst){
-      ret.push_back( new PlotUtils::GenieUniverse<T>(chain, sigma, *syst) );
+      ret.push_back( new Minerva::GenieUniverse<T>(chain, sigma, *syst) );
     }
 
     return ret;
@@ -114,7 +114,7 @@ namespace PlotUtils{
             sigma != sigmas.end(); ++sigma) {
       for(std::vector<std::string>::const_iterator syst = genie_systematics.begin(); 
               syst != genie_systematics.end(); ++syst){
-        ret[*syst].push_back(new PlotUtils::GenieUniverse<T>(chain, *sigma, *syst));
+        ret[*syst].push_back(new Minerva::GenieUniverse<T>(chain, *sigma, *syst));
       }
     }
        
@@ -129,7 +129,7 @@ namespace PlotUtils{
   std::vector<T*> GetGenieResPionFitCovSystematics(typename T::config_t chain, int sigma, int row) {
     std::vector<T*> ret;
 
-    ret.push_back( new PlotUtils::GenieMaNormResCovUniverse<T>(chain, sigma, row) );
+    ret.push_back( new Minerva::GenieMaNormResCovUniverse<T>(chain, sigma, row) );
 
     return ret;
   }
@@ -145,7 +145,7 @@ namespace PlotUtils{
     for( int iRow = 0; iRow < 2; ++iRow ) {
       for(std::vector<double>::const_iterator sigma = sigmas.begin(); 
               sigma != sigmas.end(); ++sigma) {
-        ret[Form("GENIE_Ma_Norm_RES_Cov_Row%d",iRow)].push_back( new PlotUtils::GenieMaNormResCovUniverse<T>(chain, *sigma, iRow) );
+        ret[Form("GENIE_Ma_Norm_RES_Cov_Row%d",iRow)].push_back( new Minerva::GenieMaNormResCovUniverse<T>(chain, *sigma, iRow) );
       }
     }
 
@@ -160,8 +160,8 @@ namespace PlotUtils{
   std::vector<T*> GetGenieResPionFitSystematics(typename T::config_t chain, int sigma) {
     std::vector<T*> ret;
 
-    ret.push_back( new PlotUtils::GenieMaResUniverse<T>(chain, sigma) );
-    ret.push_back( new PlotUtils::GenieNormCCResUniverse<T>(chain, sigma) );
+    ret.push_back( new Minerva::GenieMaResUniverse<T>(chain, sigma) );
+    ret.push_back( new Minerva::GenieNormCCResUniverse<T>(chain, sigma) );
 
     return ret;
   }
@@ -178,8 +178,8 @@ namespace PlotUtils{
     for(std::vector<double>::const_iterator sigma = sigmas.begin(); 
             sigma != sigmas.end(); ++sigma) {
       //TODO Change
-      ret["GENIE_D2_MaRES"].push_back( new PlotUtils::GenieMaResUniverse<T>(chain, *sigma) );
-      ret["GENIE_D2_NormCCRES"].push_back( new PlotUtils::GenieNormCCResUniverse<T>(chain, *sigma) );
+      ret["GENIE_D2_MaRES"].push_back( new Minerva::GenieMaResUniverse<T>(chain, *sigma) );
+      ret["GENIE_D2_NormCCRES"].push_back( new Minerva::GenieNormCCResUniverse<T>(chain, *sigma) );
     }
        
     return ret;
@@ -193,7 +193,7 @@ namespace PlotUtils{
   std::vector<T*> GetGenieEPMvResSystematics(typename T::config_t chain, int sigma) {
     std::vector<T*> ret;
 
-    ret.push_back( new PlotUtils::GenieMvResUniverse<T>(chain, sigma) );
+    ret.push_back( new Minerva::GenieMvResUniverse<T>(chain, sigma) );
 
     return ret;
   }
@@ -210,7 +210,7 @@ namespace PlotUtils{
     for(std::vector<double>::const_iterator sigma = sigmas.begin(); 
             sigma != sigmas.end(); ++sigma) {
       //TODO Change
-      ret["GENIE_EP_MvRES"].push_back( new PlotUtils::GenieMvResUniverse<T>(chain, *sigma) );
+      ret["GENIE_EP_MvRES"].push_back( new Minerva::GenieMvResUniverse<T>(chain, *sigma) );
     }
        
     return ret;
@@ -230,7 +230,7 @@ namespace PlotUtils{
 
     for(std::vector<std::string>::const_iterator syst = genie_systematics.begin(); 
             syst != genie_systematics.end(); ++syst){
-      ret.push_back( new PlotUtils::GenieRvx1piUniverse<T>(chain, sigma, *syst) );
+      ret.push_back( new Minerva::GenieRvx1piUniverse<T>(chain, sigma, *syst) );
     }
 
     return ret;
@@ -253,7 +253,7 @@ namespace PlotUtils{
             sigma != sigmas.end(); ++sigma) {
       for(std::vector<std::string>::const_iterator syst = genie_systematics.begin(); 
               syst != genie_systematics.end(); ++syst){
-        ret[*syst].push_back(new PlotUtils::GenieRvx1piUniverse<T>(chain, *sigma, *syst));
+        ret[*syst].push_back(new Minerva::GenieRvx1piUniverse<T>(chain, *sigma, *syst));
       }
     }
        
@@ -277,14 +277,14 @@ namespace PlotUtils{
               syst != genie_systematics.end(); ++syst){
         // I'm not sure how to pass through a purposeful sigma to give to the below line
         // without confusing z-expansion users
-        ret.push_back( new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, -1) );
+        ret.push_back( new Minerva::GenieFaCCQEUniverse<T>(chain, 1.0, -1) );
       }
     }
     // for n_universes > 0, provide the z-expansion weights
     else{
       double nsigma = 1.;
       for(unsigned int i = 0; i < n_universes; ++i){
-        ret.push_back( new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i) );
+        ret.push_back( new Minerva::GenieFaCCQEUniverse<T>(chain, 1.0, i) );
       }
     }
     return ret;
@@ -308,14 +308,14 @@ namespace PlotUtils{
               sigma != sigmas.end(); ++sigma) {
         for(std::vector<std::string>::const_iterator syst = genie_systematics.begin(); 
                 syst != genie_systematics.end(); ++syst){
-          ret[*syst].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, *sigma, -1));
+          ret[*syst].push_back(new Minerva::GenieFaCCQEUniverse<T>(chain, *sigma, -1));
         }
       }
     }
     // for n_universes > 0, provide the z-expansion weights
     else{
       for (int i = 0; i < n_universes; ++i)
-        ret["GENIE_MaCCQE"].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i));
+        ret["GENIE_MaCCQE"].push_back(new Minerva::GenieFaCCQEUniverse<T>(chain, 1.0, i));
     }
     return ret;
   }
@@ -478,8 +478,8 @@ GenieMvResUniverse<T>::GenieMvResUniverse(typename T::config_t chw, double nsigm
 template <class T>
 double GenieMvResUniverse<T>::GetGenieWeight() const { 
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
-  double wgt = PlotUtils::GetGenieParReweight( *this, m_branch_name, 
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
+  double wgt = Minerva::GetGenieParReweight( *this, m_branch_name, 
                                                NSFDefaults::GENIE_MvRES + T::m_nsigma*NSFDefaults::ELECTROPROD_MvRES_1Sig,
                                                NSFDefaults::GENIE_MvRES, NSFDefaults::GENIE_MvRES_1Sig );
   return wgt*T::GetGenieWeight();
@@ -488,8 +488,8 @@ double GenieMvResUniverse<T>::GetGenieWeight() const {
 template <class T>
 double GenieMvResUniverse<T>::GetWeightRatioToCV() const {
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
-  return PlotUtils::GetGenieParReweight( *this, m_branch_name,
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
+  return Minerva::GetGenieParReweight( *this, m_branch_name,
                                          NSFDefaults::GENIE_MvRES + T::m_nsigma*NSFDefaults::ELECTROPROD_MvRES_1Sig,
                                          NSFDefaults::GENIE_MvRES, NSFDefaults::GENIE_MvRES_1Sig );
 }
@@ -521,7 +521,7 @@ GenieNormCCResUniverse<T>::GenieNormCCResUniverse(typename T::config_t chw, doub
 template <class T>
 double GenieNormCCResUniverse<T>::GetGenieWeight() const { 
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
@@ -539,7 +539,7 @@ double GenieNormCCResUniverse<T>::GetGenieWeight() const {
 template <class T>
 double GenieNormCCResUniverse<T>::GetWeightRatioToCV() const {
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
@@ -581,15 +581,15 @@ GenieMaResUniverse<T>::GenieMaResUniverse(typename T::config_t chw, double nsigm
 template <class T>
 double GenieMaResUniverse<T>::GetGenieWeight() const { 
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
     // Neeed to divide the CV weight out
-    wgt = PlotUtils::GetGenieParReweight( *this, m_branch_name, 
+    wgt = Minerva::GetGenieParReweight( *this, m_branch_name, 
                                            NSFDefaults::DEUTERIUM_MaRES + T::m_nsigma*NSFDefaults::DEUTERIUM_MaRES_1Sig,
                                            NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig ) / 
-                                           PlotUtils::GetGenieParReweight(*this, m_branch_name,  
+                                           Minerva::GetGenieParReweight(*this, m_branch_name,  
                                                                           NSFDefaults::DEUTERIUM_MaRES,
                                                                           NSFDefaults::GENIE_MaRES, 
                                                                           NSFDefaults::GENIE_MaRES_1Sig );
@@ -606,15 +606,15 @@ double GenieMaResUniverse<T>::GetGenieWeight() const {
 template <class T>
 double GenieMaResUniverse<T>::GetWeightRatioToCV() const {
   //Should this be CCRES only?
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
     // Neeed to divide the CV weight out
-    wgt = PlotUtils::GetGenieParReweight( *this, m_branch_name,
+    wgt = Minerva::GetGenieParReweight( *this, m_branch_name,
                                            NSFDefaults::DEUTERIUM_MaRES + T::m_nsigma*NSFDefaults::DEUTERIUM_MaRES_1Sig,
                                            NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig ) /
-                                           PlotUtils::GetGenieParReweight(*this, m_branch_name,
+                                           Minerva::GetGenieParReweight(*this, m_branch_name,
                                                                           NSFDefaults::DEUTERIUM_MaRES,
                                                                           NSFDefaults::GENIE_MaRES,
                                                                           NSFDefaults::GENIE_MaRES_1Sig );
@@ -660,9 +660,9 @@ double GenieRvx1piUniverse<T>::GetGenieWeight() const {
                                  T::GetVecElem(m_branch_name.c_str(), 4);
   // If the nonrespi reweight is being applied, modify the below branches to
   // use alternate weights, provided in GenieSystematics header
-  if(T::UseNonResPiReweight()&&PlotUtils::IsNonResPi(*this)){
+  if(T::UseNonResPiReweight()&&Minerva::IsNonResPi(*this)){
     double plusMinus = T::m_nsigma < 0 ? -1. : 1.;
-    wgt = PlotUtils::kNonResPiWeight + plusMinus * PlotUtils::kNonResPiWeightShift;
+    wgt = Minerva::kNonResPiWeight + plusMinus * Minerva::kNonResPiWeightShift;
     return wgt;
   }
   // This systematic universe's modified the CV weight,
@@ -676,9 +676,9 @@ double GenieRvx1piUniverse<T>::GetWeightRatioToCV() const {
                                  T::GetVecElem(m_branch_name.c_str(), 4);
   // If the nonrespi reweight is being applied, modify the below branches to
   // use alternate weights, provided in GenieSystematics header
-  if(T::UseNonResPiReweight()&&PlotUtils::IsNonResPi(*this)){
+  if(T::UseNonResPiReweight()&&Minerva::IsNonResPi(*this)){
     double plusMinus = T::m_nsigma < 0 ? -1. : 1.;
-    wgt = 1 + plusMinus * PlotUtils::kNonResPiWeightShift / PlotUtils::kNonResPiWeight;
+    wgt = 1 + plusMinus * Minerva::kNonResPiWeightShift / Minerva::kNonResPiWeight;
     return wgt;
   }
   // This systematic universe's modified the CV weight,
@@ -727,16 +727,16 @@ GenieMaNormResCovUniverse<T>::GenieMaNormResCovUniverse(typename T::config_t chw
 // Get Genie Weight
 template <class T>
 double GenieMaNormResCovUniverse<T>::GetGenieWeight() const { 
-  if( !PlotUtils::IsCCResonance(*this) ) return T::GetGenieWeight();
+  if( !Minerva::IsCCResonance(*this) ) return T::GetGenieWeight();
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
-    double new_ma_wgt = PlotUtils::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", NSFDefaults::DEUTERIUM_MaRES, 
+    double new_ma_wgt = Minerva::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", NSFDefaults::DEUTERIUM_MaRES, 
                                                          NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig );
-    //double ma_wgt_sigma = NSFDefaults::DEUTERIUM_RES_NORM * (PlotUtils::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
+    //double ma_wgt_sigma = NSFDefaults::DEUTERIUM_RES_NORM * (Minerva::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
     //                                                          NSFDefaults::DEUTERIUM_MaRES + T::m_nsigma*NSFDefaults::DEUTERIUM_MaRES_1Sig,
     //                                                          NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig )-new_ma_wgt); 
-    double ma_wgt_1sigma = NSFDefaults::DEUTERIUM_RES_NORM * (PlotUtils::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
+    double ma_wgt_1sigma = NSFDefaults::DEUTERIUM_RES_NORM * (Minerva::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
                                                               T::m_nsigma < 0 ?
                                                               NSFDefaults::DEUTERIUM_MaRES - NSFDefaults::DEUTERIUM_MaRES_1Sig :
                                                               NSFDefaults::DEUTERIUM_MaRES + NSFDefaults::DEUTERIUM_MaRES_1Sig,
@@ -768,16 +768,16 @@ double GenieMaNormResCovUniverse<T>::GetGenieWeight() const {
 
 template <class T>
 double GenieMaNormResCovUniverse<T>::GetWeightRatioToCV() const {
-  if( !PlotUtils::IsCCResonance(*this) ) return 1.;
+  if( !Minerva::IsCCResonance(*this) ) return 1.;
   //Check if cv reweight is on. If not, I wouldn't recommend changing the uncertainty  
   double wgt = 1.0;
   if( T::UseDeuteriumGeniePiTune() ) {
-    double new_ma_wgt = PlotUtils::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", NSFDefaults::DEUTERIUM_MaRES, 
+    double new_ma_wgt = Minerva::GetGenieParReweight(*this,"truth_genie_wgt_MaRES", NSFDefaults::DEUTERIUM_MaRES, 
                                                          NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig );
-    //double ma_wgt_sigma = NSFDefaults::DEUTERIUM_RES_NORM * (PlotUtils::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
+    //double ma_wgt_sigma = NSFDefaults::DEUTERIUM_RES_NORM * (Minerva::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
     //                                                          NSFDefaults::DEUTERIUM_MaRES + T::m_nsigma*NSFDefaults::DEUTERIUM_MaRES_1Sig,
     //                                                          NSFDefaults::GENIE_MaRES, NSFDefaults::GENIE_MaRES_1Sig )-new_ma_wgt); 
-    double ma_wgt_1sigma = NSFDefaults::DEUTERIUM_RES_NORM * (PlotUtils::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
+    double ma_wgt_1sigma = NSFDefaults::DEUTERIUM_RES_NORM * (Minerva::GetGenieParReweight( *this, m_ma_branch_name.c_str(), 
                                                               T::m_nsigma < 0 ?
                                                               NSFDefaults::DEUTERIUM_MaRES - NSFDefaults::DEUTERIUM_MaRES_1Sig :
                                                               NSFDefaults::DEUTERIUM_MaRES + NSFDefaults::DEUTERIUM_MaRES_1Sig,
@@ -847,7 +847,7 @@ double GenieFaCCQEUniverse<T>::GetGenieWeight() const {
   if(T::GetInt("mc_intType")!=1) return T::GetGenieWeight();  // Only reweight CCQE events
   if(T::GetInt("mc_targetZ")<6) return T::GetGenieWeight(); // Don't reweight hydrogen
   const double q2 = T::GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
-  static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
+  static Minerva::weightZExp zExpWeighter = Minerva::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
   double cvWgt = zExpWeighter.getWeight(q2);
   double univWgt = zExpWeighter.getWeight(q2,m_universe_number);
   return (univWgt/cvWgt)*T::GetGenieWeight();
@@ -867,7 +867,7 @@ double GenieFaCCQEUniverse<T>::GetWeightRatioToCV() const {
   if(T::GetInt("mc_intType")!=1) return 1;  // Only reweight CCQE events
   if(T::GetInt("mc_targetZ")<6) return 1; // Don't reweight hydrogen
   const double q2 = T::GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
-  static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
+  static Minerva::weightZExp zExpWeighter = Minerva::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
   double cvWgt = zExpWeighter.getWeight(q2);
   double univWgt = zExpWeighter.getWeight(q2,m_universe_number);
   return univWgt/cvWgt;

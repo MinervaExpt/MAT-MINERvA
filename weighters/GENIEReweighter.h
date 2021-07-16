@@ -13,9 +13,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class GENIEReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -30,10 +30,10 @@ namespace PlotUtils
 
       double GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const override
       {
-        double nonResPiWgt = fUseNonResPiReweight && PlotUtils::IsNonResPi(univ)
-                           ? PlotUtils::kNonResPiWeight : 1.;
-        double deutWgt = fUseDeuteriumPionTune && PlotUtils::IsCCRes(univ) ?
-                         ( PlotUtils::GetGenieParReweight(univ,"truth_genie_wgt_MaRES",
+        double nonResPiWgt = fUseNonResPiReweight && MAT::IsNonResPi(univ)
+                           ? MAT::kNonResPiWeight : 1.;
+        double deutWgt = fUseDeuteriumPionTune && MAT::IsCCRes(univ) ?
+                         ( MAT::GetGenieParReweight(univ,"truth_genie_wgt_MaRES",
                                                         NSFDefaults::DEUTERIUM_MaRES,
                                                         NSFDefaults::GENIE_MaRES,
                                                         NSFDefaults::GENIE_MaRES_1Sig ) * 

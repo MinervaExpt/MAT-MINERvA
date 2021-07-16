@@ -41,7 +41,7 @@
 // Or return each CV and uncertainty one at a time
 //   (is the least cpu efficient, repeats some calculations 5 times)
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weightRPA {
   public:
@@ -100,7 +100,7 @@ namespace PlotUtils{
   };
 
   // Static instance of RPA weighter
-  PlotUtils::weightRPA& weightRPA_cv_and_var(bool useNX=true);
+  Minerva::weightRPA& weightRPA_cv_and_var(bool useNX=true);
 
 }
 

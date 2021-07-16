@@ -2,7 +2,7 @@
 #define PARTICLERESPONSECONSTANTS_CXX 1
 #include "ParticleResponseDefaults.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 double PartRespDefaults::GetDefaultPartRespFracUnc( std::string particle )
 {
   if( particle.find("proton")!=std::string::npos )       return PartRespDefaults::protonResponse;

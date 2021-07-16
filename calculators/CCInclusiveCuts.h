@@ -1,7 +1,7 @@
 //==============================================================================
 //In this file several inclusive cuts are defined.
 //
-//Each cut is a class that inherits from PlotUtils::Cut.
+//Each cut is a class that inherits from MAT::Cut.
 //
 //At minimum, cuts must have a name and they must override the checkCut
 //function.
@@ -41,12 +41,12 @@ namespace reco
   //============================================================================
   //Example 1: The simplest cut example. Just derive from Cut<> base class.
   //============================================================================
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  class HasMINOSMatch: public PlotUtils::Cut<UNIVERSE, EVENT>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  class HasMINOSMatch: public MAT::Cut<UNIVERSE, EVENT>
   {
     public:
       // Constructor
-      HasMINOSMatch(): PlotUtils::Cut<UNIVERSE, EVENT>("Has MINOS Match") {}
+      HasMINOSMatch(): MAT::Cut<UNIVERSE, EVENT>("Has MINOS Match") {}
 
     private:
       // THE cut function
@@ -66,8 +66,8 @@ namespace reco
   //getCCInclusiveCuts).
   //============================================================================
 #ifndef __GCCXML__
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  using MuonEnergyMin = PlotUtils::Minimum<UNIVERSE, double, &UNIVERSE::GetEmu, EVENT>;
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  using MuonEnergyMin = MAT::Minimum<UNIVERSE, double, &UNIVERSE::GetEmu, EVENT>;
 #endif
   //============================================================================
   //Example 3: The first, commented-out dead time cut inherits directly from Ben's
@@ -98,8 +98,8 @@ namespace reco
   //template.
   //============================================================================
 #ifndef __GCCXML__
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  using NoDeadtime = PlotUtils::Maximum<UNIVERSE, int, &UNIVERSE::GetTDead, EVENT>;
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  using NoDeadtime = MAT::Maximum<UNIVERSE, int, &UNIVERSE::GetTDead, EVENT>;
 #endif
   //============================================================================
   //Example 4: Another case like Example 1.
@@ -107,11 +107,11 @@ namespace reco
   //opposed to an antineutrino.  Negative muon charge means neutrino
   //interaction.
   //============================================================================
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  class IsNeutrino: public PlotUtils::Cut<UNIVERSE, EVENT>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  class IsNeutrino: public MAT::Cut<UNIVERSE, EVENT>
   {
     public:
-      IsNeutrino(): PlotUtils::Cut<UNIVERSE, EVENT>("Muon Charge Sign") {}
+      IsNeutrino(): MAT::Cut<UNIVERSE, EVENT>("Muon Charge Sign") {}
 
     private:
       bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
@@ -121,11 +121,11 @@ namespace reco
   };
 
   //Other Cuts I need to reproduce Dan's ME 2D inclusive analysis
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  class MaxMuonAngle: public PlotUtils::Cut<UNIVERSE, EVENT>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  class MaxMuonAngle: public MAT::Cut<UNIVERSE, EVENT>
   {
     public:
-      MaxMuonAngle(const double max): PlotUtils::Cut<UNIVERSE, EVENT>(std::string("Muon Theta < ") + std::to_string(max)), fMax(max*M_PI/180.) {}
+      MaxMuonAngle(const double max): MAT::Cut<UNIVERSE, EVENT>(std::string("Muon Theta < ") + std::to_string(max)), fMax(max*M_PI/180.) {}
 
     private:
       bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
@@ -136,11 +136,11 @@ namespace reco
       const double fMax; //radians
   };
 
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  class ZRange: public PlotUtils::Cut<UNIVERSE, EVENT>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  class ZRange: public MAT::Cut<UNIVERSE, EVENT>
   {
     public:
-      ZRange(const std::string& name, const double zMin, const double zMax): PlotUtils::Cut<UNIVERSE, EVENT>(name), fMin(zMin), fMax(zMax)
+      ZRange(const std::string& name, const double zMin, const double zMax): MAT::Cut<UNIVERSE, EVENT>(name), fMin(zMin), fMax(zMax)
       {
       }
 
@@ -154,11 +154,11 @@ namespace reco
       const double fMax;
   };
 
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  class Apothem: public PlotUtils::Cut<UNIVERSE, EVENT>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  class Apothem: public MAT::Cut<UNIVERSE, EVENT>
   {
     public:
-    Apothem(const double apothem): PlotUtils::Cut<UNIVERSE, EVENT>(std::string("Apothem ") + std::to_string(apothem)), fApothem(apothem), fSlope(-1./sqrt(3.))//A regular hexagon has angles of 2*M_PI/3, so I can find this is 1/tan(M_PI/3.)
+    Apothem(const double apothem): MAT::Cut<UNIVERSE, EVENT>(std::string("Apothem ") + std::to_string(apothem)), fApothem(apothem), fSlope(-1./sqrt(3.))//A regular hexagon has angles of 2*M_PI/3, so I can find this is 1/tan(M_PI/3.)
       {
       }
 
@@ -180,12 +180,12 @@ namespace reco
   // cuts.
   // 
   // The return type for this function is a `cuts_t<UNIVERSE, EVENT>`, which is
-  // shorthand for std::vector<std::unique_ptr<PlotUtils::Cut<UNIVERSE, EVENT>>>;
+  // shorthand for std::vector<std::unique_ptr<MAT::Cut<UNIVERSE, EVENT>>>;
   //============================================================================
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  PlotUtils::cuts_t<UNIVERSE, EVENT> GetCCInclusiveCuts()
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  MAT::cuts_t<UNIVERSE, EVENT> GetCCInclusiveCuts()
   {
-    PlotUtils::cuts_t<UNIVERSE, EVENT> inclusive_cuts;
+    MAT::cuts_t<UNIVERSE, EVENT> inclusive_cuts;
     inclusive_cuts.emplace_back(new HasMINOSMatch<UNIVERSE, EVENT>());
     inclusive_cuts.emplace_back(new MuonEnergyMin<UNIVERSE, EVENT>(2e3, "Emu"));
     inclusive_cuts.emplace_back(new NoDeadtime<UNIVERSE, EVENT>(1, "Deadtime"));
@@ -194,10 +194,10 @@ namespace reco
     return inclusive_cuts;
   }
 
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
-  PlotUtils::cuts_t<UNIVERSE, EVENT> GetCCInclusive2DCuts()
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
+  MAT::cuts_t<UNIVERSE, EVENT> GetCCInclusive2DCuts()
   { 
-    PlotUtils::cuts_t<UNIVERSE, EVENT> inclusive_cuts;
+    MAT::cuts_t<UNIVERSE, EVENT> inclusive_cuts;
     inclusive_cuts.emplace_back(new ZRange<UNIVERSE, EVENT>("Tracker", 5980, 8422));
     inclusive_cuts.emplace_back(new Apothem<UNIVERSE, EVENT>(850.));
     inclusive_cuts.emplace_back(new MaxMuonAngle<UNIVERSE, EVENT>(20.));

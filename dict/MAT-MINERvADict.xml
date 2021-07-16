@@ -1,30 +1,30 @@
 <lcgdict>
-  <!-- PlotUtils objects -->
-  <class name="PlotUtils::AnaBinning" />
+  <!-- Minvera objects -->
+  <class name="Minvera::AnaBinning" />
 
-  <!-- PlotUtils weight classes-->
-  <class name="PlotUtils::weight_2p2h" />
-  <class name="PlotUtils::weightRPA" />
-  <class name="PlotUtils::weightLowQ2Pi" />
-  <class name="PlotUtils::weightDIS" />
-  <class name="PlotUtils::weightZExp" />
+  <!-- Minvera weight classes-->
+  <class name="Minvera::weight_2p2h" />
+  <class name="Minvera::weightRPA" />
+  <class name="Minvera::weightLowQ2Pi" />
+  <class name="Minvera::weightDIS" />
+  <class name="Minvera::weightZExp" />
 
-  <!-- PlotUtils systematic universes classes (new sys framework)-->
-  <class name="PlotUtils::MinervaUniverse" />
+  <!-- Minvera systematic universes classes (new sys framework)-->
+  <class name="Minvera::MinervaUniverse" />
 
-  <!-- PlotUtils standalone systematics functions (new sys framework)-->	
-  <function name="PlotUtils::GetGenieSystematics" />
-  <function name="PlotUtils::GetGenieSystematicsMap" />
-  <function name="PlotUtils::GetMuonSystematicsMap" />
-  <function name="PlotUtils::GetAngleSystematicsMap" />
-  <function name="PlotUtils::GetRecoilSystematicsMap" />
-  <function name="PlotUtils::GetResolutionSystematicsMap" />
-  <function name="PlotUtils::GetAngleSystematics" />
-  <function name="PlotUtils::nuEnergyCCQE" />
-  <function name="PlotUtils::qSquaredCCQE" />
-  <function name="PlotUtils::struckNucleonMass" />
-  <function name="PlotUtils::W" />
-  <function name="PlotUtils::WSquared" />
-  <function name="PlotUtils::xBjorken" />
+  <!-- Minvera standalone systematics functions (new sys framework)-->	
+  <function name="Minvera::GetGenieSystematics" />
+  <function name="Minvera::GetGenieSystematicsMap" />
+  <function name="Minvera::GetMuonSystematicsMap" />
+  <function name="Minvera::GetAngleSystematicsMap" />
+  <function name="Minvera::GetRecoilSystematicsMap" />
+  <function name="Minvera::GetResolutionSystematicsMap" />
+  <function name="Minvera::GetAngleSystematics" />
+  <function name="Minvera::nuEnergyCCQE" />
+  <function name="Minvera::qSquaredCCQE" />
+  <function name="Minvera::struckNucleonMass" />
+  <function name="Minvera::W" />
+  <function name="Minvera::WSquared" />
+  <function name="Minvera::xBjorken" />
 </lcgdict>
 

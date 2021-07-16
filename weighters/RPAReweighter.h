@@ -12,9 +12,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class RPAReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -27,7 +27,7 @@ namespace PlotUtils
       double GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const override
       {
         //variation 0 is the CV
-        return PlotUtils::GetRPAWeight(univ, univ.Getq0True() / 1000 /* GeV */,
+        return MAT::GetRPAWeight(univ, univ.Getq0True() / 1000 /* GeV */,
                                  univ.Getq3True() / 1000 /* GeV */, 0,
                                  univ.IsProcessingNX());
       }

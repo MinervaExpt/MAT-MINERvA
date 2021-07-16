@@ -8,7 +8,7 @@
 // GetLowQ2PiSystematicsMap(typename T::config_t chain);
 // Get2p2hSystematicsMap(typename T::config_t chain);
 
-namespace PlotUtils{
+namespace Minerva{
   //=================================================================================
   // 2p2h
   //=================================================================================
@@ -77,15 +77,15 @@ namespace PlotUtils{
     const double kTrackerFace = 5991.29; // module 27, plane 1
     const double kTrackerBack = 8408.91; // module 80, plane 2
     const double kStandardApothem = 850;
-    PlotUtils::MnvHadronReweight& weight_hadron(TTree* truth_tree, TTree* reco_tree,
-                                                double front   = PlotUtils::kTrackerFace,
-                                                double back    = PlotUtils::kTrackerBack,
-                                                double apothem = PlotUtils::kStandardApothem,
+    Minerva::MnvHadronReweight& weight_hadron(TTree* truth_tree, TTree* reco_tree,
+                                                double front   = Minerva::kTrackerFace,
+                                                double back    = Minerva::kTrackerBack,
+                                                double apothem = Minerva::kStandardApothem,
                                                 std::string cache_dir = "./", 
                                                 std::string project_name = "" ) {
-      static PlotUtils::MnvHadronReweight* _weight_hadron = 0;
+      static Minerva::MnvHadronReweight* _weight_hadron = 0;
       if(!_weight_hadron){
-        _weight_hadron = new PlotUtils::MnvHadronReweight(truth_tree, reco_tree);
+        _weight_hadron = new Minerva::MnvHadronReweight(truth_tree, reco_tree);
         _weight_hadron->useDefaultParticles();
         _weight_hadron->setBasicFiducial(front, back, apothem);
         // Get normalization factors from file, else make the file.
@@ -113,7 +113,7 @@ namespace PlotUtils{
         }
 
         virtual double GetHadronWeight() const override { 
-          return PlotUtils::weight_hadron()
+          return Minerva::weight_hadron()
         }
 
         std::string m_type;
@@ -124,12 +124,12 @@ namespace PlotUtils{
     template <typename T>
     std::vector<T*> GetHadronSystematics(typename T::config_t chain){ 
       std::vector<T*> ret;
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, -1), "Pion");
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, +1), "Pion");
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, -1), "Proton");
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, +1), "Proton");
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, -1), "Neutron");
-      ret.push_back(new PlotUtils::HadronUniverse<T>(chain, +1), "Neutron");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, -1), "Pion");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, +1), "Pion");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, -1), "Proton");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, +1), "Proton");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, -1), "Neutron");
+      ret.push_back(new Minerva::HadronUniverse<T>(chain, +1), "Neutron");
       return ret;
     }
   */

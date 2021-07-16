@@ -2,26 +2,26 @@
 #define MINERVAUNIVERSE_H
 
 #include "BaseUniverse.h"
-#include "GeantHadronSystematics.cxx"       // PlotUtils::weight_hadron (MnvHadronReweighter)
-#include "FluxReweighter.h"                 // PlotUtils::flux_reweighter
-#include "GenieSystematics.cxx"             // PlotUtils::IsNonResPi
-#include "MinosMuonEfficiencyCorrection.h"  // PlotUtils::MinosMuonEfficiencyCorrection
-#include "MnvNormalization.h"               // PlotUtils::MnvNormalizer
-#include "MnvTuneSystematics.cxx"  // PlotUtils::Get<RPA/2p2h/NonResPi/LowQ2Pi>Weight
+#include "GeantHadronSystematics.cxx"       // MAT::weight_hadron (MnvHadronReweighter)
+#include "FluxReweighter.h"                 // MAT::flux_reweighter
+#include "GenieSystematics.cxx"             // MAT::IsNonResPi
+#include "MinosMuonEfficiencyCorrection.h"  // MAT::MinosMuonEfficiencyCorrection
+#include "MnvNormalization.h"               // MAT::MnvNormalizer
+#include "MnvTuneSystematics.cxx"  // MAT::Get<RPA/2p2h/NonResPi/LowQ2Pi>Weight
 #include "NSFDefaults.h"
 #include "PlotUtilsPhysicalConstants.h"
 #include "TVector3.h"          // Needed by SystCalcs/TruthFunctions.h
-#include "weightCoherentPi.h"  // PlotUtils::weight_coherent
-#include "weight_fsi.h"        // PlotUtils::weight_fsi
-#include "weightMK.h"          // PlotUtils::weight_mk
+#include "weightCoherentPi.h"  // MAT::weight_coherent
+#include "weight_fsi.h"        // MAT::weight_fsi
+#include "weightMK.h"          // MAT::weight_mk
 
-namespace PlotUtils {
-class MinervaUniverse : public PlotUtils::BaseUniverse {
+namespace Minerva {
+class MinervaUniverse : public MAT::BaseUniverse {
  public:
-  MinervaUniverse(){PlotUtils::BaseUniverse();};
+  MinervaUniverse(){MAT::BaseUniverse();};
   // CTOR
-  MinervaUniverse(PlotUtils::TreeWrapper* chw, double nsigma = 0)
-      : PlotUtils::BaseUniverse(chw, nsigma){};
+  MinervaUniverse(MAT::TreeWrapper* chw, double nsigma = 0)
+      : MAT::BaseUniverse(chw, nsigma){};
 
   //! Playlists
   static std::string GetPlaylist();
@@ -112,5 +112,5 @@ public:
   static bool m_use_zExpansionFa_reweight;
 
 };
-}  // namespace PlotUtils
+}  // namespace Minerva
 #endif  // MINERVAUNIVERSE

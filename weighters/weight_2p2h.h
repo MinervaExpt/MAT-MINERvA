@@ -15,7 +15,7 @@
 
 //Class for getting Gaussian paramaters inputs from a given file
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weight_2p2h {
   public:

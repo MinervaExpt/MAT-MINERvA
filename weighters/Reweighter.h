@@ -15,14 +15,14 @@
 #include <string>
 #include <vector>
 
-namespace PlotUtils
+namespace Minerva
 {
   namespace detail
   {
     struct empty;
   }
 
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class Reweighter
   {
     public:

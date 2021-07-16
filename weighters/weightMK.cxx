@@ -1,7 +1,7 @@
 #include "weightMK.h"
 #include "TreeWrapper.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 //----------------------------------------------------------------------------------------------------
 void weightMK::read(const TString  f)
@@ -180,7 +180,7 @@ double weightMK::getWeight(const double mc_W,  // should true GENIE mc_w and in 
 	else return 1.0;
 }
 //----------------------------------------------------------------------------------------------------
-double weightMK::getWeight(PlotUtils::TreeWrapper* chw,
+double weightMK::getWeight(MAT::TreeWrapper* chw,
 			   Long64_t entry)
 {
 
@@ -210,10 +210,10 @@ double weightMK::getWeight(PlotUtils::TreeWrapper* chw,
 }
 
 
-PlotUtils::weightMK& PlotUtils::weight_mk() {
+Minerva::weightMK& Minerva::weight_mk() {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string dir_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weightMK* _weight_MK = 
-      new PlotUtils::weightMK(dir_data+"output_ratio_genie_neut_for_MKmodel.root");
+  static Minerva::weightMK* _weight_MK = 
+      new Minerva::weightMK(dir_data+"output_ratio_genie_neut_for_MKmodel.root");
   return *_weight_MK;
 }    

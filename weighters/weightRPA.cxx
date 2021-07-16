@@ -1,6 +1,6 @@
 #include "weightRPA.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightRPA::read(const TString  f)
 //Read in the params doubles from a file
@@ -346,10 +346,10 @@ double weightRPA::getWeightHighQ2(const double mc_q0, const double mc_q3, int si
   return getWeightInternal(mc_q0,mc_q3,weightRPA::HIGHQ2,sign);
 }
 
-PlotUtils::weightRPA& PlotUtils::weightRPA_cv_and_var(bool useNX) {
+Minerva::weightRPA& Minerva::weightRPA_cv_and_var(bool useNX) {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weightRPA* _weightRPA_cv_and_var = 
-    new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu12C-20GeV-20170202.root",useNX);
+  static Minerva::weightRPA* _weightRPA_cv_and_var = 
+    new Minerva::weightRPA(directory_data+"/outNievesRPAratio-nu12C-20GeV-20170202.root",useNX);
   return *_weightRPA_cv_and_var;
 }

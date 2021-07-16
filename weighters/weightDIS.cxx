@@ -1,6 +1,6 @@
 #include "weightDIS.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightDIS::read(enum modelSet m)
 //Read in the params doubles from a file

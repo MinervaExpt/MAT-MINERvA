@@ -1,15 +1,15 @@
 #include "weightGenieBodekRitchieClass.h"
 
-//using namespace PlotUtils;
+//using namespace Minerva;
 
-PlotUtils::weightGenieBodekRitchieClass::weightGenieBodekRitchieClass(){
+Minerva::weightGenieBodekRitchieClass::weightGenieBodekRitchieClass(){
 	// TODO constructor stub
 }
 
-PlotUtils::weightGenieBodekRitchieClass::~weightGenieBodekRitchieClass(){
+Minerva::weightGenieBodekRitchieClass::~weightGenieBodekRitchieClass(){
 	// TODO destructor stub
 }
-double PlotUtils::weightGenieBodekRitchieClass::getWeightInternal(	int rwBRtail,
+double Minerva::weightGenieBodekRitchieClass::getWeightInternal(	int rwBRtail,
 								int mc_er_nPart,
 								int mc_intType,
 								int mc_targetA,
@@ -64,7 +64,7 @@ double PlotUtils::weightGenieBodekRitchieClass::getWeightInternal(	int rwBRtail,
   
 }
 
-double PlotUtils::weightGenieBodekRitchieClass::getWeight( int rwBRtail,
+double Minerva::weightGenieBodekRitchieClass::getWeight( int rwBRtail,
 		     			int mc_er_nPart,
 					int mc_intType,
 					int mc_targetA,

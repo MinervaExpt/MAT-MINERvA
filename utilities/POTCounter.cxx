@@ -12,7 +12,7 @@
 #include <TObjArray.h>
 #include <TBranch.h>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 double POTCounter::getPOTfromPlaylist(std::string playlist, bool getTotal, int batch_number, bool useFast)
 {
@@ -22,10 +22,10 @@ double POTCounter::getPOTfromPlaylist(std::string playlist, bool getTotal, int b
 
     // Check TChain
     if (!fChain || fChain == 0){
-        std::cout<<"PlotUtils::POTCounter -- Can NOT find TChain from input playlist! -- Returning -1"<<std::endl;
+        std::cout<<"MAT::POTCounter -- Can NOT find TChain from input playlist! -- Returning -1"<<std::endl;
         return -1;
     }else{
-        std::cout<<"PlotUtils::POTCounter -- Initialized fChain using the Input playlist!"<<std::endl;
+        std::cout<<"MAT::POTCounter -- Initialized fChain using the Input playlist!"<<std::endl;
     }
 
     // Get POT_Used and return
@@ -42,22 +42,22 @@ double POTCounter::getPOTfromTChain(TChain* ch, bool getTotal, int batch_number)
     char leafName[50];
 
     if( batch_number == -1 ) {
-        std::cout<<"PlotUtils::POTCounter -- Counting POT"<<std::endl;
+        std::cout<<"MAT::POTCounter -- Counting POT"<<std::endl;
         if(getTotal) sprintf(leafName,"POT_Total");
         else sprintf(leafName,"POT_Used");
     }
     else if( 1 <= batch_number && batch_number <= 6 ) {
-        std::cout<<"PlotUtils::POTCounter -- Counting POT from batch "<< batch_number<<std::endl;
+        std::cout<<"MAT::POTCounter -- Counting POT from batch "<< batch_number<<std::endl;
         if(getTotal){
-          std::cout <<"PlotUtils::POTCounter -- for getPOTfromTChain, there is no POT_Total for a batch"<<std::endl;
-          std::cout <<"PlotUtils::POTCounter -- Please use batch number -1 "<<std::endl;
+          std::cout <<"MAT::POTCounter -- for getPOTfromTChain, there is no POT_Total for a batch"<<std::endl;
+          std::cout <<"MAT::POTCounter -- Please use batch number -1 "<<std::endl;
           return sumPOTUsed;
          } 
         else sprintf(leafName,"POT_Used_batch%d",batch_number);
     }
     else{
-        std::cout <<"PlotUtils::POTCounter -- for getPOTfromTChain, batch number is 1 through 6"<<std::endl;
-        std::cout <<"PlotUtils::POTCounter -- inputted batch number: "<<batch_number<<std::endl;
+        std::cout <<"MAT::POTCounter -- for getPOTfromTChain, batch number is 1 through 6"<<std::endl;
+        std::cout <<"MAT::POTCounter -- inputted batch number: "<<batch_number<<std::endl;
         return sumPOTUsed;
     }
 
@@ -65,13 +65,13 @@ double POTCounter::getPOTfromTChain(TChain* ch, bool getTotal, int batch_number)
     TIter next(fileElements);
     TChainElement* chEl=0;
 
-    std::cout<<"PlotUtils::POTCounter -- It can take some time depending on the size of the TChain"<<std::endl;
+    std::cout<<"MAT::POTCounter -- It can take some time depending on the size of the TChain"<<std::endl;
 
     while (( chEl=(TChainElement*)next() )) {
         TFile f(chEl->GetTitle());
         TTree* t = (TTree*)f.Get("Meta");
         if (!t){
-            std::cout<<"PlotUtils::POTCounter -- No Meta tree in file "<<chEl->GetTitle()<<std::endl;
+            std::cout<<"MAT::POTCounter -- No Meta tree in file "<<chEl->GetTitle()<<std::endl;
             continue;
         }
 
@@ -94,11 +94,11 @@ double POTCounter::getPOTfromTChain_Fast(TChain* ch, bool getTotal, int batch_nu
 {
     double sumPOTUsed = 0;
 
-    std::cout<<"PlotUtils::POTCounter -- Called getPOTfromTChain_Fast()"<<std::endl;
-    std::cout<<"PlotUtils::POTCounter -- This method works only for non-merged files, if your playlist includes merged ROOT files,use getPOTfromPlaylist(playlist, false)"<<std::endl;
-    std::cout<<"PlotUtils::POTCounter -- This can't get batch POT";
-    std::cout<<"PlotUtils::POTCounter -- Counting POT Fast"<<std::endl;
-    std::cout<<"PlotUtils::POTCounter -- It can take some time depending on the size of the TChain"<<std::endl;
+    std::cout<<"MAT::POTCounter -- Called getPOTfromTChain_Fast()"<<std::endl;
+    std::cout<<"MAT::POTCounter -- This method works only for non-merged files, if your playlist includes merged ROOT files,use getPOTfromPlaylist(playlist, false)"<<std::endl;
+    std::cout<<"MAT::POTCounter -- This can't get batch POT";
+    std::cout<<"MAT::POTCounter -- Counting POT Fast"<<std::endl;
+    std::cout<<"MAT::POTCounter -- It can take some time depending on the size of the TChain"<<std::endl;
 
     Long64_t nentries = ch->GetEntriesFast();
 
@@ -118,8 +118,8 @@ double POTCounter::getPOTfromTChain_Fast(TChain* ch, bool getTotal, int batch_nu
         }
         else if( 1 <= batch_number && batch_number <= 6 ) {
             if(getTotal){
-              std::cout <<"PlotUtils::POTCounter -- for getPOTfromTChain, there is no POT_Total for a batch"<<std::endl;
-              std::cout <<"PlotUtils::POTCounter -- Please use batch number -1 "<<std::endl;
+              std::cout <<"MAT::POTCounter -- for getPOTfromTChain, there is no POT_Total for a batch"<<std::endl;
+              std::cout <<"MAT::POTCounter -- Please use batch number -1 "<<std::endl;
               return sumPOTUsed;
              } 
              if(batch_number == 1) sumPOTUsed = sumPOTUsed + POT_Used_batch1;
@@ -130,8 +130,8 @@ double POTCounter::getPOTfromTChain_Fast(TChain* ch, bool getTotal, int batch_nu
              if(batch_number == 6) sumPOTUsed = sumPOTUsed + POT_Used_batch6;
         }
         else{
-            std::cout <<"PlotUtils::POTCounter -- for getPOTfromTChain, batch number is 1 through 6"<<std::endl;
-            std::cout <<"PlotUtils::POTCounter -- inputted batch number: "<<batch_number<<std::endl;
+            std::cout <<"MAT::POTCounter -- for getPOTfromTChain, batch number is 1 through 6"<<std::endl;
+            std::cout <<"MAT::POTCounter -- inputted batch number: "<<batch_number<<std::endl;
             return sumPOTUsed;
         }
         
@@ -148,10 +148,10 @@ void POTCounter::Init(std::string playlist, TChain* fChain)
     std::string filename;
 
     if( !input_pl.is_open() ){
-        std::cerr<<"PlotUtils::POTCounter -- Cannot open Playlist File!"<<std::endl;
+        std::cerr<<"MAT::POTCounter -- Cannot open Playlist File!"<<std::endl;
         exit(1);
     }else{
-        std::cout<<"PlotUtils::POTCounter -- Reading Playlist: "<<playlist.c_str()<<std::endl;
+        std::cout<<"MAT::POTCounter -- Reading Playlist: "<<playlist.c_str()<<std::endl;
     }
 
     /* 
@@ -164,7 +164,7 @@ void POTCounter::Init(std::string playlist, TChain* fChain)
         if (filename[0] != '/') continue;
 
         fChain->Add( filename.c_str() );
-        //std::cout<<"PlotUtils::POTCounter -- Added "<<filename.c_str()<<std::endl;
+        //std::cout<<"MAT::POTCounter -- Added "<<filename.c_str()<<std::endl;
     }
 
     fChain->SetMakeClass(1);

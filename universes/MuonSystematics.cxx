@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils {
+namespace Minerva {
   //=================================================================================
   // Minerva muon-momentum-shifted universe 
   //=================================================================================
@@ -13,8 +13,8 @@ namespace PlotUtils {
   std::vector<T*> GetMinervaMuonSystematics(typename T::config_t chain ) {
     std::vector<T*> ret;
 
-    ret.push_back(new PlotUtils::MuonUniverseMinerva<T>(chain, -1.));
-    ret.push_back(new PlotUtils::MuonUniverseMinerva<T>(chain, 1.));
+    ret.push_back(new Minerva::MuonUniverseMinerva<T>(chain, -1.));
+    ret.push_back(new Minerva::MuonUniverseMinerva<T>(chain, 1.));
 
     return ret;
   }
@@ -23,8 +23,8 @@ namespace PlotUtils {
   std::map< std::string, std::vector<T*> > GetMinervaMuonSystematicsMap( typename T::config_t chain ) {
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["Muon_Energy_MINERvA"].push_back(new PlotUtils::MuonUniverseMinerva<T>(chain, -1.));
-    ret["Muon_Energy_MINERvA"].push_back(new PlotUtils::MuonUniverseMinerva<T>(chain, 1.));
+    ret["Muon_Energy_MINERvA"].push_back(new Minerva::MuonUniverseMinerva<T>(chain, -1.));
+    ret["Muon_Energy_MINERvA"].push_back(new Minerva::MuonUniverseMinerva<T>(chain, 1.));
 
     return ret;
   }
@@ -37,8 +37,8 @@ namespace PlotUtils {
   std::vector<T*> GetMinosMuonSystematics(typename T::config_t chain ) {
     std::vector<T*> ret;
 
-    ret.push_back(new PlotUtils::MuonUniverseMinos<T>(chain, -1.));
-    ret.push_back(new PlotUtils::MuonUniverseMinos<T>(chain, 1.));
+    ret.push_back(new Minerva::MuonUniverseMinos<T>(chain, -1.));
+    ret.push_back(new Minerva::MuonUniverseMinos<T>(chain, 1.));
 
     return ret;
   }
@@ -47,8 +47,8 @@ namespace PlotUtils {
   std::map< std::string, std::vector<T*> > GetMinosMuonSystematicsMap( typename T::config_t chain ) {
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["Muon_Energy_MINOS"].push_back(new PlotUtils::MuonUniverseMinos<T>(chain, -1.));
-    ret["Muon_Energy_MINOS"].push_back(new PlotUtils::MuonUniverseMinos<T>(chain, 1.));
+    ret["Muon_Energy_MINOS"].push_back(new Minerva::MuonUniverseMinos<T>(chain, -1.));
+    ret["Muon_Energy_MINOS"].push_back(new Minerva::MuonUniverseMinos<T>(chain, 1.));
 
     return ret;
   }
@@ -61,11 +61,11 @@ namespace PlotUtils {
 //=================================================================================
   // Constructor
   template<typename T>
-  PlotUtils::MuonUniverseMinerva<T>::MuonUniverseMinerva(
+  Minerva::MuonUniverseMinerva<T>::MuonUniverseMinerva(
       typename T::config_t chw, double nsigma) : T(chw, nsigma) {}
   
   template<typename T>
-  double PlotUtils::MuonUniverseMinerva<T>::GetMuonMomentumShiftMinerva() const {
+  double Minerva::MuonUniverseMinerva<T>::GetMuonMomentumShiftMinerva() const {
   
     double muon_shift_minerva;
   
@@ -95,7 +95,7 @@ namespace PlotUtils {
   }
   
   template<typename T>
-  double PlotUtils::MuonUniverseMinerva<T>::GetPmuMinerva() const {
+  double Minerva::MuonUniverseMinerva<T>::GetPmuMinerva() const {
   
     double shift_val = GetMuonMomentumShiftMinerva();
   
@@ -103,22 +103,22 @@ namespace PlotUtils {
   }
   
   template<typename T>
-  std::string PlotUtils::MuonUniverseMinerva<T>::ShortName() const { return "Muon_Energy_MINERvA"; }
+  std::string Minerva::MuonUniverseMinerva<T>::ShortName() const { return "Muon_Energy_MINERvA"; }
   
   
   template<typename T>
-  std::string PlotUtils::MuonUniverseMinerva<T>::LatexName() const { return "Muon Energy MINERvA"; }
+  std::string Minerva::MuonUniverseMinerva<T>::LatexName() const { return "Muon Energy MINERvA"; }
 
 //=================================================================================
 // Minos muon-momentum-shifted universe
 //=================================================================================
   // Constructor
   template<typename T>
-  PlotUtils::MuonUniverseMinos<T>::MuonUniverseMinos(
+  Minerva::MuonUniverseMinos<T>::MuonUniverseMinos(
       typename T::config_t chw, double nsigma) : T(chw, nsigma) {}
   
   template<typename T>
-  double PlotUtils::MuonUniverseMinos<T>::GetMuonMomentumShiftMinos() const {
+  double Minerva::MuonUniverseMinos<T>::GetMuonMomentumShiftMinos() const {
   
     double muon_shift_minos;
   
@@ -152,7 +152,7 @@ namespace PlotUtils {
   }
   
   template<typename T>
-  double PlotUtils::MuonUniverseMinos<T>::GetPmuMinos() const {
+  double Minerva::MuonUniverseMinos<T>::GetPmuMinos() const {
   
     double shift_val = GetMuonMomentumShiftMinos();
   
@@ -160,7 +160,7 @@ namespace PlotUtils {
   }
   
   template <class T>
-  double PlotUtils::MuonUniverseMinos<T>::GetFluxAndCVWeight(double Enu,
+  double Minerva::MuonUniverseMinos<T>::GetFluxAndCVWeight(double Enu,
                                                              int nu_pdg) const {
     // If this playlist is not ME, `GetFluxAndCVWeight` shouldn't change
     if (!T::IsPlaylistME(T::GetPlaylist())) return T::GetFluxAndCVWeight();
@@ -173,13 +173,13 @@ namespace PlotUtils {
     int universe = T::m_nsigma < 0 ? 0 : 1;
     // This universes's flux weight is modified because the flux is strongly correlated with the muon energy scale.
     // The fluxes used for these systematic universes were extracted as part of Amit's wiggle studies.
-    double wgtMod = PlotUtils::flux_reweighter(
+    double wgtMod = MAT::flux_reweighter(
       T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy",universe);
     return wgtMod*T::GetFluxAndCVWeight();
   }
 
   template <class T>
-  double PlotUtils::MuonUniverseMinos<T>::GetWeightRatioToCV() const {
+  double Minerva::MuonUniverseMinos<T>::GetWeightRatioToCV() const {
     // If this playlist is not ME, `GetFluxAndCVWeight` shouldn't change
     if (!T::IsPlaylistME(T::GetPlaylist())) return 1;
     // If this playlist is ME RHC, `GetFluxAndCVWeight` shouldn't change
@@ -191,17 +191,17 @@ namespace PlotUtils {
     int universe = T::m_nsigma < 0 ? 0 : 1;
     // This universes's flux weight is modified because the flux is strongly correlated with the muon energy scale.
     // The fluxes used for these systematic universes were extracted as part of Amit's wiggle studies.
-    double wgtMod = PlotUtils::flux_reweighter(
+    double wgtMod = MAT::flux_reweighter(
       T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy",universe);
     return wgtMod;
   }
 
   template<typename T>
-  std::string PlotUtils::MuonUniverseMinos<T>::ShortName() const { return "Muon_Energy_MINOS"; }
+  std::string Minerva::MuonUniverseMinos<T>::ShortName() const { return "Muon_Energy_MINOS"; }
   
   
   template<typename T>
-  std::string PlotUtils::MuonUniverseMinos<T>::LatexName() const { return "Muon Energy MINOS"; }
+  std::string Minerva::MuonUniverseMinos<T>::LatexName() const { return "Muon Energy MINOS"; }
 
 
 #endif // MUONSYSTEMATICS_CXX

@@ -12,7 +12,7 @@
 #include <cmath>
 #include <vector>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 
 // singleton
@@ -256,8 +256,8 @@ bool TargetUtils::InTracker( double vtx_x, double vtx_y, double vtx_z, double ap
 bool TargetUtils::InTrackerZ( double vtx_z )
 {
   //Is it in the tracker volume?
-  if( vtx_z < PlotUtils::TargetProp::Tracker::Face ) return false;
-  if( PlotUtils::TargetProp::Tracker::Back < vtx_z ) return false;
+  if( vtx_z < Minerva::TargetProp::Tracker::Face ) return false;
+  if( Minerva::TargetProp::Tracker::Back < vtx_z ) return false;
 
   return true; 
 }
@@ -275,8 +275,8 @@ bool TargetUtils::InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double
 bool TargetUtils::InNukeRegionZ( double vtx_z )
 {
   //Is it in the nuclear target region volume?
-  if( vtx_z < PlotUtils::TargetProp::NukeRegion::Face ) return false;
-  if( PlotUtils::TargetProp::NukeRegion::Back < vtx_z ) return false;
+  if( vtx_z < Minerva::TargetProp::NukeRegion::Face ) return false;
+  if( Minerva::TargetProp::NukeRegion::Back < vtx_z ) return false;
 
   return true; 
 }
@@ -634,8 +634,8 @@ bool TargetUtils::InTarget1ZMC( double vtx_z, int nucleiZ )
 
   double width = 0;  
   //Get the width of target  
-  if( OnIron( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt1::Fe/2;
-  if( OnLead( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt1::Pb/2;
+  if( OnIron( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt1::Fe/2;
+  if( OnLead( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt1::Pb/2;
 
   // Is the vertex z in the target?
   if( fabs( vtx_z - GetTarget1CenterZMC() ) <= width ) return true;
@@ -650,8 +650,8 @@ bool TargetUtils::InTarget2ZMC( double vtx_z, int nucleiZ )
 
   double width = 0;  
   //Get the width of target  
-  if( OnIron( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt2::Fe/2;
-  if( OnLead( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt2::Pb/2;
+  if( OnIron( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt2::Fe/2;
+  if( OnLead( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt2::Pb/2;
 
   // Is the vertex z in the target?
   if( fabs( vtx_z - GetTarget2CenterZMC() ) <= width ) return true;
@@ -666,9 +666,9 @@ bool TargetUtils::InTarget3ZMC( double vtx_z, int nucleiZ )
 
   double width = 0;  
   //Get the width of target  
-  if( OnCarbon( nucleiZ) )  width = PlotUtils::TargetProp::ThicknessMC::Tgt3::C/2;
-  if( OnIron( nucleiZ ) )   width = PlotUtils::TargetProp::ThicknessMC::Tgt3::Fe/2;
-  if( OnLead( nucleiZ ) )   width = PlotUtils::TargetProp::ThicknessMC::Tgt3::Pb/2;
+  if( OnCarbon( nucleiZ) )  width = Minerva::TargetProp::ThicknessMC::Tgt3::C/2;
+  if( OnIron( nucleiZ ) )   width = Minerva::TargetProp::ThicknessMC::Tgt3::Fe/2;
+  if( OnLead( nucleiZ ) )   width = Minerva::TargetProp::ThicknessMC::Tgt3::Pb/2;
 
   // Is the vertex z in the target?
   if( ( nucleiZ != 6 ) && fabs( vtx_z - GetTarget3CenterZMC() ) <= width ) return true;
@@ -684,7 +684,7 @@ bool TargetUtils::InTarget4ZMC( double vtx_z, int nucleiZ )
 
   double width = 0;  
   //Get the width of target  
-  if( OnLead( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt4::Pb/2;
+  if( OnLead( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt4::Pb/2;
 
   // Is the vertex z in the target?
   if( fabs( vtx_z - GetTarget4CenterZMC() ) <= width ) return true;
@@ -699,8 +699,8 @@ bool TargetUtils::InTarget5ZMC( double vtx_z, int nucleiZ )
 
   double width = 0;  
   //Get the width of target  
-  if( OnIron( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt5::Fe/2;
-  if( OnLead( nucleiZ ) ) width = PlotUtils::TargetProp::ThicknessMC::Tgt5::Pb/2;
+  if( OnIron( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt5::Fe/2;
+  if( OnLead( nucleiZ ) ) width = Minerva::TargetProp::ThicknessMC::Tgt5::Pb/2;
 
   // Is the vertex z in the target?
   if( fabs( vtx_z - GetTarget5CenterZMC() ) <= width ) return true;
@@ -709,8 +709,8 @@ bool TargetUtils::InTarget5ZMC( double vtx_z, int nucleiZ )
 
 bool TargetUtils::InWaterTargetZMC( double vtx_z )
 {
-  if( vtx_z < PlotUtils::TargetProp::WaterTarget::Face ) return false;
-  if( PlotUtils::TargetProp::WaterTarget::Back < vtx_z ) return false;
+  if( vtx_z < Minerva::TargetProp::WaterTarget::Face ) return false;
+  if( Minerva::TargetProp::WaterTarget::Back < vtx_z ) return false;
 
   return true;
 }
@@ -724,7 +724,7 @@ bool TargetUtils::InIron1VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double u = GetCoordU(vtx_x, vtx_y);
-   double udist = u - PlotUtils::TargetProp::offset_pb_fe;
+   double udist = u - Minerva::TargetProp::offset_pb_fe;
 
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  
@@ -740,7 +740,7 @@ bool TargetUtils::InLead1VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double u = GetCoordU(vtx_x, vtx_y);
-   double udist = u - PlotUtils::TargetProp::offset_pb_fe;
+   double udist = u - Minerva::TargetProp::offset_pb_fe;
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  
    return ( udist >= 0.0 && ( excludeBuffer ? fabs(udist) > distToDivCut_ : true ) );
@@ -755,7 +755,7 @@ bool TargetUtils::InIron2VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double d = GetCoordD(vtx_x, vtx_y);
-   double ddist = d - PlotUtils::TargetProp::offset_pb_fe;
+   double ddist = d - Minerva::TargetProp::offset_pb_fe;
 
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  
@@ -771,7 +771,7 @@ bool TargetUtils::InLead2VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double d = GetCoordD(vtx_x, vtx_y);
-   double ddist = d - PlotUtils::TargetProp::offset_pb_fe;
+   double ddist = d - Minerva::TargetProp::offset_pb_fe;
 
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  
@@ -846,7 +846,7 @@ bool TargetUtils::InIron5VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double u = GetCoordU(vtx_x, vtx_y);
-   double udist = u - PlotUtils::TargetProp::offset_pb_fe;
+   double udist = u - Minerva::TargetProp::offset_pb_fe;
 
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  
@@ -862,7 +862,7 @@ bool TargetUtils::InLead5VolMC(double vtx_x, double vtx_y, double vtx_z, double 
    if ( !IsInHexagon(vtx_x, vtx_y, apothem) ) return false;
 
    double u = GetCoordU(vtx_x, vtx_y);
-   double udist = u - PlotUtils::TargetProp::offset_pb_fe;
+   double udist = u - Minerva::TargetProp::offset_pb_fe;
 
    //Is this on the right side on the divide?
    //  If we want to exclude the buffer, is it outside the buffer?  

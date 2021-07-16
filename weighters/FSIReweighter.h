@@ -15,9 +15,9 @@
 //c++ includes
 #include <cassert>
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class FSIReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -47,7 +47,7 @@ namespace PlotUtils
       bool fUseElastic;
       bool fUseAbsorption;
 
-      mutable PlotUtils::weight_fsi fCalculator; //TODO: I'll bet GetElasticWeight() and GetAbsorptionWeight() could both be const
+      mutable MAT::weight_fsi fCalculator; //TODO: I'll bet GetElasticWeight() and GetAbsorptionWeight() could both be const
   };
 }
 

@@ -4,7 +4,7 @@
 #include "TreeWrapper.h"
 #include "NSFDefaults.h"
 
-namespace PlotUtils{
+namespace Minerva{
 
   template<class T>
   class MichelEfficiencyUniverse: public T

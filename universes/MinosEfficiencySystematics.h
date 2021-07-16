@@ -6,7 +6,7 @@
 // Helper functions declared/defined in the .cxx
 // GetMinosEfficiencySystematicsMap(typename T::config_t chain );
 
-namespace PlotUtils{
+namespace Minerva{
   template<class T>
   class MinosEfficiencyUniverse: public T
   {

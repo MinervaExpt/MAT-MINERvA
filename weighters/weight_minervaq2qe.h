@@ -21,7 +21,7 @@
   This is a class for taking a q2qe value and reweighting values based on the 2D ME q2qe data/mc ratio.
  */
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weight_minervaq2qe
   {

@@ -51,7 +51,7 @@ add both GeV and MeV options
 //   (skipping the uncertainties code completely if only cv wanted)
 // Or return each CV and uncertainty one at a time
 //   (is the least cpu efficient, repeats some calculations 5 times)
-namespace PlotUtils{
+namespace Minerva{
 	class weightSusaValenciaClass {
 	public:
 	  //Constructor: Read in params from a filename

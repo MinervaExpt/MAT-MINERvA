@@ -11,9 +11,9 @@
 //reweighters includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class Model
   {
     using weighters_t = std::vector<std::unique_ptr<Reweighter<UNIVERSE, EVENT>>>;

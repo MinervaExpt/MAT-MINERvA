@@ -39,14 +39,14 @@ ExternalProject_Add(MAT-MINERvA
                     UPDATE_COMMAND ""
                     DEPENDS MAT)
 
-ExternalProject_Add(UnfoldUtils
-                    GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
-                    GIT_TAG master
-                    ${CVS_DOWNLOAD_COMMAND}
-                    SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
-                    UPDATE_COMMAND ""
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-                    DEPENDS MAT MAT-MINERvA)
+#ExternalProject_Add(UnfoldUtils
+#                    GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
+#                    GIT_TAG master
+#                    ${CVS_DOWNLOAD_COMMAND}
+#                    SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
+#                    UPDATE_COMMAND ""
+#                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+#                    DEPENDS MAT MAT-MINERvA)
 
 #ExternalProject_Add(GENIEXSecExtract
 #                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft

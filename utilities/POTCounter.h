@@ -1,6 +1,6 @@
 /*
 ================================================================================
-Class: PlotUtils::POTCounter 
+Class: MAT::POTCounter 
     A Class designed to Count POT_Used for a given 
         1) TChain
         2) Playlist - A list of root files
@@ -33,7 +33,7 @@ Author:         Ozgur Altinok  - ozgur.altinok@tufts.edu
 class TChain;
 class TBranch;
 
-namespace PlotUtils{
+namespace Minerva{
 
     class POTCounter {
 
@@ -71,7 +71,7 @@ namespace PlotUtils{
             TBranch        *b_nEntries_Truth;   //!
 
     }; // end of class POTCounter
-} // end of namespace PlotUtils
+} // end of namespace Minerva
 
 #endif
 

@@ -12,9 +12,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class FluxAndCVReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -29,7 +29,7 @@ namespace PlotUtils
         int nu_pdg = 14;
         if(univ.IsPlaylistME(univ.GetPlaylist())) nu_pdg = univ.GetInt("mc_incoming");
 
-        return PlotUtils::flux_reweighter(univ.GetPlaylist(), nu_pdg, univ.UseNuEConstraint(),
+        return MAT::flux_reweighter(univ.GetPlaylist(), nu_pdg, univ.UseNuEConstraint(),
                                     univ.GetNFluxUniverses()).GetFluxCVWeight(univ.GetDouble("mc_incomingE") * 1e-3, nu_pdg);
       }
 

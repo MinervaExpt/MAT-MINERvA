@@ -15,9 +15,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class MINOSEfficiencyReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -35,12 +35,12 @@ namespace PlotUtils
         if (univ.IsPlaylistME(univ.GetPlaylist())) {  // The correction factors are different
                                       // between ME and LE
         double pmu = univ.GetPmuMinos() / 1000;  // GetCorrection expects GeV
-        return PlotUtils::MinosMuonEfficiencyCorrection::Get(univ.isFHC()).GetCorrection(pmu, univ.GetBatchPOT(), univ.isFHC());
+        return MAT::MinosMuonEfficiencyCorrection::Get(univ.isFHC()).GetCorrection(pmu, univ.GetBatchPOT(), univ.isFHC());
         } else {                       // Assume if not ME, then it's LE
           double pmu = univ.GetPmuMinos();  // MnVnormalizer GetCorrection expects MeV
         #ifndef __CINT__
-          static PlotUtils::MnvNormalizer mnvNormalizer =
-              PlotUtils::MnvNormalizer("Eroica", univ.GetPlaylist());
+          static MAT::MnvNormalizer mnvNormalizer =
+              MAT::MnvNormalizer("Eroica", univ.GetPlaylist());
         #endif // __CINT__
           return mnvNormalizer.GetCorrection(pmu);
         }

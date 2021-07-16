@@ -7,7 +7,7 @@
 #include <iostream>
 
 // Helper Functions
-namespace PlotUtils{
+namespace Minerva{
 
   //=================================================================================
   // QELike Signal Defintion 
@@ -46,7 +46,7 @@ namespace PlotUtils{
 // Class Definitions
 // Constructor
 template<typename T>
-PlotUtils::CCQE3DFitsUniverse<T>::CCQE3DFitsUniverse( typename T::config_t chw, double nsigma, int variation ) 
+Minerva::CCQE3DFitsUniverse<T>::CCQE3DFitsUniverse( typename T::config_t chw, double nsigma, int variation ) 
   : T(chw, nsigma),m_variation(variation) 
 {
   // Set up instance of HyperDimLinearizer
@@ -77,15 +77,15 @@ PlotUtils::CCQE3DFitsUniverse<T>::CCQE3DFitsUniverse( typename T::config_t chw, 
   full3D.push_back(pt3Dbins);
   full3D.push_back(pz3Dbins);
 
-  PlotUtils::HyperDimLinearizer hyperDimLinearizer = PlotUtils::HyperDimLinearizer(full3D,0);
+  Minerva::HyperDimLinearizer hyperDimLinearizer = Minerva::HyperDimLinearizer(full3D,0);
   
   // Pull hists out of Dan's file and unpack using HyperDimLinearizer 
   TString filename = "root://fndca1.fnal.gov//pnfs/fnal.gov/usr/minerva/persistent/users/finer/highNu/histProcessing/auxiliaryROOTFiles/CrossSection_per_nucleon_3D_pzptreco_iterations_10_CombinedPlaylists.root_big3d.root";
   TFile* CCQE3DFitsWeightFile=TFile::Open(filename,"READ");
-  PlotUtils::MnvH2D* dataHist = (PlotUtils::MnvH2D*)CCQE3DFitsWeightFile->Get("h_pzptrec_data_nobck_unfold_effcor_cross_section");
-  PlotUtils::MnvH2D* mcHist = (PlotUtils::MnvH2D*)CCQE3DFitsWeightFile->Get("h_pzptrec_mc_nobck_unfold_effcor_cross_section");
+  MAT::MnvH2D* dataHist = (MAT::MnvH2D*)CCQE3DFitsWeightFile->Get("h_pzptrec_data_nobck_unfold_effcor_cross_section");
+  MAT::MnvH2D* mcHist = (MAT::MnvH2D*)CCQE3DFitsWeightFile->Get("h_pzptrec_mc_nobck_unfold_effcor_cross_section");
 
-  PlotUtils::MnvH2D* ratioHist = dataHist->Clone("3D_Fits_Ratio_hist");
+  MAT::MnvH2D* ratioHist = dataHist->Clone("3D_Fits_Ratio_hist");
   ratioHist->Divide(dataHist,mcHist);
 
   m_weightHists = hyperDimLinearizer.Get2DHistos(ratioHist,true);
@@ -95,9 +95,9 @@ PlotUtils::CCQE3DFitsUniverse<T>::CCQE3DFitsUniverse( typename T::config_t chw, 
 
 
 template<typename T>
-double PlotUtils::CCQE3DFitsUniverse<T>::GetCCQE3DFitsWeight() const {
+double Minerva::CCQE3DFitsUniverse<T>::GetCCQE3DFitsWeight() const {
 
-  if(!PlotUtils::IsQELike(*this)) return T::GetCCQE3DFitsWeight();  // Only reweight QELike events
+  if(!Minerva::IsQELike(*this)) return T::GetCCQE3DFitsWeight();  // Only reweight QELike events
 
   // Fetch kinematic variables for this event and map to bin numbers of the unpacked hists
   double pz = T::GetPmuLongitudinalTrue();
@@ -133,11 +133,11 @@ double PlotUtils::CCQE3DFitsUniverse<T>::GetCCQE3DFitsWeight() const {
 
 
 template<typename T>
-std::string PlotUtils::CCQE3DFitsUniverse<T>::ShortName() const { return "3D_CCQE_Fits"; }
+std::string Minerva::CCQE3DFitsUniverse<T>::ShortName() const { return "3D_CCQE_Fits"; }
 
 
 template<typename T>
-std::string PlotUtils::CCQE3DFitsUniverse<T>::LatexName() const { return "3D CCQE Fits"; }
+std::string Minerva::CCQE3DFitsUniverse<T>::LatexName() const { return "3D CCQE Fits"; }
 
 
 #endif // CCQE3DFITS_SYSTEMATICS_CXX

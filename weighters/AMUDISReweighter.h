@@ -15,18 +15,18 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class AMUDISReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
     
-    PlotUtils::weightDIS* m_weighter;
+    MAT::weightDIS* m_weighter;
 
     AMUDISReweighter(): Reweighter<UNIVERSE, EVENT>()
     {
-      m_weighter = new PlotUtils::weightDIS(PlotUtils::weightDIS::kAMU, true);
+      m_weighter = new MAT::weightDIS(MAT::weightDIS::kAMU, true);
     }
     
     virtual ~AMUDISReweighter() = default;
@@ -52,7 +52,7 @@ namespace PlotUtils
       const double y=univ.GetBjorkenYTrue();
       const int targetZ = univ.GetTargetZTrue(); //TruthFunctions defined      
       
-      //PlotUtils::weightDIS* m_weighter = new PlotUtils::weightDIS(PlotUtils::weightDIS::kAMU);
+      //MAT::weightDIS* m_weighter = new MAT::weightDIS(MAT::weightDIS::kAMU);
       ret=m_weighter->getWeight(x,y,Enu,targetZ);
       //delete m_weighter;
 
@@ -63,7 +63,7 @@ namespace PlotUtils
     bool DependsReco() const override { return false; }
     /*
   private:
-  PlotUtils::weightDIS* fWeighter;*/
+  MAT::weightDIS* fWeighter;*/
       //Should keep an eye out on whether this would be needed here. 
       //I presume not given the exclusive nature of the intended low 
       //Q2 Pi use case

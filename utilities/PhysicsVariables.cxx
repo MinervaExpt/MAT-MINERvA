@@ -3,7 +3,7 @@
 
 #include "PhysicsVariables.h"
 
-namespace PlotUtils{
+namespace Minerva{
 
 //===============================================================================================
 // Assume CCQE Kinematics, formula differs slightly for nu vs anti-nu, return units are GeV-type.
@@ -11,13 +11,13 @@ namespace PlotUtils{
 //===============================================================================================
 double qSquaredCCQE( double lep_energy, double lep_p, double lep_theta, int charge )
 {
-  return PlotUtils::qSquaredCCQE( lep_energy, lep_p, lep_theta, charge, PlotUtils::getDefaultBindingE(getHelicity(charge)) );
+  return Minerva::qSquaredCCQE( lep_energy, lep_p, lep_theta, charge, Minerva::getDefaultBindingE(getHelicity(charge)) );
 }
 //=============================================================================
 double qSquaredCCQE( double lep_energy, double lep_p, double lep_theta, int charge, double bindingE, double lep_mass )
 {
   // verbose() << "qSquaredCCQE w/ binding E = " << bindingE << " and charge = " << charge << std::endl;
-  double nu_energy = PlotUtils::nuEnergyCCQE( lep_energy, lep_p, lep_theta, charge, bindingE, lep_mass );
+  double nu_energy = Minerva::nuEnergyCCQE( lep_energy, lep_p, lep_theta, charge, bindingE, lep_mass );
   if( nu_energy < 0 ) return -1000000;
   double Qsquared  = 2.0 * nu_energy * (lep_energy - lep_p * std::cos(lep_theta)) - std::pow(lep_mass,2);
   // verbose() << " Qsquared = " << Qsquared << " (MeV/c)^2" << std::endl;
@@ -26,7 +26,7 @@ double qSquaredCCQE( double lep_energy, double lep_p, double lep_theta, int char
 //=============================================================================
 double nuEnergyCCQE( double lep_energy, double lep_p, double lep_theta, int charge )
 {
-  return PlotUtils::nuEnergyCCQE( lep_energy, lep_p, lep_theta, charge, PlotUtils::getDefaultBindingE(PlotUtils::getHelicity(charge)) );
+  return Minerva::nuEnergyCCQE( lep_energy, lep_p, lep_theta, charge, Minerva::getDefaultBindingE(Minerva::getHelicity(charge)) );
 }
 //=============================================================================
 double nuEnergyCCQE( double lep_energy, double lep_p, double lep_theta, int charge, double bindingE, double lep_mass )
@@ -111,7 +111,7 @@ double struckNucleonMass( int leptonCharge )
 //=============================================================================
 double W( double mass, double recoilE, double qsquared )
 {
-  double w2 = PlotUtils::WSquared( mass, recoilE, qsquared );
+  double w2 = Minerva::WSquared( mass, recoilE, qsquared );
   double w  = (w2<0) ? -1.0 : sqrt(w2);
   return w;
 }
@@ -154,7 +154,7 @@ double getDefaultBindingE( int hel )
 
 		default:
 			std::cerr << "Binding energy for unknown helicity requested. Assuming neutrino" << std::endl;
-			return PlotUtils::getDefaultBindingE(hel);
+			return Minerva::getDefaultBindingE(hel);
 	}
 }
 

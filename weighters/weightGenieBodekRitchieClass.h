@@ -6,7 +6,7 @@
 #include <vector>
 #include <Rtypes.h>
 
-namespace PlotUtils{
+namespace Minerva{
 
 	class weightGenieBodekRitchieClass{
 	public:

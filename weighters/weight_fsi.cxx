@@ -16,13 +16,13 @@ using std::sqrt;
 namespace {
 
     class decreasingKE : public std::binary_function <
-        PlotUtils::intranuke_particle,
-        PlotUtils::intranuke_particle,
+        Minerva::intranuke_particle,
+        Minerva::intranuke_particle,
         bool
         > {
     public:
-        bool operator()(const PlotUtils::intranuke_particle& lhs,
-                        const PlotUtils::intranuke_particle& rhs)
+        bool operator()(const Minerva::intranuke_particle& lhs,
+                        const Minerva::intranuke_particle& rhs)
             {
                 return lhs.__ke > rhs.__ke;
             }
@@ -30,7 +30,7 @@ namespace {
 
 }
 
-PlotUtils::fate_code::fate_code() :
+Minerva::fate_code::fate_code() :
     fLastEntry(-1),
     __count_proton(0),
     __count_neutron(0),
@@ -38,12 +38,12 @@ PlotUtils::fate_code::fate_code() :
     __count_pizero(0),
     __count_piminus(0) {}
 
-std::vector<PlotUtils::intranuke_particle>
-PlotUtils::fate_code::GetIntranukeParticles() {
+std::vector<Minerva::intranuke_particle>
+Minerva::fate_code::GetIntranukeParticles() {
     return fIntranukeParticles;
 }
 
-void PlotUtils::fate_code::Reset()
+void Minerva::fate_code::Reset()
 {
     fIntranukeParticles.clear();
 
@@ -54,7 +54,7 @@ void PlotUtils::fate_code::Reset()
     __count_piminus = 0;
 }
 
-double PlotUtils::fate_code::getGenieBEinMeV(const int A, const int Z)
+double Minerva::fate_code::getGenieBEinMeV(const int A, const int Z)
 {
 
   // From UserPhysicsOptions.xml file
@@ -88,7 +88,7 @@ double PlotUtils::fate_code::getGenieBEinMeV(const int A, const int Z)
   
 }
 
-void PlotUtils::fate_code::calcFates(PlotUtils::ChainWrapper* chw,
+void Minerva::fate_code::calcFates(MAT::ChainWrapper* chw,
                                      Long64_t entry,
                                      bool verbose)
 {
@@ -133,7 +133,7 @@ void PlotUtils::fate_code::calcFates(PlotUtils::ChainWrapper* chw,
 }
 
 
-void PlotUtils::fate_code::calcFates(int mc_incoming,
+void Minerva::fate_code::calcFates(int mc_incoming,
                                      int mc_primaryLepton,
                                      int mc_charm,
                                      int mc_intType,
@@ -289,7 +289,7 @@ void PlotUtils::fate_code::calcFates(int mc_incoming,
 
 //-------------------------------------------------------------------------------------------
 
-PlotUtils::weight_fsi::weight_fsi()
+Minerva::weight_fsi::weight_fsi()
     : m_breakpointlow(0.110), m_breakpointhigh(1.01), m_highcutoff(3.8), fLastEntry(-1)
 {
 
@@ -298,7 +298,7 @@ PlotUtils::weight_fsi::weight_fsi()
     Reset();
 }
 
-void PlotUtils::weight_fsi::Reset()
+void Minerva::weight_fsi::Reset()
 {
     fElasticWeight1 = 1.0;
     fElasticWeight2 = 1.0;
@@ -311,7 +311,7 @@ void PlotUtils::weight_fsi::Reset()
 
 }
 
-double PlotUtils::weight_fsi::GetElasticWeight(int config)
+double Minerva::weight_fsi::GetElasticWeight(int config)
 {
     if      (config == 1) return fElasticWeight1;
     else if (config == 2) return fElasticWeight2;
@@ -322,12 +322,12 @@ double PlotUtils::weight_fsi::GetElasticWeight(int config)
     return 1.0;
 }
 
-double PlotUtils::weight_fsi::GetAbsorptionWeight()
+double Minerva::weight_fsi::GetAbsorptionWeight()
 {
     return fAbsorptionWeight;
 }
 
-double PlotUtils::weight_fsi::getGenieBEinMeV(const int A, const int Z)
+double Minerva::weight_fsi::getGenieBEinMeV(const int A, const int Z)
 {
 
   // From UserPhysicsOptions.xml file
@@ -366,12 +366,12 @@ double PlotUtils::weight_fsi::getGenieBEinMeV(const int A, const int Z)
 // could make this a class that generates the internal information for each event once
 // then responds to different information from it.
 
-void PlotUtils::weight_fsi::UseTrackingThreshold()
+void Minerva::weight_fsi::UseTrackingThreshold()
 {
     __use_tracking_threshold = true;
 }
 
-int PlotUtils::weight_fsi::calcWeights(PlotUtils::ChainWrapper* chw,
+int Minerva::weight_fsi::calcWeights(MAT::ChainWrapper* chw,
                                        Long64_t entry,
                                        bool verbose)
 {
@@ -419,7 +419,7 @@ int PlotUtils::weight_fsi::calcWeights(PlotUtils::ChainWrapper* chw,
 }
 
 
-int PlotUtils::weight_fsi::calcWeights(int mc_incoming,
+int Minerva::weight_fsi::calcWeights(int mc_incoming,
                                        int mc_primaryLepton,
                                        int mc_charm,
                                        int mc_intType,
@@ -475,7 +475,7 @@ int PlotUtils::weight_fsi::calcWeights(int mc_incoming,
 
 
 
-int PlotUtils::weight_fsi::calcWeights(int mc_incoming,
+int Minerva::weight_fsi::calcWeights(int mc_incoming,
                                        int mc_primaryLepton,
                                        int mc_charm,
                                        int mc_intType,
@@ -783,7 +783,7 @@ int PlotUtils::weight_fsi::calcWeights(int mc_incoming,
 
 }
 
-// double PlotUtils::weight_fsi::GetQEElasticWeight(int fatecodePN, double inputKEgev, int inputA, bool isAntiNu, int config){
+// double Minerva::weight_fsi::GetQEElasticWeight(int fatecodePN, double inputKEgev, int inputA, bool isAntiNu, int config){
 
 //   // overloaded version returns just one weight according to config = 1 or config = 2;
   
@@ -802,7 +802,7 @@ int PlotUtils::weight_fsi::calcWeights(int mc_incoming,
 //   return 1.0;
 // }
 
-int PlotUtils::weight_fsi::GetQEElasticWeight(double &weightElastic1, double &weightElastic2, int fatecodePN, double inputKEgev, int inputA, int pdg){
+int Minerva::weight_fsi::GetQEElasticWeight(double &weightElastic1, double &weightElastic2, int fatecodePN, double inputKEgev, int inputA, int pdg){
   //, int config){
 
   // for nonQE, there is no 25 MeV threshold probably.
@@ -869,7 +869,7 @@ int PlotUtils::weight_fsi::GetQEElasticWeight(double &weightElastic1, double &we
   
 }
 
-int PlotUtils::weight_fsi::GetQEElasticFSIWeightFromParam(double &weight1, double &weight2, double inputKEgev, int inputA, int pdg)
+int Minerva::weight_fsi::GetQEElasticFSIWeightFromParam(double &weight1, double &weight2, double inputKEgev, int inputA, int pdg)
 {
 
 //, int config){  

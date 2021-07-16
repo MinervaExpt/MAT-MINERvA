@@ -29,7 +29,7 @@
   
 */
 
-namespace PlotUtils{
+namespace Minerva{
     
     class ChainWrapper;
 
@@ -52,7 +52,7 @@ namespace PlotUtils{
         fate_code();
 
         void Reset();
-        void calcFates(PlotUtils::ChainWrapper* chw,
+        void calcFates(MAT::ChainWrapper* chw,
                        Long64_t entry,
                        bool verbose = false);
 
@@ -109,7 +109,7 @@ namespace PlotUtils{
         double GetAbsorptionWeight();
         void UseTrackingThreshold();
                 
-        int calcWeights(PlotUtils::ChainWrapper* chw,
+        int calcWeights(MAT::ChainWrapper* chw,
                         Long64_t entry,
                         bool verbose = false);
 

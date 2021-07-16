@@ -165,13 +165,13 @@ virtual double GetMinosEfficiencyWeight() const {
   if (IsPlaylistME(GetPlaylist())) {  // The correction factors are different
                                       // between ME and LE
     double pmu = GetPmuMinos() / 1000;  // GetCorrection expects GeV
-    return PlotUtils::MinosMuonEfficiencyCorrection::Get(isFHC()).GetCorrection(
+    return MAT::MinosMuonEfficiencyCorrection::Get(isFHC()).GetCorrection(
         pmu, GetBatchPOT(), isFHC());
   } else {                       // Assume if not ME, then it's LE
     double pmu = GetPmuMinos();  // MnVnormalizer GetCorrection expects MeV
 #ifndef __CINT__
-    static PlotUtils::MnvNormalizer mnvNormalizer =
-        PlotUtils::MnvNormalizer("Eroica", GetPlaylist());
+    static MAT::MnvNormalizer mnvNormalizer =
+        MAT::MnvNormalizer("Eroica", GetPlaylist());
 #endif // __CINT__
     return mnvNormalizer.GetCorrection(pmu);
   }

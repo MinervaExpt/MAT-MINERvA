@@ -9,7 +9,7 @@
 // GetGenieFaCCQESystematicsMap(typename T::config_t chain, int n_universes);
 
 
-namespace PlotUtils{
+namespace Minerva{
   const double kNonResPiWeight = 0.43;
   const double kNonResPiWeightShift = 0.04;
 

@@ -1,6 +1,6 @@
 #include "weightCoherentPi.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 weightCoherentPi::weightCoherentPi()
     : weights_file(nullptr),
@@ -91,8 +91,8 @@ double weightCoherentPi::get_pion_theta_weight_error(double theta) {
   return __h1d_theta_err->GetBinContent(__h1d_theta_err->FindBin(theta));
 }
 
-PlotUtils::weightCoherentPi& PlotUtils::weight_coherent() {
-  static PlotUtils::weightCoherentPi* _weight_coherent =
-      new PlotUtils::weightCoherentPi();
+Minerva::weightCoherentPi& Minerva::weight_coherent() {
+  static Minerva::weightCoherentPi* _weight_coherent =
+      new Minerva::weightCoherentPi();
   return *_weight_coherent;
 }

@@ -5,13 +5,13 @@
 #include "ResponseSystematics.h"
 #include <iostream>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 //Including a boolean to give user ability to include/exclude neutron systematics...Do not turn on unless you know what you are doing
 //Any trace of Neutron Systematics  will/should vanish from here once it is confirmed that
 //it is implemented properly on Hadron Reweight Systematics.
 
-namespace PlotUtils
+namespace Minerva
 {
   template <class T>
   std::vector<T*>GetResponseSystematics(typename T::config_t chain, int sigma,
@@ -41,7 +41,7 @@ namespace PlotUtils
  
     for(std::vector<std::string>::const_iterator syst = response_systematics.begin(); 
             syst != response_systematics.end(); ++syst){
-      ret.push_back( new PlotUtils::ResponseUniverse<T>(chain, sigma, *syst, use_new_part_resp) );
+      ret.push_back( new Minerva::ResponseUniverse<T>(chain, sigma, *syst, use_new_part_resp) );
     }
     
     return ret;
@@ -77,7 +77,7 @@ namespace PlotUtils
             sigma != sigmas.end(); ++sigma) {
       for(std::vector<std::string>::const_iterator syst = response_systematics.begin(); 
               syst != response_systematics.end(); ++syst){
-        ret[*syst].push_back(new PlotUtils::ResponseUniverse<T>(chain, *sigma, *syst, use_new_part_resp));
+        ret[*syst].push_back(new Minerva::ResponseUniverse<T>(chain, *sigma, *syst, use_new_part_resp));
       }
     }
 

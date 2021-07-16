@@ -9,7 +9,7 @@
 // GetMinervaMuonSystematicsMap( typename T::config_t chain );
 // GetMinosMuonSystematicsMap( typename T::config_t chain );))
 
-namespace PlotUtils{
+namespace Minerva{
   //=================================================================================
   // Minerva muon-momentum-shifted universe 
   //=================================================================================

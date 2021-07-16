@@ -21,7 +21,7 @@
 using std::vector;
 
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 namespace XSecFunctions 
 {
@@ -2295,7 +2295,7 @@ std::pair<int, int> MnvHadronReweight::getTargetNuclei( HadronBranchContainer* b
     return tar_nuc;
   }
 
-  if( vtx_z < PlotUtils::TargetProp::Tracker::Face )
+  if( vtx_z < Minerva::TargetProp::Tracker::Face )
   {
     //if(      m_TargetUtils->InTarget1MC( vtx_x, vtx_y, vtx_z, nuc ) ) tar = 1;
     //else if( m_TargetUtils->InTarget2MC( vtx_x, vtx_y, vtx_z, nuc ) ) tar = 2;
@@ -2321,21 +2321,21 @@ std::pair<int, int> MnvHadronReweight::getTargetNuclei( HadronBranchContainer* b
     }
     if(debug) std::cout<<"Active "<<std::flush;
     //Which active region are we in?
-    if( vtx_z < ( m_TargetUtils->GetTarget1CenterZMC() - PlotUtils::TargetProp::ThicknessMC::Tgt1::Pb/2 ) )      { tar = 101; nuc = 6; }
-    else if( ( m_TargetUtils->GetTarget1CenterZMC() + PlotUtils::TargetProp::ThicknessMC::Tgt1::Pb/2 ) < vtx_z &&
-             vtx_z < ( m_TargetUtils->GetTarget2CenterZMC() - PlotUtils::TargetProp::ThicknessMC::Tgt2::Pb/2 ) ) { tar = 102; nuc = 6; }
-    else if( ( m_TargetUtils->GetTarget2CenterZMC() + PlotUtils::TargetProp::ThicknessMC::Tgt2::Pb/2 ) < vtx_z &&
-             vtx_z < ( m_TargetUtils->GetTarget3CenterZMC() - PlotUtils::TargetProp::ThicknessMC::Tgt3::Pb/2 ) ) { tar = 103; nuc = 6; }
-    else if( ( m_TargetUtils->GetTarget3CenterZMC() + PlotUtils::TargetProp::ThicknessMC::Tgt3::Pb/2 ) < vtx_z &&
-             vtx_z < PlotUtils::TargetProp::WaterTarget::Face )                                                  { tar = 104; nuc = 6; }
-    else if( PlotUtils::TargetProp::WaterTarget::Back  < vtx_z &&
-             vtx_z < ( m_TargetUtils->GetTarget4CenterZMC() - PlotUtils::TargetProp::ThicknessMC::Tgt4::Pb/2 ) ) { tar = 105; nuc = 6; }
-    else if( ( m_TargetUtils->GetTarget4CenterZMC() + PlotUtils::TargetProp::ThicknessMC::Tgt4::Pb/2 ) < vtx_z &&
-             vtx_z < ( m_TargetUtils->GetTarget5CenterZMC() - PlotUtils::TargetProp::ThicknessMC::Tgt5::Pb/2 ) ) { tar = 106; nuc = 6; }
-    else if( ( m_TargetUtils->GetTarget5CenterZMC() + PlotUtils::TargetProp::ThicknessMC::Tgt5::Pb/2 ) < vtx_z &&
-             vtx_z < PlotUtils::TargetProp::Tracker::Face  )                                                     { tar = 107; nuc = 6; }
+    if( vtx_z < ( m_TargetUtils->GetTarget1CenterZMC() - Minerva::TargetProp::ThicknessMC::Tgt1::Pb/2 ) )      { tar = 101; nuc = 6; }
+    else if( ( m_TargetUtils->GetTarget1CenterZMC() + Minerva::TargetProp::ThicknessMC::Tgt1::Pb/2 ) < vtx_z &&
+             vtx_z < ( m_TargetUtils->GetTarget2CenterZMC() - Minerva::TargetProp::ThicknessMC::Tgt2::Pb/2 ) ) { tar = 102; nuc = 6; }
+    else if( ( m_TargetUtils->GetTarget2CenterZMC() + Minerva::TargetProp::ThicknessMC::Tgt2::Pb/2 ) < vtx_z &&
+             vtx_z < ( m_TargetUtils->GetTarget3CenterZMC() - Minerva::TargetProp::ThicknessMC::Tgt3::Pb/2 ) ) { tar = 103; nuc = 6; }
+    else if( ( m_TargetUtils->GetTarget3CenterZMC() + Minerva::TargetProp::ThicknessMC::Tgt3::Pb/2 ) < vtx_z &&
+             vtx_z < Minerva::TargetProp::WaterTarget::Face )                                                  { tar = 104; nuc = 6; }
+    else if( Minerva::TargetProp::WaterTarget::Back  < vtx_z &&
+             vtx_z < ( m_TargetUtils->GetTarget4CenterZMC() - Minerva::TargetProp::ThicknessMC::Tgt4::Pb/2 ) ) { tar = 105; nuc = 6; }
+    else if( ( m_TargetUtils->GetTarget4CenterZMC() + Minerva::TargetProp::ThicknessMC::Tgt4::Pb/2 ) < vtx_z &&
+             vtx_z < ( m_TargetUtils->GetTarget5CenterZMC() - Minerva::TargetProp::ThicknessMC::Tgt5::Pb/2 ) ) { tar = 106; nuc = 6; }
+    else if( ( m_TargetUtils->GetTarget5CenterZMC() + Minerva::TargetProp::ThicknessMC::Tgt5::Pb/2 ) < vtx_z &&
+             vtx_z < Minerva::TargetProp::Tracker::Face  )                                                     { tar = 107; nuc = 6; }
   }
-  else if( PlotUtils::TargetProp::Tracker::Face < vtx_z && vtx_z < PlotUtils::TargetProp::Tracker::Back )
+  else if( Minerva::TargetProp::Tracker::Face < vtx_z && vtx_z < Minerva::TargetProp::Tracker::Back )
   {
     if( m_TargetUtils->InTracker( vtx_x, vtx_y, vtx_z ) ) { tar = 6; nuc = 6; }
     if(debug && !inFiducial( vtx_x, vtx_y, vtx_z) ) std::cout<<"Not in tracker fid vol "<<std::flush;

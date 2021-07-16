@@ -7,14 +7,14 @@
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils {
+namespace Minerva {
 
   template <class T>
   std::vector<T*> GetTargetMassSystematics(typename T::config_t chain ) {
     std::vector<T*> ret;
     
-    ret.push_back(new PlotUtils::TargetMassUniverse<T>(chain, -1.));
-    ret.push_back(new PlotUtils::TargetMassUniverse<T>(chain, 1.));
+    ret.push_back(new Minerva::TargetMassUniverse<T>(chain, -1.));
+    ret.push_back(new Minerva::TargetMassUniverse<T>(chain, 1.));
 
     return ret;
   }
@@ -25,8 +25,8 @@ namespace PlotUtils {
       typename T::config_t chain ) {
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["TargetMass"].push_back(new PlotUtils::TargetMassUniverse<T>(chain, -1.));
-    ret["TargetMass"].push_back(new PlotUtils::TargetMassUniverse<T>(chain, 1.));
+    ret["TargetMass"].push_back(new Minerva::TargetMassUniverse<T>(chain, -1.));
+    ret["TargetMass"].push_back(new Minerva::TargetMassUniverse<T>(chain, 1.));
 
     return ret;
   }
@@ -37,12 +37,12 @@ namespace PlotUtils {
 // Class Definitions
 // Constructor
 template<typename T>
-PlotUtils::TargetMassUniverse<T>::TargetMassUniverse(
+Minerva::TargetMassUniverse<T>::TargetMassUniverse(
     typename T::config_t chw, double nsigma) : T(chw, nsigma) {}
 
 
 template<typename T>
-double PlotUtils::TargetMassUniverse<T>::GetTargetMassWeight() const {
+double Minerva::TargetMassUniverse<T>::GetTargetMassWeight() const {
 
   double cv_wgt = T::GetTargetMassWeight();
 
@@ -52,12 +52,12 @@ double PlotUtils::TargetMassUniverse<T>::GetTargetMassWeight() const {
   double wgt_shift;
 
   // if interaction is not in Nuclear Target regio, use CH error
-  if(targetVtxZ>PlotUtils::TargetProp::Tracker::Face){
+  if(targetVtxZ>Minerva::TargetProp::Tracker::Face){
     wgt_shift = NSFDefaults::ch_err;
   }
   // if interaction is in Nuclear Target region, error depends on
   // struck nucleus (one of the nuclear targets, else default to CH)
-  else if( PlotUtils::TargetUtils::Get().InWaterTargetMC( T::GetVecElem("mc_vtx",0), T::GetVecElem("mc_vtx",1),
+  else if( Minerva::TargetUtils::Get().InWaterTargetMC( T::GetVecElem("mc_vtx",0), T::GetVecElem("mc_vtx",1),
                                                          T::GetVecElem("mc_vtx",2), targetZ ) ){
     wgt_shift = NSFDefaults::h2o_err;
   }
@@ -79,9 +79,9 @@ double PlotUtils::TargetMassUniverse<T>::GetTargetMassWeight() const {
 
 //This systematic is special: its weight function is always 1 in the CV
 //as of April 2021.  So, it doesn't even have a Reweighter.  Just
-//including it in the list of systematics and using PlotUtils::Model applies it.
+//including it in the list of systematics and using Minerva::Model applies it.
 template <typename T>
-double PlotUtils::TargetMassUniverse<T>::GetWeightRatioToCV() const {
+double Minerva::TargetMassUniverse<T>::GetWeightRatioToCV() const {
   double cv_wgt = 1; //TODO: Watch very carefully for this to change
 
   int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
@@ -90,7 +90,7 @@ double PlotUtils::TargetMassUniverse<T>::GetWeightRatioToCV() const {
   double wgt_shift;
 
   // if interaction is not in Nuclear Target regio, use CH error
-  if(targetVtxZ>PlotUtils::TargetProp::Tracker::Face){
+  if(targetVtxZ>Minerva::TargetProp::Tracker::Face){
     wgt_shift = NSFDefaults::ch_err;
   }
   // if interaction is in Nuclear Target region, error depends on
@@ -112,11 +112,11 @@ double PlotUtils::TargetMassUniverse<T>::GetWeightRatioToCV() const {
 }
 
 template<typename T>
-std::string PlotUtils::TargetMassUniverse<T>::ShortName() const { return "Target_Mass"; }
+std::string Minerva::TargetMassUniverse<T>::ShortName() const { return "Target_Mass"; }
 
 
 template<typename T>
-std::string PlotUtils::TargetMassUniverse<T>::LatexName() const { return "Target Mass"; }
+std::string Minerva::TargetMassUniverse<T>::LatexName() const { return "Target Mass"; }
 
 
 #endif // TARGETMASSSYSTEMATICS_CXX

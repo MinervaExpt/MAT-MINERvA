@@ -7,12 +7,12 @@
 
 /* instantiate this uncertainty with
  
- SystMap muonR_systematics = PlotUtils::GetMuonResolutionSystematicsMap<CVUniverse>(chain,NSFDefaults::muonResolution_Err);
+ SystMap muonR_systematics = Minerva::GetMuonResolutionSystematicsMap<CVUniverse>(chain,NSFDefaults::muonResolution_Err);
   error_bands.insert(muonR_systematics.begin(), muonR_systematics.end());
  
  */
 
-namespace PlotUtils{
+namespace Minerva{
   template<class T>
   class MuonResolutionUniverse: public T
   {

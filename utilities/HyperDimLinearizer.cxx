@@ -3,7 +3,7 @@
 #include "HyperDimLinearizer.h"
 #include <string>
 
-namespace PlotUtils
+namespace Minerva
 {
 
   //!Get a set of bins
@@ -105,7 +105,7 @@ namespace PlotUtils
   }
   
   
-  std::vector<TH2D*> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false){
+  std::vector<TH2D*> HyperDimLinearizer::Get2DHistos(MAT::MnvH2D *result, bool IncludeSys = false){
     //  std::cout <<"Entering Get2DHistos"  << std::endl;
     std::vector<TH2D*> expanded_results;
     TH2D mybigmap;
@@ -139,12 +139,12 @@ namespace PlotUtils
   }
   
   
-  std::vector<PlotUtils::MnvH2D*> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false){
+  std::vector<MAT::MnvH2D*> HyperDimLinearizer::Get2DMnvHistos(MAT::MnvH2D *result, bool IncludeSys = false){
     std::cout << "Entering Get2DMnvHistos"  << std::endl;
-    std::vector<PlotUtils::MnvH2D*> expanded_results;
+    std::vector<MAT::MnvH2D*> expanded_results;
     std::vector<TH2D*> CV_vals = Get2DHistos(result,false);//get CV
     std::cout << "I have " << CV_vals.size() << " CV histograms" << std::endl;
-    for(uint i=0;i<CV_vals.size();i++) expanded_results.push_back(new PlotUtils::MnvH2D(*CV_vals[i]));
+    for(uint i=0;i<CV_vals.size();i++) expanded_results.push_back(new MAT::MnvH2D(*CV_vals[i]));
   
     std::vector<std::string> vertnames = result->GetVertErrorBandNames();
     std::vector<std::string> latnames = result->GetLatErrorBandNames();
@@ -153,10 +153,10 @@ namespace PlotUtils
     for(uint i=0;i<vertnames.size();i++){
       std::cout << "Working on " << vertnames[i] << std::endl;
       std::vector<std::vector<TH2D*> > unihists;
-      PlotUtils::MnvVertErrorBand2D *band = result->GetVertErrorBand(vertnames[i]);
+      MAT::MnvVertErrorBand2D *band = result->GetVertErrorBand(vertnames[i]);
       int bandsize = band->GetNHists();
       for(int uni=0;uni<bandsize;uni++){
-        std::vector<TH2D*> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
+        std::vector<TH2D*> tmpbandset = Get2DHistos(new MAT::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
         unihists.push_back(tmpbandset);
       }
       //Have an N by uni matrix of TH2D. Now time to push back into the primary
@@ -176,10 +176,10 @@ namespace PlotUtils
      for(uint i=0;i<latnames.size();i++){
       std::cout << "Working on " << latnames[i] << std::endl;
       std::vector<std::vector<TH2D*> > unihists;
-      PlotUtils::MnvLatErrorBand2D *band = result->GetLatErrorBand(latnames[i]);
+      MAT::MnvLatErrorBand2D *band = result->GetLatErrorBand(latnames[i]);
       int bandsize = band->GetNHists();
       for(int uni=0;uni<bandsize;uni++){
-        std::vector<TH2D*> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
+        std::vector<TH2D*> tmpbandset = Get2DHistos(new MAT::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
         unihists.push_back(tmpbandset);
       }
       //Have an N by uni matrix of TH2D. Now time to push back into the primary
@@ -199,7 +199,7 @@ namespace PlotUtils
   }
   
   
-  TH2D* HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false){
+  TH2D* HyperDimLinearizer::Get2DHisto(MAT::MnvH1D *result, bool IncludeSys = false){
     if(m_invec.size()!=2) std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
     std::string myname = Form("Unmapped_%s",result->GetTitle());
     TH1D* mybigmap = NULL;
@@ -224,12 +224,12 @@ namespace PlotUtils
   
   }
   
-  PlotUtils::MnvH2D* HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false){
+  MAT::MnvH2D* HyperDimLinearizer::Get2DMnvHisto(MAT::MnvH1D *result, bool IncludeSys = false){
     std::cout << "Entering Get2DMnvHisto"  << std::endl;
     if(m_invec.size()!=2) std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
   
     TH2D* CV_vals = Get2DHisto(result,false);
-    PlotUtils::MnvH2D *expanded_result = new PlotUtils::MnvH2D(*CV_vals);
+    MAT::MnvH2D *expanded_result = new MAT::MnvH2D(*CV_vals);
     
     std::vector<std::string> vertnames = result->GetVertErrorBandNames();
     std::vector<std::string> latnames = result->GetLatErrorBandNames();
@@ -238,10 +238,10 @@ namespace PlotUtils
     for(uint i=0;i<vertnames.size();i++){
       std::cout << "Working on " << vertnames[i] << std::endl;
       std::vector<TH2D*> unihists;
-      PlotUtils::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
+      MAT::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
       int bandsize = band->GetNHists();
       for(int uni=0;uni<bandsize;uni++){
-        TH2D* tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
+        TH2D* tmpbandset = Get2DHisto(new MAT::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
         unihists.push_back(tmpbandset);
       }
       expanded_result->AddVertErrorBand(vertnames[i],unihists);
@@ -250,10 +250,10 @@ namespace PlotUtils
     for(uint i=0;i<latnames.size();i++){
       std::cout << "Working on " << latnames[i] << std::endl;
       std::vector<TH2D*> unihists;
-      PlotUtils::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
+      MAT::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
       int bandsize = band->GetNHists();
       for(int uni=0;uni<bandsize;uni++){
-        TH2D* tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
+        TH2D* tmpbandset = Get2DHisto(new MAT::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
         unihists.push_back(tmpbandset);
       }
       expanded_result->AddLatErrorBand(latnames[i],unihists);
@@ -291,5 +291,5 @@ namespace PlotUtils
     }
   }    
 
-} //namespace PlotUtils
+} //namespace Minerva
 #endif

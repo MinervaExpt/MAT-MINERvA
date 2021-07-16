@@ -1,16 +1,16 @@
 #include "weightRemoveUnphysical2p2hExtendedEventsClass.h"
 
-//using namespace PlotUtils;
+//using namespace Minerva;
 
-PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::weightRemoveUnphysical2p2hExtendedEventsClass(){
+Minerva::weightRemoveUnphysical2p2hExtendedEventsClass::weightRemoveUnphysical2p2hExtendedEventsClass(){
 	// TODO constructor stub
 }
 
-PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::~weightRemoveUnphysical2p2hExtendedEventsClass(){
+Minerva::weightRemoveUnphysical2p2hExtendedEventsClass::~weightRemoveUnphysical2p2hExtendedEventsClass(){
 	// TODO destructor stub
 }
 
-double PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::get2p2h_mc_er_W(int mc_er_nPart,
+double Minerva::weightRemoveUnphysical2p2hExtendedEventsClass::get2p2h_mc_er_W(int mc_er_nPart,
 					                              		 const std::vector<int>& mc_er_ID,
 							                         const std::vector<int>& mc_er_status,
 										 const std::vector<double>& mc_er_Px,
@@ -47,7 +47,7 @@ double PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::get2p2h_mc_er_W
 
 }
 
-double PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::getWeightInternal(double q0_t,
+double Minerva::weightRemoveUnphysical2p2hExtendedEventsClass::getWeightInternal(double q0_t,
 	                           						   int mc_intType,
 			                              				   int mc_er_nPart,
 					                              		   const std::vector<int>& mc_er_ID,
@@ -93,7 +93,7 @@ double PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::getWeightIntern
   
 }
 
-double PlotUtils::weightRemoveUnphysical2p2hExtendedEventsClass::getWeight(double q0_t,
+double Minerva::weightRemoveUnphysical2p2hExtendedEventsClass::getWeight(double q0_t,
 	                           					   int mc_intType,
 			                              			   int mc_er_nPart,
 					                              	   const std::vector<int>& mc_er_ID,

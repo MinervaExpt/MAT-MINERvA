@@ -1,6 +1,6 @@
 #include "weightSusaValenciaClass.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightSusaValenciaClass::read(const TString  f)
 //Read in the params doubles from a file

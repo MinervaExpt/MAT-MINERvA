@@ -1,7 +1,7 @@
 #ifndef MNV_TargetUtils
 #define MNV_TargetUtils 1
 
-namespace PlotUtils
+namespace Minerva
 {
   /*! Define target properties
     See doc 6016 for measurements
@@ -532,6 +532,6 @@ namespace PlotUtils
 
   }; // end class TargetUtils
 
-}//end namespace PlotUtils
+}//end namespace Minerva
 
 #endif //MNV_TargetUtils

@@ -4,7 +4,7 @@
 #include "TreeWrapper.h"
 #include "NSFDefaults.h"
 
-namespace PlotUtils{
+namespace Minerva{
   //Right now, just hardcoding this.  
   //To estimate uncertainty on diffractive pion events, putting an uncertainty on coherent events
   //  to simulate our lack of knowledge about diffractive events 

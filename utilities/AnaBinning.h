@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace PlotUtils{
+namespace Minerva{
 
   struct axis_binning{
     std::vector<double> bin_edges; 

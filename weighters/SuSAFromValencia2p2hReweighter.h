@@ -15,9 +15,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class SuSAFromValencia2p2hReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:

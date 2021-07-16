@@ -4,7 +4,7 @@
 
 class TF1;
 
-namespace PlotUtils {
+namespace Minerva {
     
         /// how to use:
         /// call anywhere inside your event loop

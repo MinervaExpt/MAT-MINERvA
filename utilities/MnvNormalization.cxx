@@ -8,7 +8,7 @@
 #include <TError.h>
 
 
-using namespace PlotUtils;
+using namespace Minerva;
 using namespace MnvNorm;
 
 //================================

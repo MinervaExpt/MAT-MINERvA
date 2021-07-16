@@ -13,7 +13,7 @@
 
 
 
-namespace PlotUtils{
+namespace Minerva{
 
     // Assume CCQE Kinematics, formula differs slightly for nu vs anti-nu, all energies are MeV.
     // Q^2 calc also computes E for a CCQE hypothesis and uses that value.

@@ -12,7 +12,7 @@
 using std::sqrt;
 using std::pow;
 
-PlotUtils::MinosMuonEfficiencyCorrection::MinosMuonEfficiencyCorrection(bool isNeutrino /*=true*/)
+Minerva::MinosMuonEfficiencyCorrection::MinosMuonEfficiencyCorrection(bool isNeutrino /*=true*/)
 {
     __pmin = 1.0;
     __pmax = 4.0;
@@ -111,16 +111,16 @@ PlotUtils::MinosMuonEfficiencyCorrection::MinosMuonEfficiencyCorrection(bool isN
     
 }
 
-PlotUtils::MinosMuonEfficiencyCorrection::~MinosMuonEfficiencyCorrection() {}
+Minerva::MinosMuonEfficiencyCorrection::~MinosMuonEfficiencyCorrection() {}
 
-PlotUtils::MinosMuonEfficiencyCorrection& PlotUtils::MinosMuonEfficiencyCorrection::Get(bool isNeutrino /* true*/)
+Minerva::MinosMuonEfficiencyCorrection& Minerva::MinosMuonEfficiencyCorrection::Get(bool isNeutrino /* true*/)
 {
     static MinosMuonEfficiencyCorrection singleton(isNeutrino);
     
     return singleton;
 }
 
-double PlotUtils::MinosMuonEfficiencyCorrection::GetCorrection(double p_mu /*GeV*/, double pot, bool isNeutrino /* true*/)
+double Minerva::MinosMuonEfficiencyCorrection::GetCorrection(double p_mu /*GeV*/, double pot, bool isNeutrino /* true*/)
 {
 
 static double pot_lo;
@@ -156,7 +156,7 @@ static double pot_hi;
 
 }
 
-double PlotUtils::MinosMuonEfficiencyCorrection::GetCorrectionErr(double, double theta_mu /*degrees*/, double, bool isNeutrino)
+double Minerva::MinosMuonEfficiencyCorrection::GetCorrectionErr(double, double theta_mu /*degrees*/, double, bool isNeutrino)
 {
     theta_mu = std::min(theta_mu, __theta_max);
     theta_mu = std::max(theta_mu, __theta_min);
@@ -174,7 +174,7 @@ double PlotUtils::MinosMuonEfficiencyCorrection::GetCorrectionErr(double, double
 
 
 
-void PlotUtils::MinosMuonEfficiencyCorrection::solve_eq(double a1, double b1,double c1,
+void Minerva::MinosMuonEfficiencyCorrection::solve_eq(double a1, double b1,double c1,
                                                         double a2, double b2,double c2,
                                                         double& A, double& B)
 {

@@ -72,7 +72,7 @@ norm.LoadAnalysis( "ccqe" );
 
 */
 
-namespace PlotUtils
+namespace Minerva
 {
   /*! Constants used to account for data/MC discrepancies
 
@@ -912,6 +912,6 @@ Abbreviations used are:
 
  }; // end class MnvNormalizer
 
-}//end namespace PlotUtils
+}//end namespace Minerva
 
 #endif //MNV_MnvNormization

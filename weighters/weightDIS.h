@@ -22,7 +22,7 @@
 TODO: Add reference to nCTEQ15 and AMU model here
  */
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weightDIS
   {

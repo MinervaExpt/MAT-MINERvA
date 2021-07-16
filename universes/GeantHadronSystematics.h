@@ -5,7 +5,7 @@
 #include "NSFDefaults.h"
 #include <cstdlib>
 
-namespace PlotUtils {
+namespace Minerva {
 /*! @brief Implements Geant uncertainty on hadron (pi, p, n) (re)interaction
            probabilities. MnvHadronReweight class does all physics hard work.
 
@@ -33,7 +33,7 @@ namespace PlotUtils {
       return "GEANT " + m_part_name;
     } /* override */ 
   };
-}  // namespace PlotUtils
+}  // namespace Minerva
 
 // Explicit Instantiation, needed for loading into python
 // See Ana/PlotUtils/dict/PlotUtilsDict.h

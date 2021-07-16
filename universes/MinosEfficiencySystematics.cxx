@@ -7,14 +7,14 @@
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils {
+namespace Minerva {
 
   template <class T>
   std::vector<T*> GetMinosEfficiencySystematics(typename T::config_t chain ) {
     std::vector<T*> ret;
     
-    ret.push_back(new PlotUtils::MinosEfficiencyUniverse<T>(chain, -1.));
-    ret.push_back(new PlotUtils::MinosEfficiencyUniverse<T>(chain, 1.));
+    ret.push_back(new Minerva::MinosEfficiencyUniverse<T>(chain, -1.));
+    ret.push_back(new Minerva::MinosEfficiencyUniverse<T>(chain, 1.));
 
     return ret;
   }
@@ -25,8 +25,8 @@ namespace PlotUtils {
       typename T::config_t chain ) {
     std::map< std::string, std::vector<T*> > ret;
     
-    ret["MinosEfficiency"].push_back(new PlotUtils::MinosEfficiencyUniverse<T>(chain, -1.));
-    ret["MinosEfficiency"].push_back(new PlotUtils::MinosEfficiencyUniverse<T>(chain, 1.));
+    ret["MinosEfficiency"].push_back(new Minerva::MinosEfficiencyUniverse<T>(chain, -1.));
+    ret["MinosEfficiency"].push_back(new Minerva::MinosEfficiencyUniverse<T>(chain, 1.));
 
     return ret;
   }
@@ -37,12 +37,12 @@ namespace PlotUtils {
 // Class Definitions
 // Constructor
 template<typename T>
-PlotUtils::MinosEfficiencyUniverse<T>::MinosEfficiencyUniverse(
+Minerva::MinosEfficiencyUniverse<T>::MinosEfficiencyUniverse(
     typename T::config_t chw, double nsigma) : T(chw, nsigma) {}
 
 
 template<typename T>
-double PlotUtils::MinosEfficiencyUniverse<T>::GetMinosEfficiencyWeight() const {
+double Minerva::MinosEfficiencyUniverse<T>::GetMinosEfficiencyWeight() const {
 
   if( T::IsTruth() ) return 1;  
   if( !T::isFHC() && !T::isRHC() ) return 1; //LE or non standard palylist
@@ -54,12 +54,12 @@ double PlotUtils::MinosEfficiencyUniverse<T>::GetMinosEfficiencyWeight() const {
   double wgt_shift;
 
   if(T::IsPlaylistME( T::GetPlaylist() )){ //The correction factors are different between ME and LE
-    wgt_shift = PlotUtils::MinosMuonEfficiencyCorrection::Get( T::isFHC() ).GetCorrectionErr(
+    wgt_shift = Minerva::MinosMuonEfficiencyCorrection::Get( T::isFHC() ).GetCorrectionErr(
                            pmu, thetamu, 0, T::isFHC() );
   }
   else{ 
        pmu=pmu*1000;// Normalizer LE wants MeV	
-       static PlotUtils::MnvNormalizer mnvNormalizer = PlotUtils::MnvNormalizer("Eroica",T::GetPlaylist());
+       static Minerva::MnvNormalizer mnvNormalizer = Minerva::MnvNormalizer("Eroica",T::GetPlaylist());
        wgt_shift = mnvNormalizer.GetCorrectionErr(pmu);
   }
 
@@ -70,7 +70,7 @@ double PlotUtils::MinosEfficiencyUniverse<T>::GetMinosEfficiencyWeight() const {
 }
 
 template <typename T>
-double  PlotUtils::MinosEfficiencyUniverse<T>::GetWeightRatioToCV() const {
+double  Minerva::MinosEfficiencyUniverse<T>::GetWeightRatioToCV() const {
   //In these 2 situations, the CV weight is also 1.
   if( T::IsTruth() ) return 1;
   if( !T::isFHC() && !T::isRHC() ) return 1; //LE or non standard palylist
@@ -81,13 +81,13 @@ double  PlotUtils::MinosEfficiencyUniverse<T>::GetWeightRatioToCV() const {
   if (T::IsPlaylistME(T::GetPlaylist())) {  // The correction factors are different
                                       // between ME and LE
     double pmu = T::GetPmuMinos() / 1000;  // GetCorrection expects GeV
-    cv_wgt = PlotUtils::MinosMuonEfficiencyCorrection::Get(T::isFHC()).GetCorrection(
+    cv_wgt = Minerva::MinosMuonEfficiencyCorrection::Get(T::isFHC()).GetCorrection(
         pmu, T::GetBatchPOT(), T::isFHC());
   } else {                       // Assume if not ME, then it's LE
     double pmu = T::GetPmuMinos();  // MnVnormalizer GetCorrection expects MeV
 #ifndef __CINT__
-    static PlotUtils::MnvNormalizer mnvNormalizer =
-        PlotUtils::MnvNormalizer("Eroica", T::GetPlaylist());
+    static Minerva::MnvNormalizer mnvNormalizer =
+        Minerva::MnvNormalizer("Eroica", T::GetPlaylist());
 #endif // __CINT__
     cv_wgt = mnvNormalizer.GetCorrection(pmu);
   }
@@ -98,12 +98,12 @@ double  PlotUtils::MinosEfficiencyUniverse<T>::GetWeightRatioToCV() const {
   double wgt_shift;
 
   if(T::IsPlaylistME( T::GetPlaylist() )){ //The correction factors are different between ME and LE
-    wgt_shift = PlotUtils::MinosMuonEfficiencyCorrection::Get( T::isFHC() ).GetCorrectionErr(
+    wgt_shift = Minerva::MinosMuonEfficiencyCorrection::Get( T::isFHC() ).GetCorrectionErr(
                            pmu, thetamu, 0, T::isFHC() );
   }
   else{
        pmu=pmu*1000;// Normalizer LE wants MeV  
-       static PlotUtils::MnvNormalizer mnvNormalizer = PlotUtils::MnvNormalizer("Eroica",T::GetPlaylist());
+       static Minerva::MnvNormalizer mnvNormalizer = Minerva::MnvNormalizer("Eroica",T::GetPlaylist());
        wgt_shift = mnvNormalizer.GetCorrectionErr(pmu);
   }
 
@@ -114,11 +114,11 @@ double  PlotUtils::MinosEfficiencyUniverse<T>::GetWeightRatioToCV() const {
 }
 
 template<typename T>
-std::string PlotUtils::MinosEfficiencyUniverse<T>::ShortName() const { return "MINOS_Reconstruction_Efficiency"; }
+std::string Minerva::MinosEfficiencyUniverse<T>::ShortName() const { return "MINOS_Reconstruction_Efficiency"; }
 
 
 template<typename T>
-std::string PlotUtils::MinosEfficiencyUniverse<T>::LatexName() const { return "MINOS Reconstruction Efficiency"; }
+std::string Minerva::MinosEfficiencyUniverse<T>::LatexName() const { return "MINOS Reconstruction Efficiency"; }
 
 
 #endif // MINOSEFFICIENCYSYSTEMATICS_CXX

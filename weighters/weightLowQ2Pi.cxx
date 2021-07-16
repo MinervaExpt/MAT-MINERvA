@@ -1,6 +1,6 @@
 #include "weightLowQ2Pi.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 weightLowQ2Pi::weightLowQ2Pi() 
   : weights_file(nullptr),
@@ -119,7 +119,7 @@ double weightLowQ2Pi::getMinosWeight(const double Q2/*(GeV/c)^2*/ /*, int variat
    return Aminos/denom;
 }
 
-PlotUtils::weightLowQ2Pi& PlotUtils::weight_lowq2pi() {
-  static PlotUtils::weightLowQ2Pi* _weight_lowq2pi = new PlotUtils::weightLowQ2Pi();
+Minerva::weightLowQ2Pi& Minerva::weight_lowq2pi() {
+  static Minerva::weightLowQ2Pi* _weight_lowq2pi = new Minerva::weightLowQ2Pi();
   return *_weight_lowq2pi;
 }    

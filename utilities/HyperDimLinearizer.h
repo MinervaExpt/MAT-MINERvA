@@ -4,7 +4,7 @@
 #include <iostream>
 #include <utility>
 #include "MnvH2D.h"
-namespace PlotUtils
+namespace Minerva
 {
 class HyperDimLinearizer{
 
@@ -12,10 +12,10 @@ class HyperDimLinearizer{
   HyperDimLinearizer(std::vector<std::vector<double> > input, int type);//constructor
   std::pair<int,int> GetBin(std::vector<double> values); // Template get bin for 2,3,4D cases
   std::vector<int> GetValues(int x);//
-  std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH2D* result, bool IncludeSys);// This is for type==0
-  std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);// This is for type==0
-  TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
-  PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
+  std::vector<TH2D*> Get2DHistos(MAT::MnvH2D* result, bool IncludeSys);// This is for type==0
+  std::vector<MAT::MnvH2D*> Get2DMnvHistos(MAT::MnvH2D* result, bool IncludeSys);// This is for type==0
+  TH2D* Get2DHisto(MAT::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
+  MAT::MnvH2D* Get2DMnvHisto(MAT::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
   void TestFunctionality();// a bunch of prints.
  private:
   int Get1DBin(double value,int el); //Get the bin number for one of the dimensions

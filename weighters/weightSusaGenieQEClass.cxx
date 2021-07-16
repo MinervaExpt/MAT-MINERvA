@@ -1,6 +1,6 @@
 #include "weightSusaGenieQEClass.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightSusaGenieQEClass::read(const TString  f)
 //Read in the params doubles from a file

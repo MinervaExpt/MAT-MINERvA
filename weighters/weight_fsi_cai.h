@@ -23,7 +23,7 @@
   This is a class for taking a Tproton histogram and apply reweighing on the no FSI to mimic the effects of a corrected elastic FSI. The current parameter for Transverse Imbalance Study, Phys. Rev. Lett. 121, 022504 (2018)/arXiv:1805.05486 is 1.5
 */
 
-namespace PlotUtils{
+namespace Minerva{
 
   class weight_fsi_cai
   {

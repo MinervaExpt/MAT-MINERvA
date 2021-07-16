@@ -1,6 +1,6 @@
 #include "weightZExp.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightZExp::read(const TString  f)
 //Read in the params doubles from a file
@@ -8,7 +8,7 @@ void weightZExp::read(const TString  f)
 {
   fZExpRatioCov = TFile::Open(f,"READONLY");
   if (fZExpRatioCov){
-    hZExpRatioCov = (PlotUtils::MnvH1D*)fZExpRatioCov->Get("zexpvar");
+    hZExpRatioCov = (MAT::MnvH1D*)fZExpRatioCov->Get("zexpvar");
     std::cout << "have read in ratios from file " << f <<std::endl;
     hZExpRatioBand = hZExpRatioCov->GetVertErrorBand("zexpCov");
   }

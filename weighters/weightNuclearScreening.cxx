@@ -1,7 +1,7 @@
 #include "weightNuclearScreening.h"
 #include "TSystem.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 void weightNuclearScreening::read(const std::string f)
 {

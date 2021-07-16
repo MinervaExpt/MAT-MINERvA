@@ -12,9 +12,9 @@
 //Reweighter includes
 #include "PlotUtils/Reweighter.h"
 
-namespace PlotUtils
+namespace Minerva
 {
-  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+  template <class UNIVERSE, class EVENT = MAT::detail::empty>
   class LowQ2PiReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
@@ -27,8 +27,8 @@ namespace PlotUtils
       double GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const override
       {
         //variation 0 is the CV
-        if(!PlotUtils::IsCCRes(univ)) return 1;
-        return PlotUtils::weight_lowq2pi().getWeight(univ.GetQ2True() * 1e-6 /*GeV^2*/,
+        if(!MAT::IsCCRes(univ)) return 1;
+        return MAT::weight_lowq2pi().getWeight(univ.GetQ2True() * 1e-6 /*GeV^2*/,
                                                      fChannel, 0);
       }
 

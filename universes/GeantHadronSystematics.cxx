@@ -8,14 +8,14 @@
 
 #include "NSFDefaults.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 //=================================================================================
 // Helper Functions
 //=================================================================================
 //More information about how to use this (or build a new renormalization file) is in 
 //docdb 28556
-namespace PlotUtils {
+namespace Minerva {
 // Static instance of MnvHadronReweight
 template <class T>
 MnvHadronReweight& weight_hadron(
@@ -106,7 +106,7 @@ std::map<std::string, std::vector<T*> > GetGeantHadronSystematicsMap(
   ret[std::string("GEANT_Pion")].push_back(   new GeantHadronUniverse<T>(chain, -1., 211 ));
   return ret;
 }
-}  // namespace PlotUtils
+}  // namespace Minerva
 
 //=================================================================================
 // Class
@@ -141,7 +141,7 @@ template <class T>
 double GeantHadronUniverse<T>::GetGeantHadronWeight() const {
   if( T::IsTruth() ) return 1; //No reweighting for truth events 
   InelXSecWeights weights =
-      weight_hadron<PlotUtils::TreeWrapper*>().getWeights(*this);
+      weight_hadron<MAT::TreeWrapper*>().getWeights(*this);
   double wgt = 1.;
   if (weights.eventHas[m_pdg]) {
     wgt = T::m_nsigma < 0 ? weights.weightDown[m_pdg] : weights.weightUp[m_pdg];
@@ -153,7 +153,7 @@ template <class T>
 double GeantHadronUniverse<T>::GetWeightRatioToCV() const {
   if( T::IsTruth() ) return 1; //No reweighting for truth events 
   InelXSecWeights weights =
-      weight_hadron<PlotUtils::TreeWrapper*>().getWeights(*this);
+      weight_hadron<MAT::TreeWrapper*>().getWeights(*this);
   double wgt = 1.;
   if (weights.eventHas[m_pdg]) {
     wgt = T::m_nsigma < 0 ? weights.weightDown[m_pdg] : weights.weightUp[m_pdg];

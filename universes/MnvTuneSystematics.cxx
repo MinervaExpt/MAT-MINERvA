@@ -6,10 +6,10 @@
 #include "weightLowQ2Pi.h"
 #include "MnvTuneSystematics.h"
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 // Helper functions -- get Weighters, containers of systematics universes
-namespace PlotUtils{
+namespace Minerva{
   //=================================================================================
   // 2p2h
   //=================================================================================
@@ -52,10 +52,10 @@ namespace PlotUtils{
       if(variation==1 && !isnnorpp) return 1.0;//variation 1 is for nn/pp only interactions
       if(variation==2 && !isnp) return 1.0;//variation 2 is for np only interactions
       double ret = 1.0;
-      if(variation==0)      ret=PlotUtils::weight_2p2h_cv().getWeight(q0,q3); // pass as GeV
-      else if(variation==1) ret=PlotUtils::weight_2p2h_nn().getWeight(q0,q3); // pass as GeV
-      else if(variation==2) ret=PlotUtils::weight_2p2h_np().getWeight(q0,q3); // pass as GeV
-      else if(variation==3) ret=PlotUtils::weight_2p2h_qe().getWeight(q0,q3); // pass as GeV
+      if(variation==0)      ret=Minerva::weight_2p2h_cv().getWeight(q0,q3); // pass as GeV
+      else if(variation==1) ret=Minerva::weight_2p2h_nn().getWeight(q0,q3); // pass as GeV
+      else if(variation==2) ret=Minerva::weight_2p2h_np().getWeight(q0,q3); // pass as GeV
+      else if(variation==3) ret=Minerva::weight_2p2h_qe().getWeight(q0,q3); // pass as GeV
       else std::cout <<"Should not have gotten here. GetLowRecoil2p2hWeight."<< std::endl;
       return ret;
     }
@@ -68,7 +68,7 @@ namespace PlotUtils{
       const double nsigma = 1.;
       const unsigned int n_variations = 3;
       for (unsigned int i = 1; i <= n_variations; ++i)
-        ret.push_back(new PlotUtils::Universe2p2h<T>(chain, nsigma, i));
+        ret.push_back(new Minerva::Universe2p2h<T>(chain, nsigma, i));
       return ret;
     }
 
@@ -79,7 +79,7 @@ namespace PlotUtils{
       const double nsigma = 1.;
       const unsigned int n_variations = 3;
       for (unsigned int i = 1; i <= n_variations; ++i)
-        ret["2p2h"].push_back(new PlotUtils::Universe2p2h<T>(chain, nsigma, i));
+        ret["2p2h"].push_back(new Minerva::Universe2p2h<T>(chain, nsigma, i));
       return ret;
     }
 
@@ -102,11 +102,11 @@ namespace PlotUtils{
 
       if(universe.GetInt("mc_intType")!=1) return 1.0;
       if(universe.GetInt("mc_targetZ")<6) return 1.0;
-      if(variation==0) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeight(q0,q3);
-      else if(variation==1) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,1);
-      else if(variation==2) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,-1);
-      else if(variation==3) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,1);
-      else if(variation==4) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,-1);
+      if(variation==0) ret=Minerva::weightRPA_cv_and_var(useNX).getWeight(q0,q3);
+      else if(variation==1) ret=Minerva::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,1);
+      else if(variation==2) ret=Minerva::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,-1);
+      else if(variation==3) ret=Minerva::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,1);
+      else if(variation==4) ret=Minerva::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,-1);
       else 
         throw std::runtime_error("RPAUniverse::GetRPAWeight: invalid variation");
 
@@ -119,10 +119,10 @@ namespace PlotUtils{
     std::map< std::string, std::vector<T*> > GetRPASystematicsMap(typename T::config_t chain ) {
       std::map< std::string, std::vector<T*> > ret;
       const double nsigma = 1.;
-      ret["HighQ2"].push_back(new PlotUtils::RPAUniverse<T>(chain, nsigma, 1, "HighQ2"));
-      ret["HighQ2"].push_back(new PlotUtils::RPAUniverse<T>(chain, nsigma, 2, "HighQ2"));
-      ret["LowQ2"].push_back(new PlotUtils::RPAUniverse<T>(chain, nsigma, 3, "LowQ2"));
-      ret["LowQ2"].push_back(new PlotUtils::RPAUniverse<T>(chain, nsigma, 4, "LowQ2"));
+      ret["HighQ2"].push_back(new Minerva::RPAUniverse<T>(chain, nsigma, 1, "HighQ2"));
+      ret["HighQ2"].push_back(new Minerva::RPAUniverse<T>(chain, nsigma, 2, "HighQ2"));
+      ret["LowQ2"].push_back(new Minerva::RPAUniverse<T>(chain, nsigma, 3, "LowQ2"));
+      ret["LowQ2"].push_back(new Minerva::RPAUniverse<T>(chain, nsigma, 4, "LowQ2"));
       return ret;
     }
 
@@ -143,16 +143,16 @@ namespace PlotUtils{
     template <typename T>
     std::vector<T*> GetLowQ2PiSystematics(typename T::config_t chain ) {
       std::vector<T*> ret;
-      ret.push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, -1));
-      ret.push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1));
+      ret.push_back(new Minerva::LowQ2PionUniverse<T>(chain, -1));
+      ret.push_back(new Minerva::LowQ2PionUniverse<T>(chain, +1));
       return ret;
     }
 
     template <typename T>
     std::map< std::string, std::vector<T*> > GetLowQ2PiSystematicsMap(typename T::config_t chain ) {
       std::map< std::string, std::vector<T*> > ret;
-      ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, -1));
-      ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1));
+      ret["LowQ2Pi"].push_back(new Minerva::LowQ2PionUniverse<T>(chain, -1));
+      ret["LowQ2Pi"].push_back(new Minerva::LowQ2PionUniverse<T>(chain, +1));
       return ret;
     }
 }
@@ -172,12 +172,12 @@ namespace PlotUtils{
 
   template<typename T>
   double Universe2p2h<T>::GetLowRecoil2p2hWeight() const {
-    return PlotUtils::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation);
+    return Minerva::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation);
   }
 
   template <typename T>
   double Universe2p2h<T>::GetWeightRatioToCV() const {
-    return PlotUtils::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation) / PlotUtils::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0); //Variation 0 is the CV
+    return Minerva::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation) / Minerva::GetLowRecoil2p2hWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0); //Variation 0 is the CV
   }
 
 
@@ -207,12 +207,12 @@ namespace PlotUtils{
 
   template<typename T>
   double RPAUniverse<T>::GetRPAWeight( ) const {
-    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX());
+    return Minerva::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX());
   }
 
   template <typename T>
   double RPAUniverse<T>::GetWeightRatioToCV() const {
-    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX()) / PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0, T::IsProcessingNX()); //Variation 0 is the CV
+    return Minerva::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX()) / Minerva::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0, T::IsProcessingNX()); //Variation 0 is the CV
   }
 
   template<typename T>
@@ -241,10 +241,10 @@ namespace PlotUtils{
 
   template<typename T>
   double LowQ2PionUniverse<T>::GetLowQ2PiWeight(std::string channel) const { 
-    if(!PlotUtils::IsCCRes(*this)) 
+    if(!Minerva::IsCCRes(*this)) 
       return 1.;
     else
-      return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True()*1e-6 /*GeV^2*/, channel, T::m_nsigma);
+      return Minerva::weight_lowq2pi().getWeight(T::GetQ2True()*1e-6 /*GeV^2*/, channel, T::m_nsigma);
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.

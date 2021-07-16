@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-using namespace PlotUtils;
+using namespace Minerva;
 
 namespace {
 bool _is_nue_constraint_set = false;
@@ -359,24 +359,24 @@ bool MinervaUniverse::SetupMHRWeighter() const {
   if( m_mhrw_load_renorm ) 
   {
     // Make sure to init the static MHRW 
-    weight_hadron<PlotUtils::TreeWrapper*>(m_chw, GetPlaylist(), 
+    weight_hadron<MAT::TreeWrapper*>(m_chw, GetPlaylist(), 
                                         m_readout_vol_minZ, m_readout_vol_maxZ, m_readout_vol_apothem, 
                                         m_use_mhrw_neutronCV_reweight, m_use_mhrw_elastics,
                                         m_mhrw_process_name, m_mhrw_directory);
     //If readout volume isn't empty, use that, and change the volume variables
     if( !m_readout_volname.empty() )
     {
-      weight_hadron<PlotUtils::TreeWrapper*>().setReadoutVolume(m_readout_volname);
+      weight_hadron<MAT::TreeWrapper*>().setReadoutVolume(m_readout_volname);
 
       double minZ = 0, maxZ = 0, apothem = 0;
-      weight_hadron<PlotUtils::TreeWrapper*>().getBasicFiducial(minZ,maxZ,apothem);;
+      weight_hadron<MAT::TreeWrapper*>().getBasicFiducial(minZ,maxZ,apothem);;
       SetReadoutVolume( minZ, maxZ, apothem );
       m_readout_vol_minZ    = minZ   ;  
       m_readout_vol_maxZ    = maxZ   ;  
       m_readout_vol_apothem = apothem;  
     }
 
-    weight_hadron<PlotUtils::TreeWrapper*>().getTruthKineRenorm(); 
+    weight_hadron<MAT::TreeWrapper*>().getTruthKineRenorm(); 
     m_mhrw_load_renorm = false; 
   }
   return true;
