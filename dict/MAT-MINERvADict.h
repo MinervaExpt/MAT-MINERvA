@@ -1,5 +1,5 @@
-#ifndef PLOTUTILSDICT_H 
-#define PLOTUTILSDICT_H 1
+#ifndef MATMINERVADICT_H 
+#define MATMINERVADICT_H 1
 
 // Include files for PlotUtils dictionary.
 
@@ -20,7 +20,7 @@
 
 // PlotUtils weight classes
 #include "weighters/weightRPA.h"
-#include "weighters/weight_2p2h.h"
+#include "weight_2p2h.h"
 #include "weighters/weightLowQ2Pi.h"
 #include "weighters/weightDIS.h"
 #include "weighters/weightZExp.h"
@@ -50,5 +50,5 @@
 // Use extern keyword because these functions are instantiated in FluxReweighter.cxx already
 
 #endif
-#endif // PLOTUTILSDICT_H
+#endif // MATMINERVADICT_H
 
