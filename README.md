@@ -3,7 +3,7 @@ MINERvA-specific plugins to the MAT like FluxReweighter, MuonFunctions, and our 
 
 # Installation (Installs MAT too)
 ```
-git checkout TODO
+git checkout git@github.com:MinervaExpt/MAT-MINERvA.git #ssh keys are easier to manage on Fermilab's GPVMs than HTTPS authentication
 mkdir -p opt/build && cd opt/build
 cmake ../../MAT-MINERvA/bootstrap -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_TYPE=Release
 kinit #Fermilab Kerberos ticket for getting flux and reweight files
