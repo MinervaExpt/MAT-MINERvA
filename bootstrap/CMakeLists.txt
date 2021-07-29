@@ -87,7 +87,7 @@ ExternalProject_Add(MATFluxAndReweightFiles
 #Nota Bene: This may not work well on Windows.  If you need to do that one day, read https://stackoverflow.com/questions/35765106/symbolic-links-cmake/41037224
 #TODO: If /cvmfs exists, symlink to central MParamFiles and MATFluxAndReweightFiles instead of downloading them.
 #      Not entirely sure symlinks work between /cvmfs, BlueArc, and CONDIR_INPUT_DIR to be fair.
-install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles ${CMAKE_INSTALL_PREFIX}/lib/data )" )
+install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ../etc/MATFluxAndReweightFiles ${CMAKE_INSTALL_PREFIX}/lib/data )" )
 
 #Tell setup.sh about the installation directory of this package
 configure_file(setup.sh.in setup.sh @ONLY)
