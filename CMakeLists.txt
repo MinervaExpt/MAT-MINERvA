@@ -82,7 +82,7 @@ file(GLOB HEADER_FILES */*.h)
 #Include build system for the rest of this project.  Add new top-level directories here.
 #First, build a ROOT dictionary
 #I modified this dictionary generation code from Heidi's CMakeLists.txt
-REFLEX_GENERATE_DICTIONARY(G__${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__)
+REFLEX_GENERATE_DICTIONARY(G__${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.h SELECTION ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PROJECT_NAME}Dict.xml OPTIONS -D__GCC_XML__ --noIncludePaths)
 
 #install the dictionary files ROOT generates where LD_LIBRARY_PATH can find them
 #(after sourcing setup.sh of course)
