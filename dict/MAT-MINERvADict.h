@@ -19,23 +19,23 @@
 #include <vector>
 
 // PlotUtils weight classes
-#include "weighters/weightRPA.h"
+#include "weightRPA.h"
 #include "weight_2p2h.h"
-#include "weighters/weightLowQ2Pi.h"
-#include "weighters/weightDIS.h"
-#include "weighters/weightZExp.h"
+#include "weightLowQ2Pi.h"
+#include "weightDIS.h"
+#include "weightZExp.h"
 
 //PlotUtils systematic universes classes (new sys framework)
-#include "universes/MinervaUniverse.h"
-#include "universes/GenieSystematics.h"
-#include "universes/GeantHadronSystematics.h"
-#include "universes/MnvTuneSystematics.h"
-#include "universes/MinosEfficiencySystematics.h"
-#include "universes/MuonSystematics.h"
-#include "universes/MuonResolutionSystematics.h"
-#include "universes/MichelSystematics.h"
-#include "universes/AngleSystematics.h"
-#include "universes/ResponseSystematics.h"
+#include "MinervaUniverse.h"
+#include "GenieSystematics.h"
+#include "GeantHadronSystematics.h"
+#include "MnvTuneSystematics.h"
+#include "MinosEfficiencySystematics.h"
+#include "MuonSystematics.h"
+#include "MuonResolutionSystematics.h"
+#include "MichelSystematics.h"
+#include "AngleSystematics.h"
+#include "ResponseSystematics.h"
 
 
 //TODO: Do I need this?
