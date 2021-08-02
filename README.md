@@ -16,7 +16,7 @@ make install #-j 4
 ```
 
 ## How to Use MAT-MINERvA
-MAT-MINERvA is compiled and installed using CMake 3 or later.
+MAT-MINERvA is compiled and installed using CMake 3 or later.  Once it has been installed, **`source opt/bin/setup.sh` to tell the operating system to use it**.
 
 ### Learn to use MINERvA's standard systematics
 Follow the [tutorial](https://github.com/MinervaExpt/MINERvA-101-Cross-Section) to work through a simple inclusive analysis.  It's a good blueprint/fork point for building a new analysis.
