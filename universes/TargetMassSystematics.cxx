@@ -51,7 +51,7 @@ double PlotUtils::TargetMassUniverse<T>::GetTargetMassWeight() const {
 
   double wgt_shift;
 
-  // if interaction is not in Nuclear Target regio, use CH error
+  // if interaction is not in Nuclear Target region, use CH error
   if(targetVtxZ>PlotUtils::TargetProp::Tracker::Face){
     wgt_shift = NSFDefaults::ch_err;
   }
@@ -109,6 +109,52 @@ double PlotUtils::TargetMassUniverse<T>::GetWeightRatioToCV() const {
     wgt_shift = NSFDefaults::ch_err;
   }
   return  1 + T::m_nsigma*wgt_shift/cv_wgt;
+}
+
+// This method returns the MnvHnD that users will include in the denominator of
+// their cross section calculation to normalize by the number of targets.
+// It returns an MnvHnD, in the binning specified by the user, where the content of
+// each bin is the number of targets (also specified by the user) in every systematic
+// universe except the "TargetMass" universes which are appropriately shifted
+template<class MnvHistoType>
+MnvHistoType* PlotUtils::GetNTargetsHist(double nTargets,
+                                         int targetZ,
+                                         MnvHistoType* template_hist)
+{
+
+  // This is the hist that will be returned to the user. Start from a clean slate
+  MnvHistoType* h_number_of_targets = (MnvHistoType*)template_hist->Clone("number_of_targets");
+  h_number_of_targets->ClearAllErrorBands();
+  h_number_of_targets->Reset();
+
+  // Fetch correct number of targets
+  double nTargets = 2.0;
+
+  //CV first
+  for(int i=0;i<h_flux_number_of_targets->GetSize();i++)
+    h_flux_number_of_targets->SetBinContent(i,nTargets);
+
+  // Systematically vary number of targets in "TargetMass" universes
+  MnvVertErrorBand *errBand = h_flux_ppfx->GetVertErrorBand("TargetMass");
+  const int universes = errBand->GetNHists();
+  auto flux_sys_hists = GetVector(h_flux_integrated);
+  for(int u=0;u<universes;++u) {
+    TH1D* tmp_flux = new TH1D(*errBand->GetHist( u ));
+    auto tmp_template = h_flux_integrated->GetCVHistoWithStatError();
+    tmp_template.SetName(Form("Flux_integrated_universe_%d",u));
+    double flux_uni = tmp_flux->Integral(ppfx_b_min,ppfx_b_max,"width");
+    for(int i=0;i<h_flux_integrated->GetSize();i++)
+      tmp_template.SetBinContent(i,flux_uni);
+    flux_sys_hists.push_back(NewHist(tmp_template));
+  }
+
+  // Push the constructed error band into the return hist
+  h_number_of_targets->AddVertErrorBand("TargetMass_{0}".format(targetZ),flux_sys_hists);
+  
+  // Fill CV for any systematic universes which don't have a non-CV nTargets
+  h_number_of_targets->AddMissingErrorBandsAndFillWithCV(*template_hist);
+  return h_number_of_targets;
+
 }
 
 template<typename T>

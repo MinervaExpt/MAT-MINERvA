@@ -16,6 +16,8 @@ namespace PlotUtils{
       virtual double GetTargetMassWeight() const /*override*/;
       double GetWeightRatioToCV() const;
 
+      MnvHistoType* GetNTargetsHist(double nTargets, int targetZ, MnvHistoType* template_hist);
+
       virtual std::string ShortName() const /*override*/;
       virtual std::string LatexName() const /*override*/;
       virtual bool IsVerticalOnly() const   { return true; }/* override */;
