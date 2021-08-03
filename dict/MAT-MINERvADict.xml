@@ -9,6 +9,9 @@
   <class name="PlotUtils::weightDIS" />
   <class name="PlotUtils::weightZExp" />
 
+
+  <class name="PlotUtils::TargetUtils" />
+  <class name="PlotUtils::POTCounter" />
   <!-- PlotUtils systematic universes classes (new sys framework)-->
   <class name="PlotUtils::MinervaUniverse" />
 

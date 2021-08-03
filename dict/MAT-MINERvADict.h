@@ -37,6 +37,10 @@
 #include "AngleSystematics.h"
 #include "ResponseSystematics.h"
 
+//Utils
+#include "TargetUtils.h"
+#include "POTCounter.h"
+
 
 //TODO: Do I need this?
 //#include "ErrorHandler.h"
