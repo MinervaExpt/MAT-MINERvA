@@ -8,7 +8,7 @@ source /cvmfs/minerva.opensciencegrid.org/minerva/hep_hpc_products/setups
 setup root v6_10_04d -q e14:prof
 setup cmake v3_7_1
 
-git checkout git@github.com:MinervaExpt/MAT-MINERvA.git #ssh keys are easier to manage on Fermilab's GPVMs than HTTPS authentication
+git clone git@github.com:MinervaExpt/MAT-MINERvA.git #ssh keys are easier to manage on Fermilab's GPVMs than HTTPS authentication
 mkdir -p opt/build && cd opt/build
 cmake ../../MAT-MINERvA/bootstrap -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_TYPE=Release
 kinit #Fermilab Kerberos ticket for getting flux and reweight files
@@ -16,7 +16,7 @@ make install #-j 4
 ```
 
 ## How to Use MAT-MINERvA
-MAT-MINERvA is compiled and installed using CMake 3 or later.
+MAT-MINERvA is compiled and installed using CMake 3 or later.  Once it has been installed, **`source opt/bin/setup.sh` to tell the operating system to use it**.
 
 ### Learn to use MINERvA's standard systematics
 Follow the [tutorial](https://github.com/MinervaExpt/MINERvA-101-Cross-Section) to work through a simple inclusive analysis.  It's a good blueprint/fork point for building a new analysis.
