@@ -116,6 +116,7 @@ add_subdirectory(weighters)
 
 #Now, build libMAT-MINERvA.
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${SOURCE_FILES} ${HEADER_FILES}) #This is necessary to get headers installed on OS X!
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
 install(FILES ${HEADER_FILES} ${SOURCE_FILES} DESTINATION include/PlotUtils) #Match old MINERvA include convention
