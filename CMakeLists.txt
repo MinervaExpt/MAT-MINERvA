@@ -107,6 +107,13 @@ add_library(G__${PROJECT_NAME}Dict SHARED ${CMAKE_CURRENT_BINARY_DIR}/${DICTIONA
 target_link_libraries(G__${PROJECT_NAME}Dict ${ROOT_LIBRARIES})
 install(TARGETS G__${PROJECT_NAME}Dict EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
 
+#Install headers under sub-directories
+add_subdirectory(calculators)
+add_subdirectory(style)
+add_subdirectory(universes)
+add_subdirectory(utilities)
+add_subdirectory(weighters)
+
 #Now, build libMAT-MINERvA.
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
