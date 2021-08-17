@@ -1,7 +1,7 @@
 #ifndef MINERVAUNIVERSE_cxx
 #define MINERVAUNIVERSE_cxx
 
-#include "MinervaUniverse.h"
+#include "universes/MinervaUniverse.h"
 
 #include <algorithm>
 

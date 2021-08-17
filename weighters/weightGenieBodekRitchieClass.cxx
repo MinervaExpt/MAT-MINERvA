@@ -1,4 +1,4 @@
-#include "weightGenieBodekRitchieClass.h"
+#include "weighters/weightGenieBodekRitchieClass.h"
 
 //using namespace PlotUtils;
 

@@ -3,8 +3,8 @@
 
 // class to vary the RecoProtonKECut
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
 
 namespace PlotUtils{
   template<class T>

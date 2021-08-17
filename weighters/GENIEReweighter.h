@@ -6,12 +6,12 @@
 #define PLOTUTILS_GENIEREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/GenieSystematics.cxx" //IsNonResPi()
-#include "PlotUtils/MnvTuneSystematics.cxx" //IsCCRes()
+#include "utilities/NSFDefaults.h"
+#include "universes/GenieSystematics.cxx" //IsNonResPi()
+#include "universes/MnvTuneSystematics.cxx" //IsCCRes()
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

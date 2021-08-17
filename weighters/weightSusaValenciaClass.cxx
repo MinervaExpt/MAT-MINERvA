@@ -1,4 +1,4 @@
-#include "weightSusaValenciaClass.h"
+#include "weighters/weightSusaValenciaClass.h"
 
 using namespace PlotUtils;
 

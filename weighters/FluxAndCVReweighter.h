@@ -6,11 +6,11 @@
 #define PLOTUTILS_FluxAndCVREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
+#include "utilities/NSFDefaults.h"
 #include "PlotUtils/FluxReweighter.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

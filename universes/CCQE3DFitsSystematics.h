@@ -1,7 +1,7 @@
 #ifndef SYSTEMATICS_3DCQEFITS_H
 #define SYSTEMATICS_3DCQEFITS_H
 
-#include "TreeWrapper.h"
+#include "PlotUtils/TreeWrapper.h"
 #include <TH2D.h>
 
 namespace PlotUtils{

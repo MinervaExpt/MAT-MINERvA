@@ -1,5 +1,5 @@
-#include "weightMK.h"
-#include "TreeWrapper.h"
+#include "weighters/weightMK.h"
+#include "PlotUtils/TreeWrapper.h"
 
 using namespace PlotUtils;
 

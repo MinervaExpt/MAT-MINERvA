@@ -3,9 +3,9 @@
 
 #include <TMath.h>
 
-#include "ChainWrapper.h"
+#include "PlotUtils/ChainWrapper.h"
 
-#include "weight_fsi_absorption.h"
+#include "weighters/weight_fsi_absorption.h"
 
 
 double PlotUtils::gethAFSIAbsorptionWeight(int mc_incoming,

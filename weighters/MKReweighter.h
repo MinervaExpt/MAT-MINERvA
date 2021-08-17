@@ -6,11 +6,11 @@
 #define PLOTUTILS_MKREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/weightMK.h"
+#include "utilities/NSFDefaults.h"
+#include "weighters/weightMK.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

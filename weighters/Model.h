@@ -9,7 +9,7 @@
 #define PLOTUTILS_MODEL_H
 
 //reweighters includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

@@ -1,10 +1,10 @@
 #ifndef MNVTUNESYSTEMATICS_CXX
 #define MNVTUNESYSTEMATICS_CXX
 
-#include "weight_2p2h.h"
-#include "weightRPA.h"
-#include "weightLowQ2Pi.h"
-#include "MnvTuneSystematics.h"
+#include "weighters/weight_2p2h.h"
+#include "weighters/weightRPA.h"
+#include "weighters/weightLowQ2Pi.h"
+#include "universes/MnvTuneSystematics.h"
 
 using namespace PlotUtils;
 

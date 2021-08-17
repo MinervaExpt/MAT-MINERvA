@@ -1,9 +1,9 @@
 #ifndef MUONSYSTEMATICS_H
 #define MUONSYSTEMATICS_H
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
-#include "FluxSystematics.cxx"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
+#include "PlotUtils/FluxSystematics.cxx"
 
 // Helper functions declared/defined in the .cxx
 // GetMinervaMuonSystematicsMap( typename T::config_t chain );

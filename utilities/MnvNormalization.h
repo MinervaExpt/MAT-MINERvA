@@ -1,6 +1,7 @@
 #ifndef MNV_MnvNormalization
 #define MNV_MnvNormalization 1
 
+
 #include <string>
 #include <map>
 

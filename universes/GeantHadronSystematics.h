@@ -1,8 +1,8 @@
 #ifndef GeanHadronSystematics_h
 #define GeanHadronSystematics_h
 
-#include "MnvHadronReweight.h"
-#include "NSFDefaults.h"
+#include "weighters/MnvHadronReweight.h"
+#include "utilities/NSFDefaults.h"
 #include <cstdlib>
 
 namespace PlotUtils {

@@ -6,11 +6,11 @@
 #define PLOTUTILS_GeantNeutronCVREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/GeantHadronSystematics.h"
+#include "utilities/NSFDefaults.h"
+#include "universes/GeantHadronSystematics.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

@@ -1,7 +1,7 @@
 #ifndef MINOSEFFICIENCYSYSTEMATICS_H
 #define MINOSEFFICIENCYSYSTEMATICS_H
 
-#include "TreeWrapper.h"
+#include "PlotUtils/TreeWrapper.h"
 
 // Helper functions declared/defined in the .cxx
 // GetMinosEfficiencySystematicsMap(typename T::config_t chain );

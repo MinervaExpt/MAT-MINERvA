@@ -1,8 +1,8 @@
 #ifndef DIFFRACTIVEUNCSYSTEMATICS_H
 #define DIFFRACTIVEUNCSYSTEMATICS_H
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
 
 namespace PlotUtils{
   //Right now, just hardcoding this.  

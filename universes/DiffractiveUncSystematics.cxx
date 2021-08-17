@@ -1,8 +1,8 @@
 #ifndef DiffractiveUncSystematics_CXX
 #define DiffractiveUncSystematics_CXX
 
-#include "DiffractiveUncSystematics.h"
-#include "TargetUtils.h"
+#include "universes/DiffractiveUncSystematics.h"
+#include "utilities/TargetUtils.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

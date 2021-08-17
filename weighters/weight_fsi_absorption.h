@@ -3,7 +3,6 @@
 
 #include <Rtypes.h>
 
-
 namespace PlotUtils {
 
     class ChainWrapper;

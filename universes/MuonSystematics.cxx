@@ -1,7 +1,7 @@
 #ifndef MUONSYSTEMATICS_CXX
 #define MUONSYSTEMATICS_CXX
 
-#include "MuonSystematics.h"
+#include "universes/MuonSystematics.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

@@ -10,10 +10,10 @@
 #define PLOTUTILS_SuSAFromValencia2p2hREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/weightSusaValenciaClass.h"
+#include "weighters/weightSusaValenciaClass.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

@@ -1,4 +1,4 @@
-#include "weightRPA.h"
+#include "weighters/weightRPA.h"
 
 using namespace PlotUtils;
 

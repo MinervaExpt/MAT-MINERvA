@@ -1,7 +1,7 @@
 #ifndef MuonResolutionSYSTEMATICS_CXX
 #define MuonResolutionSYSTEMATICS_CXX
 
-#include "MuonResolutionSystematics.h"
+#include "universes/MuonResolutionSystematics.h"
 #include "TVector3.h" // Using this to get theta from a 3d vector
 #include <iostream>
 

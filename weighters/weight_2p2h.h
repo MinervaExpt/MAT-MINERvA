@@ -6,8 +6,8 @@
 //#include <cstdlib>  //cout, endl
 
 #include <string>
-#include "math.h"
-#include "assert.h"
+#include <cmath>
+#include <cassert>
 
 //For Compatibility with ROOT compiler uncomment the following:
 //#define ROOT

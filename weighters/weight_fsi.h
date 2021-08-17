@@ -1,7 +1,6 @@
 
 #ifndef weight_fsi_h
 #define weight_fsi_h
-
 #include <vector>
 
 #include <Rtypes.h>

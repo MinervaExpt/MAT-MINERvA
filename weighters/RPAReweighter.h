@@ -6,11 +6,11 @@
 #define PLOTUTILS_RPAREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/MnvTuneSystematics.h"
+#include "utilities/NSFDefaults.h"
+#include "universes/MnvTuneSystematics.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

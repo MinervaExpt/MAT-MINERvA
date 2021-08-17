@@ -1,8 +1,8 @@
 #ifndef RESPONSESYSTEMATICS_CXX
 #define RESPONSESYSTEMATICS_CXX
 
-#include "ParticleResponseDefaults.h"
-#include "ResponseSystematics.h"
+#include "utilities/ParticleResponseDefaults.h"
+#include "universes/ResponseSystematics.h"
 #include <iostream>
 
 using namespace PlotUtils;

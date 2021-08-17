@@ -8,12 +8,12 @@
 #define PLOTUTILS_AMUDISREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/MnvTuneSystematics.h"
-#include "PlotUtils/weightDIS.h"
+#include "utilities/NSFDefaults.h"
+#include "universes/MnvTuneSystematics.h"
+#include "weighters/weightDIS.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

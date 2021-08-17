@@ -1,8 +1,8 @@
 #ifndef AngleSYSTEMATICS_H
 #define AngleSYSTEMATICS_H
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
 
 namespace PlotUtils{
   ///////////////////////////////////////////////////////////////

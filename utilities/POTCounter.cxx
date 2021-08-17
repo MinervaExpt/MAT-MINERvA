@@ -1,7 +1,7 @@
 #ifndef POTCounter_cxx
 #define POTCounter_cxx 1
 
-#include "POTCounter.h"
+#include "utilities/POTCounter.h"
 
 #include <TFile.h>
 #include <TChain.h>

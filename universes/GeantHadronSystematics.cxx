@@ -1,12 +1,12 @@
 #ifndef GeanHadronSystematics_cxx
 #define GeanHadronSystematics_cxx
 
-#include "GeantHadronSystematics.h"
-#include "TreeWrapper.h"
+#include "universes/GeantHadronSystematics.h"
+#include "PlotUtils/TreeWrapper.h"
 #include <cassert>
 #include <iostream>
 
-#include "NSFDefaults.h"
+#include "utilities/NSFDefaults.h"
 
 using namespace PlotUtils;
 

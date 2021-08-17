@@ -1,9 +1,9 @@
 #ifndef GENIESYSTEMATICS_CXX
 #define GENIESYSTEMATICS_CXX
 
-#include "NSFDefaults.h"
-#include "weightZExp.h"
-#include "GenieSystematics.h"
+#include "utilities/NSFDefaults.h"
+#include "weighters/weightZExp.h"
+#include "universes/GenieSystematics.h"
 #include "TDecompChol.h"
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "weight_minervaq2qe.h"
+#include "weighters/weight_minervaq2qe.h"
 
 using namespace PlotUtils;
 

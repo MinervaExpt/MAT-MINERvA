@@ -9,10 +9,10 @@
 #include <TH2D.h>
 #include <TH1D.h>
 #include <TFile.h>
-#include "math.h"
-#include "assert.h"
-#include "MnvH1D.h"
-#include "MnvVertErrorBand.h"
+#include <cmath>
+#include <cassert>
+#include "PlotUtils/MnvH1D.h"
+#include "PlotUtils/MnvVertErrorBand.h"
 //For Compatibility with ROOT compiler
 //uncomment the following:
 //#define ROOT

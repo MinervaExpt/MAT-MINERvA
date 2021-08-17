@@ -1,8 +1,8 @@
 #ifndef CCQE3DFITS_SYSTEMATICS_CXX
 #define CCQE3DFITS_SYSTEMATICS_CXX
 
-#include "CCQE3DFitsSystematics.h"
-#include "HyperDimLinearizer.h"
+#include "universes/CCQE3DFitsSystematics.h"
+#include "utilities/HyperDimLinearizer.h"
 #include "TFile.h"
 #include <iostream>
 

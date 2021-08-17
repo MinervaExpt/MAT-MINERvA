@@ -1,7 +1,7 @@
 #ifndef MNV_ANABINNING_cxx
 #define MNV_ANABINNING_cxx 1
 
-#include "AnaBinning.h"
+#include "utilities/AnaBinning.h"
 #include <iostream>
 
 using namespace PlotUtils;

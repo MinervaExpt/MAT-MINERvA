@@ -1,9 +1,9 @@
 #ifndef MINOSEFFICIENCYSYSTEMATICS_CXX
 #define MINOSEFFICIENCYSYSTEMATICS_CXX
 
-#include "MinosMuonEfficiencyCorrection.h"
-#include "MnvNormalization.h"
-#include "MinosEfficiencySystematics.h"
+#include "weighters/MinosMuonEfficiencyCorrection.h"
+#include "utilities/MnvNormalization.h"
+#include "universes/MinosEfficiencySystematics.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

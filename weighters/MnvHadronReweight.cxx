@@ -3,8 +3,8 @@
 
 #include <TF1.h>
 #include <TLeaf.h>
-#include "MnvHadronReweight.h"
-#include "NSFDefaults.h"
+#include "weighters/MnvHadronReweight.h"
+#include "utilities/NSFDefaults.h"
 #include <TFile.h>
 #include <TTree.h>
 #include <TString.h>
@@ -15,8 +15,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string.h>
-#include <stdio.h>
+#include <string>
+//#include <stdio> // HMS commented out as it gave compile errors on OSX 
 
 using std::vector;
 

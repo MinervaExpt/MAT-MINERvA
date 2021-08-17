@@ -1,8 +1,8 @@
 #ifndef MNV_MnvHadronReweight
 #define MNV_MnvHadronReweight 1
 
-#include "PlotUtilsPhysicalConstants.h"
-#include "TargetUtils.h"
+#include "utilities/PlotUtilsPhysicalConstants.h"
+#include "utilities/TargetUtils.h"
 #include <TH2D.h>
 #include <TTree.h>
 #include <map>

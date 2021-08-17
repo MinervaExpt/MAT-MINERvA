@@ -24,7 +24,7 @@ Author:         Ozgur Altinok  - ozgur.altinok@tufts.edu
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 #include <cstdlib>
 
 // ROOT Libraries

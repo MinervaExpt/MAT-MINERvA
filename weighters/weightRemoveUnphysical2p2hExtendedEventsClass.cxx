@@ -1,4 +1,4 @@
-#include "weightRemoveUnphysical2p2hExtendedEventsClass.h"
+#include "weighters/weightRemoveUnphysical2p2hExtendedEventsClass.h"
 
 //using namespace PlotUtils;
 

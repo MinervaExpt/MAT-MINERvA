@@ -1,4 +1,4 @@
-#include "weight_2p2h.h"
+#include "weighters/weight_2p2h.h"
 #include "TSystem.h"
 
 using namespace PlotUtils;

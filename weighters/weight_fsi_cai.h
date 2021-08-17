@@ -12,9 +12,9 @@
 #include <TH1D.h>
 #include <TFile.h>
 #include <TMath.h>
-#include "genie_particle.h"
-#include "math.h"
-#include "assert.h"
+#include "PlotUtils/genie_particle.h"
+#include <cmath>
+#include <cassert>
 //For Compatibility with ROOT compiler
 //uncomment the following:
 //#define ROOT

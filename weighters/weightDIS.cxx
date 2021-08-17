@@ -1,4 +1,4 @@
-#include "weightDIS.h"
+#include "weighters/weightDIS.h"
 
 using namespace PlotUtils;
 

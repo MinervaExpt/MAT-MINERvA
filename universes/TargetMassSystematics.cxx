@@ -1,9 +1,9 @@
 #ifndef TARGETMASSSYSTEMATICS_CXX
 #define TARGETMASSSYSTEMATICS_CXX
 
-#include "NSFDefaults.h"
-#include "TargetMassSystematics.h"
-#include "TargetUtils.h"
+#include "utilities/NSFDefaults.h"
+#include "universes/TargetMassSystematics.h"
+#include "utilities/TargetUtils.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

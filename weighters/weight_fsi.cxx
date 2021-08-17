@@ -6,9 +6,9 @@
 
 #include <TMath.h>
 
-#include "ChainWrapper.h"
+#include "PlotUtils/ChainWrapper.h"
 
-#include "weight_fsi.h"
+#include "weighters/weight_fsi.h"
 
 
 using std::sqrt;

@@ -6,11 +6,11 @@
 #define PLOTUTILS_FSIREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/weight_fsi.h"
+#include "utilities/NSFDefaults.h"
+#include "weighters/weight_fsi.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 //c++ includes
 #include <cassert>

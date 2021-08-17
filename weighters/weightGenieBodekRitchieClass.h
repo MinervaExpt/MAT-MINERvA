@@ -6,6 +6,7 @@
 #include <vector>
 #include <Rtypes.h>
 
+
 namespace PlotUtils{
 
 	class weightGenieBodekRitchieClass{

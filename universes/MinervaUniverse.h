@@ -1,19 +1,19 @@
 #ifndef MINERVAUNIVERSE_H
 #define MINERVAUNIVERSE_H
 
-#include "BaseUniverse.h"
-#include "GeantHadronSystematics.cxx"       // PlotUtils::weight_hadron (MnvHadronReweighter)
-#include "FluxReweighter.h"                 // PlotUtils::flux_reweighter
-#include "GenieSystematics.cxx"             // PlotUtils::IsNonResPi
-#include "MinosMuonEfficiencyCorrection.h"  // PlotUtils::MinosMuonEfficiencyCorrection
-#include "MnvNormalization.h"               // PlotUtils::MnvNormalizer
-#include "MnvTuneSystematics.cxx"  // PlotUtils::Get<RPA/2p2h/NonResPi/LowQ2Pi>Weight
-#include "NSFDefaults.h"
-#include "PlotUtilsPhysicalConstants.h"
+#include "PlotUtils/BaseUniverse.h"
+#include "universes/GeantHadronSystematics.cxx"       // PlotUtils::weight_hadron (MnvHadronReweighter)
+#include "PlotUtils/FluxReweighter.h"                 // PlotUtils::flux_reweighter
+#include "universes/GenieSystematics.cxx"             // PlotUtils::IsNonResPi
+#include "weighters/MinosMuonEfficiencyCorrection.h"  // PlotUtils::MinosMuonEfficiencyCorrection
+#include "utilities/MnvNormalization.h"               // PlotUtils::MnvNormalizer
+#include "universes/MnvTuneSystematics.cxx"  // PlotUtils::Get<RPA/2p2h/NonResPi/LowQ2Pi>Weight
+#include "utilities/NSFDefaults.h"
+#include "utilities/PlotUtilsPhysicalConstants.h"
 #include "TVector3.h"          // Needed by SystCalcs/TruthFunctions.h
-#include "weightCoherentPi.h"  // PlotUtils::weight_coherent
-#include "weight_fsi.h"        // PlotUtils::weight_fsi
-#include "weightMK.h"          // PlotUtils::weight_mk
+#include "weighters/weightCoherentPi.h"  // PlotUtils::weight_coherent
+#include "weighters/weight_fsi.h"        // PlotUtils::weight_fsi
+#include "weighters/weightMK.h"          // PlotUtils::weight_mk
 
 namespace PlotUtils {
 class MinervaUniverse : public PlotUtils::BaseUniverse {

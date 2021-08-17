@@ -1,4 +1,4 @@
-#include "weightNuclearScreening.h"
+#include "weighters/weightNuclearScreening.h"
 #include "TSystem.h"
 
 using namespace PlotUtils;

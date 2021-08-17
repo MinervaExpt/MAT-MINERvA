@@ -3,8 +3,8 @@
 
 // class to vary the TrueProtonKECut
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
 
 namespace PlotUtils{
   template<class T>

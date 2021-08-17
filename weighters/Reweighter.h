@@ -7,6 +7,7 @@
 #ifndef PLOTUTILS_REWEIGHTER_H
 #define PLOTUTILS_REWEIGHTER_H
 
+
 #if __cplusplus < 201103L
   #define override
 #endif

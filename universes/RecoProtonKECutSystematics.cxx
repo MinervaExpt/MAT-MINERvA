@@ -1,7 +1,7 @@
 #ifndef RecoProtonKECutSystematics_CXX
 #define RecoProtonKECutSystematics_CXX
 
-#include "RecoProtonKECutSystematics.h"
+#include "universes/RecoProtonKECutSystematics.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

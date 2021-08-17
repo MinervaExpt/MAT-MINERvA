@@ -1,4 +1,4 @@
-#include "weightLowQ2Pi.h"
+#include "weighters/weightLowQ2Pi.h"
 
 using namespace PlotUtils;
 

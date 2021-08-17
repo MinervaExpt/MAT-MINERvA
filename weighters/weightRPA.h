@@ -8,8 +8,8 @@
 #include <TH2D.h>
 #include <TH1D.h>
 #include <TFile.h>
-#include "math.h"
-#include "assert.h"
+#include <cmath>
+#include <cassert>
 //For Compatibility with ROOT compiler
 //uncomment the following:
 //#define ROOT

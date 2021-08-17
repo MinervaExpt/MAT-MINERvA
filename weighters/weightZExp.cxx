@@ -1,4 +1,4 @@
-#include "weightZExp.h"
+#include "weighters/weightZExp.h"
 
 using namespace PlotUtils;
 

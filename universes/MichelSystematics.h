@@ -1,8 +1,8 @@
 #ifndef MichelSYSTEMATICS_H
 #define MichelSYSTEMATICS_H
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
 
 namespace PlotUtils{
 

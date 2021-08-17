@@ -10,13 +10,14 @@
 #include <TH2D.h>
 #include <TH1D.h>
 #include <TFile.h>
-#include "math.h"
-#include "assert.h"
+#include <cmath>
+#include <cassert>
 
 #include "TGraph.h"
 #include "TFile.h"
 #include <Rtypes.h>
 #include <vector>
+
 
 namespace PlotUtils {
 

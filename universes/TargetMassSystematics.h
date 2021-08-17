@@ -1,7 +1,7 @@
 #ifndef TARGETMASSSYSTEMATICS_H
 #define TARGETMASSSYSTEMATICS_H
 
-#include "TreeWrapper.h"
+#include "PlotUtils/TreeWrapper.h"
 
 // Helper functions declared/defined in the .cxx
 // GetTargetMassSystematicsMap(typename T::config_t chain );

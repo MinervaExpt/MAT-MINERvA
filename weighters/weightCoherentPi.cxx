@@ -1,4 +1,4 @@
-#include "weightCoherentPi.h"
+#include "weighters/weightCoherentPi.h"
 
 using namespace PlotUtils;
 

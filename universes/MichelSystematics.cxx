@@ -1,7 +1,7 @@
 #ifndef MichelSystematics_CXX
 #define MichelSystematics_CXX
 
-#include "MichelSystematics.h"
+#include "universes/MichelSystematics.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

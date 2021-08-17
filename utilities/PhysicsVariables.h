@@ -6,10 +6,10 @@
 //#ifndef PLOTUTILS_STANDALONE
 //#include "Kernel/MinervaPhysicalConstants.h"
 //#else
-#include "PlotUtilsPhysicalConstants.h"
+#include "utilities/PlotUtilsPhysicalConstants.h"
 //#endif
 
-#include "NSFDefaults.h"  // Get binding energies here
+#include "utilities/NSFDefaults.h"  // Get binding energies here
 
 
 

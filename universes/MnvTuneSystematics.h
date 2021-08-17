@@ -1,7 +1,7 @@
 #ifndef MNVTUNESYSTEMATICS_H
 #define MNVTUNESYSTEMATICS_H
 
-#include "TreeWrapper.h"
+#include "PlotUtils/TreeWrapper.h"
 
 // Helper functions declared/defined in the .cxx
 // GetRPASystematicsMap(typename T::config_t chain);

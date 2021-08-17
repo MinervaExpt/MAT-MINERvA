@@ -1,7 +1,7 @@
 #ifndef AngleSystematics_CXX
 #define AngleSystematics_CXX
 
-#include "AngleSystematics.h"
+#include "universes/AngleSystematics.h"
 #include "TRandom3.h"
 #include <iostream>
 

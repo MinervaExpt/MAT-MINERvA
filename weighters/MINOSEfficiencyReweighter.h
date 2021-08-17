@@ -6,14 +6,14 @@
 #define PLOTUTILS_MINOSEfficiencyREWEIGHTER_H
 
 //PlotUtils includes
-#include "PlotUtils/NSFDefaults.h"
-#include "PlotUtils/GenieSystematics.cxx" //IsNonResPi()
-#include "PlotUtils/MnvTuneSystematics.cxx" //IsCCRes()
-#include "PlotUtils/MinosMuonEfficiencyCorrection.h"
-#include "PlotUtils/MnvNormalization.h"
+#include "utilities/NSFDefaults.h"
+#include "universes/GenieSystematics.cxx" //IsNonResPi()
+#include "universes/MnvTuneSystematics.cxx" //IsCCRes()
+#include "weighters/MinosMuonEfficiencyCorrection.h"
+#include "utilities/MnvNormalization.h"
 
 //Reweighter includes
-#include "PlotUtils/Reweighter.h"
+#include "weighters/Reweighter.h"
 
 namespace PlotUtils
 {

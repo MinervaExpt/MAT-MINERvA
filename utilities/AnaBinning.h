@@ -3,6 +3,7 @@
 
 #include <vector>
 
+
 namespace PlotUtils{
 
   struct axis_binning{

@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <utility>
-#include "MnvH2D.h"
+#include "PlotUtils/MnvH2D.h"
 namespace PlotUtils
 {
 class HyperDimLinearizer{

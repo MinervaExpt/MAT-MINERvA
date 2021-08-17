@@ -1,9 +1,9 @@
 #ifndef MuonResolutionSYSTEMATICS_H
 #define MuonResolutionSYSTEMATICS_H
 
-#include "TreeWrapper.h"
-#include "NSFDefaults.h"
-#include "PlotUtilsPhysicalConstants.h"
+#include "PlotUtils/TreeWrapper.h"
+#include "utilities/NSFDefaults.h"
+#include "utilities/PlotUtilsPhysicalConstants.h"
 
 /* instantiate this uncertainty with
  

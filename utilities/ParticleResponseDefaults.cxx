@@ -1,6 +1,6 @@
 #ifndef PARTICLERESPONSECONSTANTS_CXX
 #define PARTICLERESPONSECONSTANTS_CXX 1
-#include "ParticleResponseDefaults.h"
+#include "utilities/ParticleResponseDefaults.h"
 
 using namespace PlotUtils;
 double PartRespDefaults::GetDefaultPartRespFracUnc( std::string particle )

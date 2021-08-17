@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
 
-#include "PhysicsVariables.h"
+#include "utilities/PhysicsVariables.h"
 
 namespace PlotUtils{
 

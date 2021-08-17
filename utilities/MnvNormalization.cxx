@@ -1,4 +1,4 @@
-#include "MnvNormalization.h"
+#include "utilities/MnvNormalization.h"
 
 #include <iostream>
 #include <cstdlib>

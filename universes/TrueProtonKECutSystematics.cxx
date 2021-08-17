@@ -1,7 +1,7 @@
 #ifndef TrueProtonKECutSystematics_CXX
 #define TrueProtonKECutSystematics_CXX
 
-#include "TrueProtonKECutSystematics.h"
+#include "universes/TrueProtonKECutSystematics.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes

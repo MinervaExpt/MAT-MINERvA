@@ -6,7 +6,7 @@
 
 #include <TF1.h>
 
-#include "MinosMuonEfficiencyCorrection.h"
+#include "weighters/MinosMuonEfficiencyCorrection.h"
 
 
 using std::sqrt;
