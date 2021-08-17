@@ -54,6 +54,10 @@ else()
   add_definitions(-DNCINTEX)
 endif()
 
+#All components in this project can refer to other components by
+#relative path from the root source code directory.
+include_directories( ${CMAKE_SOURCE_DIR} )
+
 #From Heidi: ---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
 include(${ROOT_USE_FILE})
 
@@ -61,10 +65,6 @@ find_package(MAT REQUIRED)
 include_directories(${MAT_INCLUDE_DIR})
 include_directories(${MAT_INCLUDE_DIR}/PlotUtils) #Legacy include paths
 message("Including the MAT from ${MAT_INCLUDE_DIR}/PlotUtils")
-
-#All components in this project can refer to other components by
-#relative path from the root source code directory.
-include_directories( ${CMAKE_SOURCE_DIR} )
 
 #From Heidi: put some special flags here forgot what the DBUILD_SHARED_LIBS=OFF does..
 add_definitions(-DFORM -DMNVROOT6 -DPLOTUTILS_STANDALONE "-DBUILD_SHARED_LIBS=OFF")
