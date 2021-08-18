@@ -23,7 +23,6 @@ ExternalProject_Add(MAT
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 
 ExternalProject_Add(MAT-MINERvA
-                    #TODO: Can I both have git checkout information (for MAT-MINERvA-update) and not download?  Perhaps it would be easier to set the UPDATE_COMMAND manually...
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT-MINERvA.git
                     GIT_TAG ${MY_GIT_TAG}
                     DOWNLOAD_COMMAND "" #Let git updates work, but not downloads.  Otherwise, you'd overwrite your MAT-MINERvA area every time you tried to install it.  In reality, I think the install just stops and fails.
