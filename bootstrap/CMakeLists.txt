@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.2) #Requiring version 3.2
 
 include(ExternalProject)
 
+set(MY_GIT_TAG main) #TODO: Make this come from the command line/cache
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 set(CVS_DOWNLOAD_COMMAND)
 
@@ -14,15 +15,16 @@ endif()
 
 ExternalProject_Add(MAT
                     GIT_REPOSITORY git@github.com:MinervaExpt/MAT.git
-                    GIT_TAG feature/aolivier_oneLibrary
+                    GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 
 ExternalProject_Add(MAT-MINERvA
+                    #TODO: Can I both have git checkout information (for MAT-MINERvA-update) and not download?  Perhaps it would be easier to set the UPDATE_COMMAND manually...
                     #GIT_REPOSITORY git@github.com:MinervaExpt/MAT-MINERvA.git
-                    #GIT_TAG main
+                    #GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
@@ -31,22 +33,13 @@ ExternalProject_Add(MAT-MINERvA
 
 ExternalProject_Add(UnfoldUtils
                     GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
-                    GIT_TAG feature/aolivier_oneLibrary
+                    GIT_TAG ${MY_GIT_TAG}
                     ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true
                     DEPENDS MAT MAT-MINERvA)
-
-#ExternalProject_Add(GENIEXSecExtract
-#                    CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
-#                    CVS_MODULE GENIEXSecExtract
-#                    ${CVS_DOWNLOAD_COMMAND}
-#                    SOURCE_DIR "${SOURCE_CODE_DIR}/GENIEXSecExtract"
-#                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-#                    DEPENDS MAT MAT-MINERvA)
-
 
 #MParamFiles doesn't need to be built or installed.  It's a bunch of text and .root files that programs need to be able to find.
 #Nothing depends on MParamFiles to build, but it does need to be installed before much of libPlotUtils can be used.
@@ -76,7 +69,6 @@ ExternalProject_Add(MATFluxAndReweightFiles
                     )
 
 add_custom_target(update
-                  #COMMAND ${CMAKE_COMMAND} -E echo "Updating all projects..."
                   COMMENT "Updating all projects from github/CVS")
 add_dependencies(update MAT-MINERvA-update MAT-update UnfoldUtils-update MParamFiles-update MATFluxAndReweightFiles-update)
 
