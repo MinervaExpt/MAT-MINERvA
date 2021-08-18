@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.2) #Requiring version 3.2
 
 include(ExternalProject)
 
-set(MY_GIT_TAG main) #TODO: Make this come from the command line/cache
+set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects") #TODO: Make this come from the command line/cache
+set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 set(CVS_DOWNLOAD_COMMAND)
 
@@ -14,7 +15,7 @@ if(EXISTS ${SOURCE_CODE_DIR}/Ana AND NOT ${CMAKE_NOT_FIRST_RUN})
 endif()
 
 ExternalProject_Add(MAT
-                    GIT_REPOSITORY git@github.com:MinervaExpt/MAT.git
+                    GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT.git
                     GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     STEP_TARGETS update
@@ -23,7 +24,7 @@ ExternalProject_Add(MAT
 
 ExternalProject_Add(MAT-MINERvA
                     #TODO: Can I both have git checkout information (for MAT-MINERvA-update) and not download?  Perhaps it would be easier to set the UPDATE_COMMAND manually...
-                    GIT_REPOSITORY git@github.com:MinervaExpt/MAT-MINERvA.git
+                    GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT-MINERvA.git
                     GIT_TAG ${MY_GIT_TAG}
                     DOWNLOAD_COMMAND "" #Let git updates work, but not downloads.  Otherwise, you'd overwrite your MAT-MINERvA area every time you tried to install it.  In reality, I think the install just stops and fails.
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
@@ -33,7 +34,7 @@ ExternalProject_Add(MAT-MINERvA
                     DEPENDS MAT)
 
 ExternalProject_Add(UnfoldUtils
-                    GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
+                    GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
                     GIT_TAG ${MY_GIT_TAG}
                     ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
