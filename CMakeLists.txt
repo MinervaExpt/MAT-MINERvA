@@ -88,7 +88,7 @@ REFLEX_GENERATE_DICTIONARY(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/dict/${PR
 #(after sourcing setup.sh of course)
 #Taken from Clark McGrew's edepsim package
 if(${ROOT_VERSION} VERSION_GREATER 6)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/{PROJECT_NAME}Dict.rootmap
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Dict.rootmap
     DESTINATION lib)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_rdict.pcm
     DESTINATION lib)
