@@ -25,7 +25,7 @@ endif()
 
 ExternalProject_Add(MAT
                     GIT_REPOSITORY git@github.com:MinervaExpt/MAT.git
-                    GIT_TAG main
+                    GIT_TAG feature/aolivier_oneLibrary
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     UPDATE_COMMAND ""
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
@@ -41,7 +41,7 @@ ExternalProject_Add(MAT-MINERvA
 
 ExternalProject_Add(UnfoldUtils
                     GIT_REPOSITORY git@github.com:MinervaExpt/UnfoldUtils.git
-                    GIT_TAG master
+                    GIT_TAG feature/aolivier_oneLibrary
                     ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
                     UPDATE_COMMAND ""
