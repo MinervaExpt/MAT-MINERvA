@@ -10,11 +10,14 @@ set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 
 #Stop the build if any source directories already exist.  Otherwise, CMake would blindly overwrite any changes!
 #Contact aolivier@ur.rochester.edu for manual install instructions if this is stopping you from doing something.
+set(DISABLE_CVS_DOWNLOAD)
+
 if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
   message(FATAL_ERROR "One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
 endif()
 if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles)
-  message(FATAL_ERROR "Flux and/or reweight files are exist.  I'm not going to download anything so I don't overwrite your hard work.")
+  message("Flux and/or reweight files already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+  set(DISABLE_CVS_DOWNLOAD DOWNLOAD_COMMAND "" UPDATE_COMMAND "")
 endif()
 
 ExternalProject_Add(MAT
@@ -47,9 +50,9 @@ ExternalProject_Add(UnfoldUtils
 #MParamFiles doesn't need to be built or installed.  It's a bunch of text and .root files that programs need to be able to find.
 #Nothing depends on MParamFiles to build, but it does need to be installed before much of libPlotUtils can be used.
 ExternalProject_Add(MParamFiles
+                    "${DISABLE_CVS_DOWNLOAD}"
                     CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
                     CVS_MODULE MParamFiles
-                    ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/etc/MParamFiles" #Check out directly into install prefix
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
@@ -60,9 +63,9 @@ ExternalProject_Add(MParamFiles
 
 #The flux files and many of our reweights now live in this package.
 ExternalProject_Add(MATFluxAndReweightFiles
+                    "${DISABLE_CVS_DOWNLOAD}"
                     CVS_REPOSITORY minervacvs@cdcvs.fnal.gov:/cvs/mnvsoft
                     CVS_MODULE AnalysisFramework/Ana/MATFluxAndReweightFiles
-                    ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles" #Check out directly into install prefix
                     CONFIGURE_COMMAND ""
                     BUILD_COMMAND ""
