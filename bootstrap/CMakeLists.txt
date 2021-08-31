@@ -7,11 +7,10 @@ include(ExternalProject)
 set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects") #TODO: Make this come from the command line/cache
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
-set(CVS_DOWNLOAD_COMMAND)
 
-if(EXISTS ${SOURCE_CODE_DIR}/Ana AND NOT ${CMAKE_NOT_FIRST_RUN})
-  message("Ana already exists.  I'm not going to let CVS download anything so it doesn't overwrite your hard work.")
-  set(CVS_DOWNLOAD_COMMAND "DOWNLOAD_COMMAND \"\"")
+if(EXISTS ${SOURCE_CODE_DIR}/MAT) #AND NOT ${CMAKE_NOT_FIRST_RUN})
+  message(FATAL_ERROR "MAT already exists.  I'm not going to download anything so I don't overwrite your hard work.")
+  #TODO: Exit with error?  Build but don't download?
 endif()
 
 ExternalProject_Add(MAT
@@ -35,7 +34,6 @@ ExternalProject_Add(MAT-MINERvA
 ExternalProject_Add(UnfoldUtils
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
                     GIT_TAG ${MY_GIT_TAG}
-                    ${CVS_DOWNLOAD_COMMAND}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
