@@ -8,9 +8,13 @@ set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects"
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 
-if(EXISTS ${SOURCE_CODE_DIR}/MAT) #AND NOT ${CMAKE_NOT_FIRST_RUN})
-  message(FATAL_ERROR "MAT already exists.  I'm not going to download anything so I don't overwrite your hard work.")
-  #TODO: Exit with error?  Build but don't download?
+#Stop the build if any source directories already exist.  Otherwise, CMake would blindly overwrite any changes!
+#Contact aolivier@ur.rochester.edu for manual install instructions if this is stopping you from doing something.
+if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
+  message(FATAL_ERROR "One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+endif()
+if(EXISTS ${CMAKE_INSTALL_PREFIX}/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/MATFluxAndReweightFiles)
+  message(FATAL_ERROR "Flux and/or reweight files are exist.  I'm not going to download anything so I don't overwrite your hard work.")
 endif()
 
 ExternalProject_Add(MAT
