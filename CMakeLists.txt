@@ -113,7 +113,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/$
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${SOURCE_FILES} ${HEADER_FILES}) #This is necessary to get headers installed on OS X!
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES} MAT)
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets DESTINATION lib)
-install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink lib${PROJECT_NAME}.so lib${PROJECT_NAME}Dict.so )" ) #Make a symbolic link to the "magic" file name that older ROOT 6 versions look for.
+install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink lib${PROJECT_NAME}.so ${CMAKE_INSTALL_PREFIX}/lib/lib${PROJECT_NAME}Dict.so )" ) #Make a symbolic link to the "magic" file name that older ROOT 6 versions look for.
 install(FILES ${HEADER_FILES} ${SOURCE_FILES} DESTINATION include/PlotUtils) #Match old MINERvA include convention
 install(EXPORT ${PROJECT_NAME}Targets DESTINATION lib/cmake/${PROJECT_NAME})
 
