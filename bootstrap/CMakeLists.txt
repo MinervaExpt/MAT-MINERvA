@@ -13,7 +13,7 @@ set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
   message(FATAL_ERROR "One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
 endif()
-if(EXISTS ${CMAKE_INSTALL_PREFIX}/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/MATFluxAndReweightFiles)
+if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles)
   message(FATAL_ERROR "Flux and/or reweight files are exist.  I'm not going to download anything so I don't overwrite your hard work.")
 endif()
 
