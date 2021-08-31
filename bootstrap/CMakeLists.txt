@@ -10,10 +10,12 @@ set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 
 #Stop the build if any source directories already exist.  Otherwise, CMake would blindly overwrite any changes!
 #Contact aolivier@ur.rochester.edu for manual install instructions if this is stopping you from doing something.
+set(DISABLE_GIT_DOWNLOAD)
 set(DISABLE_CVS_DOWNLOAD)
 
 if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
-  message(FATAL_ERROR "One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+  message("One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+  set(DISABLE_GIT_DOWNLOAD DOWNLOAD_COMMAND "" UPDATE_COMMAND "")
 endif()
 if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles)
   message("Flux and/or reweight files already exist.  I'm not going to download anything so I don't overwrite your hard work.")
@@ -21,6 +23,7 @@ if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREF
 endif()
 
 ExternalProject_Add(MAT
+                    "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT.git
                     GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
@@ -39,6 +42,7 @@ ExternalProject_Add(MAT-MINERvA
                     DEPENDS MAT)
 
 ExternalProject_Add(UnfoldUtils
+                    "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
                     GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
