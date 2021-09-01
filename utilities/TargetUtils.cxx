@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <vector>
+#include <math.h>
 
 using namespace PlotUtils;
 
@@ -43,6 +44,18 @@ bool TargetUtils::IsInHexagon( double x, double y, double apothem /*= 850. */ ) 
 
    return false;
 }
+
+//! What daisy petal is the (x,y) coordinate in
+int TargetUtils::GetDaisyPetal( double x, double y, double apothem /*= 850. mm*/ ) const
+{
+  if( !IsInHexagon( x, y, apothem ) ) return -1;
+  double angle = atan2(y,x) / ( 2 * TMath::Pi() );
+  if ( angle < 0 ) angle += 1;
+  int out = floor(12*angle);
+  return out;
+} 
+
+
 
 //! Get the pass of a number of planes
 double TargetUtils::GetTrackerMass( double nPlanes, bool isMC, double apothem /* = 850. */ ) const
