@@ -6,7 +6,7 @@ include(ExternalProject)
 
 set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects")
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
-set(FLUX_FILE_DIR "broken" CACHE STRING "Andrew broke this on purpose until /cvmfs flux files are auto-updating!") #"/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
+set(FLUX_FILE_DIR "intentionallyBroken" CACHE STRING "Andrew broke this on purpose until /cvmfs flux files are auto-updating!") #"/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 
 #Try to get flux files from a central location
@@ -24,13 +24,15 @@ endif()
 set(DISABLE_GIT_DOWNLOAD)
 set(DISABLE_CVS_DOWNLOAD)
 
-if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
-  message("One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
-  set(DISABLE_GIT_DOWNLOAD DOWNLOAD_COMMAND "" UPDATE_COMMAND "")
-endif()
-if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles)
-  message("Flux and/or reweight files already exist.  I'm not going to download anything so I don't overwrite your hard work.")
-  set(DISABLE_CVS_DOWNLOAD DOWNLOAD_COMMAND "" UPDATE_COMMAND "")
+if(NOT CMAKE_NOT_FIRST_RUN)
+  if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
+    message("One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+    set(DISABLE_GIT_DOWNLOAD DOWNLOAD_COMMAND "")
+  endif()
+  if(EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles OR EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MATFluxAndReweightFiles)
+    message("Flux and/or reweight files already exist.  I'm not going to download anything so I don't overwrite your hard work.")
+    set(DISABLE_CVS_DOWNLOAD DOWNLOAD_COMMAND "")
+  endif()
 endif()
 
 ExternalProject_Add(MAT
@@ -104,7 +106,11 @@ endif()
 #Make a symbolic link to MATFluxAndReweightFiles because Andrew didn't think about
 #naming it "data" before he created a bunch of CVS directories that only Rob can remove :(
 #Nota Bene: This may not work well on Windows.  If you need to do that one day, read https://stackoverflow.com/questions/35765106/symbolic-links-cmake/41037224
+#Also make a symbolic link for MParamFiles because I can't be bothered to figure out the right way to detect FLUX_FILE_DIR in setup.sh.in
 install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ${FLUX_FILE_DIR}/MATFluxAndReweightFiles ${CMAKE_INSTALL_PREFIX}/lib/data )" )
+if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles)
+  install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ${FLUX_FILE_DIR}/MParamFiles ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles )" )
+endif()
 
 #Tell setup.sh about the installation directory of this package
 configure_file(setup.sh.in setup.sh @ONLY)
