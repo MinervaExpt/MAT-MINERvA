@@ -397,6 +397,9 @@ namespace PlotUtils
       //! Is (x,y) coordinate inside the hexagon
       bool IsInHexagon( double x, double y, double apothem = 850. ) const;
 
+      //! What daisy petal is the (x,y) coordinate in? Include apothem (mm) cut
+      int GetDaisyPetal( double x, double y, double apothem = 850. ) const;
+
       //==========================================
       // Functions for Tracker
       //==========================================
