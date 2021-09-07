@@ -55,5 +55,20 @@ double GetSubdetFuzz(Subdet subdet) const {
   return 0; // for now.
 }
 
+double GetLowRecoilQ3() const {
+  double q0 = GetCalorimetryQ0();
+  double E_lep = GetEmu();
+  double E_nu = q0+E_lep;
+  double q2 = calcqsquare_calorimetry(E_lep,GetThetamu(),GetPmu(),q0);
+  return calcq3(q2,E_nu,E_lep);
+}
+
+double calcqsquare_calorimetry(double E_lep, double theta_lep, double p_lep, double q0) const {
+  if (E_lep <= p_lep) throw std::runtime_error("Calculate Q^2 error: lepton mass is 0(imaginary), because Energy is equal to (less than) momentum.");
+  double mass_square = E_lep*E_lep - p_lep *p_lep;
+  double Enu = E_lep+q0;
+  double q2 = 2*Enu *(E_lep - p_lep * std::cos(theta_lep))-mass_square;
+  return std::max(0.,q2);
+}
 
 #endif /* LOWRECOILFUNCTIONS_H */
