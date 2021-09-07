@@ -14,9 +14,9 @@
 
 enum Subdet{nucl,tracker,ecal,hcal,od};
 struct Q0Spline {
-  std::vector<double> poly_x;
-  std::vector<double> poly_y;
-  double scale;
+  std::vector<double> poly_x = {0.,50.};
+  std::vector<double> poly_y = {0.,50.};
+  double scale = 1.0;
   bool set=false;
 };
 
@@ -71,7 +71,7 @@ double GetSplinedQ0(bool fuzz = true) const {
 }
 
 double Spline(double rawEnergy) const {
-  if (!current_spline.set) return -1.;
+  if (!current_spline.set) LoadNukeCC_Nu_Tracker();
   rawEnergy*= 1e-3;
   const std::vector<double>& poly_x = current_spline.poly_x;
   const std::vector<double>& poly_y = current_spline.poly_y;
@@ -86,7 +86,7 @@ double Spline(double rawEnergy) const {
   return (rawEnergy < 0.0)? 0.0 :current_spline.scale * rawEnergy * 1e3; // Change back to MeV
 }
 
-bool LoadNukeCC_Nu_Tracker() {
+static bool LoadNukeCC_Nu_Tracker() {
   double scale = 1.51324;
   std::vector<std::pair<double,double>> points;
   points.push_back(std::make_pair(0.,0.));
@@ -111,8 +111,8 @@ bool LoadNukeCC_Nu_Tracker() {
   return SetupSpline(x,y,scale);
 }
 
-bool SetupSpline(const std::vector<double>& x, const std::vector<double>& y,double scale) {
-  if (!current_spline.set) return false;
+static bool SetupSpline(const std::vector<double>& x, const std::vector<double>& y,double scale) {
+  if (current_spline.set) return false;
   if (x.size() != y.size() || x.size() < 2) return false;
   //check whether x is monotonically increasing
   double p0 = x[0];
@@ -127,7 +127,7 @@ bool SetupSpline(const std::vector<double>& x, const std::vector<double>& y,doub
   return true;
 }
 
-Q0Spline current_spline;
+static Q0Spline current_spline;
 
 
 
