@@ -6,7 +6,7 @@ include(ExternalProject)
 
 set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects")
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
-set(FLUX_FILE_DIR "intentionallyBroken" CACHE STRING "Andrew broke this on purpose until /cvmfs flux files are auto-updating!") #"/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
+set(FLUX_FILE_DIR "/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
 
 #Try to get flux files from a central location
