@@ -1,7 +1,7 @@
 #ifndef MNV_MnvRecoShifter_cxx
 #define MNV_MnvRecoShifter_cxx 1
 
-#include "MnvRecoShifter.h"
+#include "legacy/MnvRecoShifter.h"
 
 #include "TError.h"
 #include "HistogramUtils.h" //for NotPhysicsShift
