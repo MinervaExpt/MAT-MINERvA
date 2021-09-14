@@ -69,10 +69,10 @@ namespace XSecFunctions
   TGraph* loadTGraph(const char* filename, const char* graphname)
   {
     std::cout<<"Trying to load filename: "<<filename<<", graphname: "<<graphname<<std::endl; // TODO remove
-    std::string plotutils = std::string(getenv("PLOTUTILSROOT"));
+    std::string plotutils = std::string(getenv("MATFLUXANDWEIGHTFILES"));
     if (plotutils == std::string("")) 
     {
-      std::cout<<"PlotUtils.MnvHadronReweight.XSecFunctions.loadTGraph: ERROR: $PLOTUTILSROOT is not defined"<<graphname<<std::endl;
+      std::cout<<"PlotUtils.MnvHadronReweight.XSecFunctions.loadTGraph: ERROR: $MATFLUXANDWEIGHTFILES is not defined"<<graphname<<std::endl;
       throw 66;
     }
     std::string fullfilename_temp = plotutils + std::string(filename);
@@ -762,7 +762,7 @@ TargetUtils* MnvHadronReweight::m_TargetUtils;
 //================================
 MnvHadronReweight::MnvHadronReweight(TTree* truth, TTree* data, bool hdXSec) :
   fData(NULL), fTruth(NULL), 
-  m_directory(Form("%s/data/mhrwKineRenorm",getenv("PLOTUTILSROOT"))),
+  m_directory(Form("%s/data/mhrwKineRenorm",getenv("MATFLUXANDWEIGHTFILES"))),
   m_projectname("Renorm_Kine_Truth"), m_reweightNeutronCV(false),
   m_current_entry_neutronCV(-1),m_current_entry_weight(-1),
   m_current_rwgt_neutronCV(1.0)

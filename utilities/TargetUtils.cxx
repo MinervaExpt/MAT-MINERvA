@@ -899,9 +899,9 @@ double TargetUtils::GetCoordC(double vtx_x, double vtx_y)
 
 double TargetUtils::GetNPlanes(double minZ, double maxZ) const
 {
-    const char* plotutils = gSystem->Getenv("PLOTUTILSROOT");
+    const char* plotutils = gSystem->Getenv("MATFLUXANDWEIGHTFILES");
     if(!plotutils || !strlen(plotutils)){
-        std::cout<<"$PLOTUTILSROOT is not set. Can't find flux histograms"<<std::endl;
+        std::cout<<"$MATFLUXANDWEIGHTFILES is not set. Can't find flux histograms"<<std::endl;
         std::exit(1);
     }
 

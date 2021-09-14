@@ -50,7 +50,7 @@ double MinervaUniverse::m_reco_proton_ke_cut_central = NSFDefaults::RecoProtonKE
 
 std::string MinervaUniverse::m_readout_volname      = "";
 std::string MinervaUniverse::m_mhrw_process_name    = "Renorm_Kine_Truth";
-std::string MinervaUniverse::m_mhrw_directory       = Form("%s/data/mhrwKineRenorm",getenv("PLOTUTILSROOT"));
+std::string MinervaUniverse::m_mhrw_directory       = Form("%s/data/mhrwKineRenorm",getenv("MATFLUXANDWEIGHTFILES"));
 std::string MinervaUniverse::m_treename= "MasterAnaDev";
 // CTOR TODO:depends on the above conversation about whether all those bools
 // need to be static or not

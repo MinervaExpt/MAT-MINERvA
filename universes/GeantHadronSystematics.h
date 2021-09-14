@@ -11,7 +11,7 @@ namespace PlotUtils {
 
            MnvHadronReweight needs to renormalize in order to fix the event
            rate. There are a set of standard renormalization weights in 
-           $PLOTUTILSROOT/data/mhrwKineRenorm, but the user may want to include
+           $MATFLUXANDWEIGHTFILES/data/mhrwKineRenorm, but the user may want to include
            different hadrons or different analysis volumes, which will require
            new renormalizations.   
 */

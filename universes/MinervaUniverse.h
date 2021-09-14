@@ -63,7 +63,7 @@ public:
   static bool SetNFluxUniverses(int n_flux_universes);
 
   //! MnvHadronReweighter
-  static bool SetMHRWeightFilename( std::string process_name, std::string directory = Form("%s/data/mhrwKineRenorm",getenv("PLOTUTILSROOT")) );
+  static bool SetMHRWeightFilename( std::string process_name, std::string directory = Form("%s/data/mhrwKineRenorm",getenv("MATFLUXANDWEIGHTFILES")) );
   static bool SetReadoutVolume( std::string readout_vol );
   static bool SetReadoutVolume( double minZ, double maxZ, double apothem );
   static bool SetMHRWeightNeutronCVReweight( bool useNeutronCVReweight );

@@ -27,7 +27,7 @@ MnvHadronReweight& weight_hadron(
     bool useNeutronCVReweight = true,
     bool useElastics = true,
     std::string project_name = "Renorm_Kine_Truth",
-    std::string directory = Form("%s/data/mhrwKineRenorm",getenv("PLOTUTILSROOT")) ){
+    std::string directory = Form("%s/data/mhrwKineRenorm",getenv("MATFLUXANDWEIGHTFILES")) ){
   static MnvHadronReweight* _weight_hadron = 0;
   // First time -- use the input args to make a MHRW
   if (!_weight_hadron) {
