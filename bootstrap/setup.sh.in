@@ -15,4 +15,5 @@ export LD_LIBRARY_PATH=${OLD_LIBS}:${INSTALL_DIR}/lib
 
 #Set up MParamFiles for my laptop
 export MPARAMFILESROOT=${INSTALL_DIR}/etc/MParamFiles
-export export MPARAMFILES=$MPARAMFILESROOT/data
+export MATFLUXANDWEIGHTFILES=${INSTALL_DIR}/etc/MATFluxAndReweightFiles
+export MPARAMFILES=${MPARAMFILESROOT}/data
