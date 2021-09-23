@@ -257,7 +257,7 @@ double TargetUtils::GetTrackerNCarbonAtoms( double minZ, double maxZ, bool isMC,
 }
 
 //! In tracker?
-bool TargetUtils::InTracker( double vtx_x, double vtx_y, double vtx_z, double apothem/* = 850. */ )
+bool TargetUtils::InTracker( double vtx_x, double vtx_y, double vtx_z, double apothem/* = 850. */ ) const
 {
   if( !InTrackerZ( vtx_z ) ) return false;
 
@@ -266,7 +266,7 @@ bool TargetUtils::InTracker( double vtx_x, double vtx_y, double vtx_z, double ap
    
   return true; 
 }
-bool TargetUtils::InTrackerZ( double vtx_z )
+bool TargetUtils::InTrackerZ( double vtx_z ) const
 {
   //Is it in the tracker volume?
   if( vtx_z < PlotUtils::TargetProp::Tracker::Face ) return false;

@@ -8,7 +8,7 @@
 //ROOT includes
 #include "TH1D.h"
 #include "TGraph.h"
-#include "TSpline3.h"
+#include "TSpline.h"
 #include "TF1.h"
 #include "TFile.h"
 
@@ -22,36 +22,37 @@ template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
 class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 {
   public:
-    NeutronInelasticReweighter(const std::string& oldTotalInel, const std::string& newTotalInel, const std::map<std::string, std::vector<int>>& fileNameToFS): fTotalInelastic(oldTotalInel, newTotalInel, {}), fGeometry()
+    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fGeometry()
     {
       //Load fKinENormalization from a file.  Do this first because it can fail.
       const std::string kinEFileName = "", 
                         kinENormHistName = "";
       auto oldPwd = gDirectory;
       std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
-      fKinENormalization = dynamic_cast<TH1D*>(kinEFile.Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
+      fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
       if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
-      fKinENormalization.SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
+      fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
       gDirectory = oldPwd;
 
       //Load interaction channels from files
       for(const auto& channel: fileNameToFS) fChannels.emplace_back(channel.first, channel.first, channel.second);
 
       //Create an "Other" Channel that preserves the total cross section
-      fOther.fOldSigmaRatio = TF1([this](const double* x, const double* /*p*/)
-                                  {
-                                    double result = 1;
-                                    for(const auto& channel: this->fChannels) result -= channel->fOldSigmaRatio->Eval(x[0]);
-                                    return result;
-                                  });
-      fOther.fNewSigmaRatio = TF1([this](const double* x, const double* /*p*/)
-                                  {
-                                    double result = 1;
-                                    for(const auto& channel: this->fChannels) result -= channel->fNewSigmaRatio->Eval(x[0]);
-                                    return result;
-                                  });;
-      fOther.fMin = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& channel) { return channel.fMin; })->fMin;
-      fOther.fMax = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& channel) { return channel.fMax; })->fMax;
+      fOther.fMin = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
+      fOther.fMax = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
+
+      fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/)
+                                         {
+                                           double result = 1;
+                                           for(const auto& channel: this->fChannels) result -= channel.fOldSigmaRatio.Eval(x[0]);
+                                           return result;
+                                         }, fOther.fMin, fOther.fMax, 0);
+      fOther.fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/)
+                                         {
+                                           double result = 1;
+                                           for(const auto& channel: this->fChannels) result -= channel.fNewSigmaRatio.Eval(x[0]);
+                                           return result;
+                                         }, fOther.fMin, fOther.fMax, 0);;
     }
 
     ~NeutronInelasticReweighter() = default;
@@ -66,25 +67,30 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     {
       std::multiset<int> fInelasticChildren;
 
-      TF1 fOldSigmaRatio; //N.B.: Using TF1s instead of TSpline3s or TGraphs so I can use Integral() function like Jeffrey did
-      TF1 fNewSigmaRatio;
+      mutable TF1 fOldSigmaRatio; //N.B.: Using TF1s instead of TSpline3s or TGraphs so I can use Integral() function like Jeffrey did
+      mutable TF1 fNewSigmaRatio;
 
       double fMin;
       double fMax;
+
+      Channel(): fInelasticChildren(), fOldSigmaRatio(), fNewSigmaRatio(), fMin(), fMax(), fOldSigmaRatioSpline(), fNewSigmaRatioSpline()
+      {
+      }
 
       Channel(const std::string& oldFile, const std::string& newFile, const std::vector<int> inelChildren): fInelasticChildren(inelChildren.begin(), inelChildren.end())
       {
         //TODO: oldRatioGraph might actually come from a TFile the way things are written right now
         TGraph oldRatioGraph(oldFile.c_str());
-        fOldSigmaRatioSpline = TSpline3(oldRatioGraph, oldFile.substr(oldFile.rfind("/"), oldFile.find(".")-1 - oldFile.rfind("/")));
-        fOldSigmaRatio = TF1([this](const double* x, const double* /*p*/){ return this->fOldSigmaRatioSpline.Eval(x[0]); });
-                                                                                                                                                                         
+        fOldSigmaRatioSpline = TSpline3(oldFile.substr(oldFile.rfind("/"), oldFile.find(".")-1 - oldFile.rfind("/")).c_str(), &oldRatioGraph);
+
         TGraph newRatioGraph(newFile.c_str());
-        fNewSigmaRatioSpline = TSpline3(newRatioGraph, newFile.substr(newFile.rfind("/"), newFile.find(".")-1 - newFile.rfind("/")));
-        fNewSigmaRatio = TF1([this](const double* x, const double* /*p*/){ return this->fNewSigmaRatioSpline.Eval(x[0]); });
-                                                                                                                                                                         
-        fMin = std::max(fOldSigmaRatioSpline.GetMin(), fNewSigmaRatioSpline.GetMin());
-        fMax = std::min(fOldSigmaRatioSpline.GetMax(), fNewSigmaRatioSpline.GetMax());
+        fNewSigmaRatioSpline = TSpline3(newFile.substr(newFile.rfind("/"), newFile.find(".")-1 - newFile.rfind("/")).c_str(), &newRatioGraph);
+
+        fMin = std::max(fOldSigmaRatioSpline.GetXmin(), fNewSigmaRatioSpline.GetXmin());
+        fMax = std::min(fOldSigmaRatioSpline.GetXmax(), fNewSigmaRatioSpline.GetXmax());
+
+        fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/){ return this->fOldSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
+        fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/){ return this->fNewSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
       }
 
       private:
@@ -104,38 +110,38 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     double getNonInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const;
     double getInteractingWeight(const Channel& channel, const double /*density*/, const double Ti, const double Tf) const;
 
-    double evalSigmaRatio(const TF1& ratioFunc, double Ti, double Tf, const double min, const double max) const;
+    double evalSigmaRatio(TF1& ratioFunc, double Ti, double Tf, const double min, const double max) const;
 };
 
 template <class UNIVERSE, class EVENT>
-double NeutronInelasticReweighter::GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const
+double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const
 {
   double weight = 1;
 
   constexpr double neutronMass = 939.6; //MeV/c^2
   const std::string prefix = "neutronInelasticReweight"; //Beginning of branch names for inelastic reweighting
 
-  const int nNeutrons = univ.GetInt(prefix + "NPaths");
-  const auto startEnergyPerPoint = univ.GetVecDouble(prefix + "InitialE"),
-             endEnergyPerPoint = univ.GetVecDouble(prefix + "FinalE"),
-             densityPerPoint = univ.GetVecDouble(prefix + "ColumnarDensity"),
-             xPerPoint = univ.GetVecDouble(prefix + "PosX"),
-             yPerPoint = univ.GetVecDouble(prefix + "PosY"),
-             zPerPoint = univ.GetVecDouble(prefix + "PosZ");
-  const auto nPointsPerNeutron = univ.GetVecInt(prefix + "NTrajPoints"),
-             nInelasticChildren = univ.GetVecInt(prefix + "NInelasticChildren"),
-             allInelChildren = univ.GetVecInt(prefix + "InelasticChildPDGs"),
-             materialPerPoint = univ.GetVecInt(prefix + "Nuke"),
-             intCodePerPoint = univ.GetVecInt(prefix + "IntCodePerSegment");
+  const int nNeutrons = univ.GetInt((prefix + "NPaths").c_str());
+  const auto startEnergyPerPoint = univ.GetVecDouble((prefix + "InitialE").c_str()),
+             endEnergyPerPoint = univ.GetVecDouble((prefix + "FinalE").c_str()),
+             densityPerPoint = univ.GetVecDouble((prefix + "ColumnarDensity").c_str()),
+             xPerPoint = univ.GetVecDouble((prefix + "PosX").c_str()),
+             yPerPoint = univ.GetVecDouble((prefix + "PosY").c_str()),
+             zPerPoint = univ.GetVecDouble((prefix + "PosZ").c_str());
+  const auto nPointsPerNeutron = univ.GetVecInt((prefix + "NTrajPoints").c_str()),
+             nInelasticChildren = univ.GetVecInt((prefix + "NInelasticChildren").c_str()),
+             allInelChildren = univ.GetVecInt((prefix + "InelasticChildPDGs").c_str()),
+             materialPerPoint = univ.GetVecInt((prefix + "Nuke").c_str()),
+             intCodePerPoint = univ.GetVecInt((prefix + "IntCodePerSegment").c_str());
 
   if(nPointsPerNeutron.empty()) return 1.;
 
-  int endPoint = -1;
-  auto endInelasticChild = allInelChildren.begin();
+  int endPoint = 0,
+      endInelasticChild = 0;
   for(int whichNeutron = 0; whichNeutron < nNeutrons; ++whichNeutron)
   {
-    const int startPoint = endPoint;
-    const auto startInelasticChild = endInelasticChild;
+    const int startPoint = endPoint,
+              startInelasticChild = endInelasticChild;
     endPoint += nPointsPerNeutron[whichNeutron];
     endInelasticChild += nInelasticChildren[whichNeutron];
 
@@ -151,7 +157,7 @@ double NeutronInelasticReweighter::GetWeight(const UNIVERSE& univ, const EVENT& 
       //N.B.: material of -6 seems to be a special flag Jeffrey added to denote CH scintillator as opposed to pure carbon from target 3.
       if(materialPerPoint[whichPoint] != -6) continue; //We only have data for CH scintillator
 
-      if(fGeometry.InTracker(xPerPoint[endPoint], yPerPoint[lastPoint], zPerPoint[lastPoint]))
+      if(fGeometry.InTracker(xPerPoint[endPoint], yPerPoint[endPoint], zPerPoint[endPoint]))
       {
         const double Ti = startEnergyPerPoint[whichPoint] - neutronMass,
                      Tf = endEnergyPerPoint[whichPoint] - neutronMass;
@@ -162,7 +168,7 @@ double NeutronInelasticReweighter::GetWeight(const UNIVERSE& univ, const EVENT& 
       }
     }*/
 
-    if(fGeometry.InTracker(xPerPoint[endPoint - 1], yPerPoint[lastPoint - 1], zPerPoint[lastPoint - 1]) && materialPerPoint[lastPoint - 1] == -6)
+    if(fGeometry.InTracker(xPerPoint[endPoint - 1], yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
     {
       //A multi-set is a collection of numbers with a count of how many times each number came up.
       std::multiset<int> inelasticChildren(allInelChildren.begin() + startInelasticChild, allInelChildren.begin() + endInelasticChild);
@@ -179,11 +185,11 @@ double NeutronInelasticReweighter::GetWeight(const UNIVERSE& univ, const EVENT& 
 
       if(intCode == 1 || intCode == 4) //If there was an inelastic interaction
       {
-        const auto foundChannel = std::find(fChannels.begin(), fChannels.end(),
-                                            [&inelasticChildren](const auto& channel)
-                                            {
-                                              return channel.fInelasticChildren == inelasticChildren;
-                                            });
+        const auto foundChannel = std::find_if(fChannels.begin(), fChannels.end(),
+                                               [&inelasticChildren](const auto& channel)
+                                               {
+                                                 return channel.fInelasticChildren == inelasticChildren;
+                                               });
         if(foundChannel != fChannels.end()) weight *= getInteractingWeight(*foundChannel, density, Ti, Tf);
         else getInteractingWeight(fOther, density, Ti, Tf); //Other channel
       }
@@ -212,9 +218,9 @@ double NeutronInelasticReweighter::GetWeight(const UNIVERSE& univ, const EVENT& 
 template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getNonInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
-  //TODO: Need distance and density correction.  Multiply density by 4.626e22 for MINERvA's CH scintillator
+  //TODO: Need a density correction.  Multiply density by 4.626e22 for MINERvA's CH scintillator
   //TODO: Multiply by total inelastic cross section.
-  return exp(-1.0 * density * distance * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
+  return exp(-1.0 * density * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
 }
 
 template <class UNIVERSE, class EVENT>
@@ -234,7 +240,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const C
 
 //Adapt to graph evaluation pitfalls
 template <class UNIVERSE, class EVENT>
-double NeutronInelasticReweighter::evalSigmaRatio(const TF1& ratioFunc, double Ti, double Tf, const double min, const double max) const
+double NeutronInelasticReweighter<UNIVERSE, EVENT>::evalSigmaRatio(TF1& ratioFunc, double Ti, double Tf, const double min, const double max) const
 {
   //Prefer rounding into the range where we have data over interpolating off the end of a spline
   //"clamp" Ti and Tf to min/max of ratioFunc
