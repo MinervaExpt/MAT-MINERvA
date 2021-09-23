@@ -7,11 +7,68 @@
 // GetTargetMassSystematicsMap(typename T::config_t chain );
 
 namespace PlotUtils{
+
   template<class T>
-  class TargetMassUniverse: public T
+  class TargetMassScintillatorUniverse: public T
   {
     public:
-      TargetMassUniverse(typename T::config_t chw, double nsigma );
+      TargetMassScintillatorUniverse(typename T::config_t chw, double nsigma );
+
+      virtual double GetTargetMassWeight() const /*override*/;
+      double GetWeightRatioToCV() const;
+
+      virtual std::string ShortName() const /*override*/;
+      virtual std::string LatexName() const /*override*/;
+      virtual bool IsVerticalOnly() const   { return true; }/* override */;
+  };
+
+  template<class T>
+  class TargetMassCarbonUniverse: public T
+  {
+    public:
+      TargetMassCarbonUniverse(typename T::config_t chw, double nsigma );
+
+      virtual double GetTargetMassWeight() const /*override*/;
+      double GetWeightRatioToCV() const;
+
+      virtual std::string ShortName() const /*override*/;
+      virtual std::string LatexName() const /*override*/;
+      virtual bool IsVerticalOnly() const   { return true; }/* override */;
+  };
+
+  template<class T>
+  class TargetMassWaterUniverse: public T
+  {
+    public:
+      TargetMassWaterUniverse(typename T::config_t chw, double nsigma );
+
+      virtual double GetTargetMassWeight() const /*override*/;
+      double GetWeightRatioToCV() const;
+
+      virtual std::string ShortName() const /*override*/;
+      virtual std::string LatexName() const /*override*/;
+      virtual bool IsVerticalOnly() const   { return true; }/* override */;
+  };
+
+  template<class T>
+  class TargetMassIronUniverse: public T
+  {
+    public:
+      TargetMassIronUniverse(typename T::config_t chw, double nsigma );
+
+      virtual double GetTargetMassWeight() const /*override*/;
+      double GetWeightRatioToCV() const;
+
+      virtual std::string ShortName() const /*override*/;
+      virtual std::string LatexName() const /*override*/;
+      virtual bool IsVerticalOnly() const   { return true; }/* override */;
+  };
+
+  template<class T>
+  class TargetMassLeadUniverse: public T
+  {
+    public:
+      TargetMassLeadUniverse(typename T::config_t chw, double nsigma );
 
       virtual double GetTargetMassWeight() const /*override*/;
       double GetWeightRatioToCV() const;
