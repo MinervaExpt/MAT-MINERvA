@@ -107,6 +107,8 @@ endif()
 #naming it "data" before he created a bunch of CVS directories that only Rob can remove :(
 #Nota Bene: This may not work well on Windows.  If you need to do that one day, read https://stackoverflow.com/questions/35765106/symbolic-links-cmake/41037224
 #Also make a symbolic link for MParamFiles because I can't be bothered to figure out the right way to detect FLUX_FILE_DIR in setup.sh.in
+install(DIRECTORY DESTINATION etc)
+
 install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ${FLUX_FILE_DIR}/MATFluxAndReweightFiles ${CMAKE_INSTALL_PREFIX}/lib/data )" )
 if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles)
   install(CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E create_symlink ${FLUX_FILE_DIR}/MParamFiles ${CMAKE_INSTALL_PREFIX}/etc/MParamFiles )" )
