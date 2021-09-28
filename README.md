@@ -10,8 +10,15 @@ setup cmake v3_7_1
 kinit #Fermilab Kerberos ticket for getting flux and reweight files
 unset SSH_ASKPASS  # this will stop it putting up an xwindow to ask for your token for https git access.
 
-git clone git@github.com:MinervaExpt/MAT-MINERvA.git #ssh keys are easier to manage on Fermilab's GPVMs than HTTPS authentication
-# git clone https://github.com/MinervaExpt/MAT-MINERvA.git # alternate if you really want to use the https interface
+#Have you set up a github personal access token yet?  If you don't know what I'm talking about:
+#First, follow these instructions: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+#When you get to setting permissions, tick only the "repo" box.
+#Next, write down the key it generated.
+#Then, run this before proceeding: git config --global credential.helper store #Saves your access token as a plaintext file in your home directory
+#Later, when you're asked for a username and a password, use your github username and your access key.  This will save the access key forever.
+
+git clone https://github.com/MinervaExpt/MAT-MINERvA.git #Use a github personal access token for checkout
+#git clone git@github.com:MinervaExpt/MAT-MINERvA.git #Use an ssh key instead of a github personal access token
 mkdir -p opt/build && cd opt/build
 cmake ../../MAT-MINERvA/bootstrap -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_TYPE=Release
 
