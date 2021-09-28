@@ -24,22 +24,30 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
   public:
     NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fGeometry()
     {
+      fChannels.reserve(fileNameToFS.size()); //If I don't use this, the program will often crash.  std::vector::emplace_back() will have to
+                                              //reallocate memory many times.  When it does that, it copies the old Channels is made and then
+                                              //deletes the originals.  But the copied TF1s hold lambda functions that still point at the
+                                              //original (now deleted) Channels.
+
       //Load fKinENormalization from a file.  Do this first because it can fail.
       const std::string kinEFileName = "", 
                         kinENormHistName = "";
-      auto oldPwd = gDirectory;
+      /*auto oldPwd = gDirectory;
       std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
       fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
       if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
       fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
-      gDirectory = oldPwd;
+      gDirectory = oldPwd;*/
 
       //Load interaction channels from files
-      for(const auto& channel: fileNameToFS) fChannels.emplace_back(channel.first, channel.first, channel.second);
+      for(const auto& channel: fileNameToFS) fChannels.emplace_back(channel.first, channel.second);
 
       //Create an "Other" Channel that preserves the total cross section
       fOther.fMin = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
       fOther.fMax = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
+
+      fLowestMinKE = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
+      fHighestMaxKE = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
 
       fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/)
                                          {
@@ -52,7 +60,7 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
                                            double result = 1;
                                            for(const auto& channel: this->fChannels) result -= channel.fNewSigmaRatio.Eval(x[0]);
                                            return result;
-                                         }, fOther.fMin, fOther.fMax, 0);;
+                                         }, fOther.fMin, fOther.fMax, 0);
     }
 
     ~NeutronInelasticReweighter() = default;
@@ -77,21 +85,31 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       {
       }
 
-      Channel(const std::string& oldFile, const std::string& newFile, const std::vector<int> inelChildren): fInelasticChildren(inelChildren.begin(), inelChildren.end())
+      Channel(const std::string& channelName, const std::vector<int> inelChildren): fInelasticChildren(inelChildren.begin(), inelChildren.end())
       {
-        //TODO: oldRatioGraph might actually come from a TFile the way things are written right now
-        TGraph oldRatioGraph(oldFile.c_str());
-        fOldSigmaRatioSpline = TSpline3(oldFile.substr(oldFile.rfind("/"), oldFile.find(".")-1 - oldFile.rfind("/")).c_str(), &oldRatioGraph);
+        const std::string oldFileName = "cross_section.root"; //TODO: Use PlotUtilsROOT or something to find this file
+        std::unique_ptr<TFile> oldGraphFile(TFile::Open(oldFileName.c_str()));
+        if(!oldGraphFile) throw std::runtime_error("Failed to open a file named " + oldFileName + " for a GEANT cross section graph in InelasticNeutronReweighter::Channel.");
+        //TGraph oldRatioGraph(oldFile.c_str());
+        auto oldRatioGraph = dynamic_cast<TGraph*>(oldGraphFile->Get(channelName.c_str()));
+        if(!oldRatioGraph) throw std::runtime_error("Failed to load a TGraph named " + channelName + " from a file named " + oldFileName + " for NeutronInelasticReweighter::Channel");
+        fOldSigmaRatioSpline = TSpline3(channelName.c_str(), oldRatioGraph);
 
-        TGraph newRatioGraph(newFile.c_str());
-        fNewSigmaRatioSpline = TSpline3(newFile.substr(newFile.rfind("/"), newFile.find(".")-1 - newFile.rfind("/")).c_str(), &newRatioGraph);
+        TGraph newRatioGraph((channelName + ".csv").c_str());
+        fNewSigmaRatioSpline = TSpline3(channelName.c_str(), &newRatioGraph);
 
         fMin = std::max(fOldSigmaRatioSpline.GetXmin(), fNewSigmaRatioSpline.GetXmin());
         fMax = std::min(fOldSigmaRatioSpline.GetXmax(), fNewSigmaRatioSpline.GetXmax());
 
-        fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/){ return this->fOldSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
-        fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/){ return this->fNewSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
+        //fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/){ return fOldSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
+        //fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/){ return fNewSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
+
+        fOldSigmaRatio = TF1("old", this, &Channel::evalOldSpline, fMin, fMax, 0);
+        fNewSigmaRatio = TF1("new", this, &Channel::evalNewSpline, fMin, fMax, 0);
       }
+
+      double evalOldSpline(double* x, double* /*p*/) const { return fOldSigmaRatioSpline.Eval(x[0]); }
+      double evalNewSpline(double* x, double* /*p*/) const { return fNewSigmaRatioSpline.Eval(x[0]); }
 
       private:
         //I think I have to keep these TSpline3 objects around because they're referenced by the TF1s :(
@@ -102,6 +120,10 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     std::vector<Channel> fChannels; //channels that will be reweighted
     Channel fOther; //All other channels that aren't reweighted are lumped into one.  This keeps the total inelastic cross section the same.
     //Channel fTotalInelastic; //TODO: Not needed as long as I can get away with just weighting each neutron by exclusive cross section ratio
+
+    //KE range which at least some channel covers.  Any neutrons outside of this range just get a weight of 1.
+    double fLowestMinKE;
+    double fHighestMaxKE;
 
     TH1D* fKinENormalization; //Normalization to keep the overall neutrino cross section the same in kinetic energy and angle
 
@@ -119,7 +141,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
   double weight = 1;
 
   constexpr double neutronMass = 939.6; //MeV/c^2
-  const std::string prefix = "neutronInelasticReweight"; //Beginning of branch names for inelastic reweighting
+  const std::string prefix = "truth_neutronInelasticReweight"; //Beginning of branch names for inelastic reweighting
 
   const int nNeutrons = univ.GetInt((prefix + "NPaths").c_str());
   const auto startEnergyPerPoint = univ.GetVecDouble((prefix + "InitialE").c_str()),
@@ -128,7 +150,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
              xPerPoint = univ.GetVecDouble((prefix + "PosX").c_str()),
              yPerPoint = univ.GetVecDouble((prefix + "PosY").c_str()),
              zPerPoint = univ.GetVecDouble((prefix + "PosZ").c_str());
-  const auto nPointsPerNeutron = univ.GetVecInt((prefix + "NTrajPoints").c_str()),
+  const auto nPointsPerNeutron = univ.GetVecInt((prefix + "NTrajPointsSaved").c_str()),
              nInelasticChildren = univ.GetVecInt((prefix + "NInelasticChildren").c_str()),
              allInelChildren = univ.GetVecInt((prefix + "InelasticChildPDGs").c_str()),
              materialPerPoint = univ.GetVecInt((prefix + "Nuke").c_str()),
@@ -168,16 +190,20 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
       }
     }*/
 
-    if(fGeometry.InTracker(xPerPoint[endPoint - 1], yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
+    if(endPoint > 0 && fGeometry.InTracker(/*xPerPoint[endPoint - 1]*/ xPerPoint.at(endPoint - 1), yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
     {
       //A multi-set is a collection of numbers with a count of how many times each number came up.
       std::multiset<int> inelasticChildren(allInelChildren.begin() + startInelasticChild, allInelChildren.begin() + endInelasticChild);
       inelasticChildren.erase(22); //Ignore photons because GEANT tends to emit extra low energy photons to distribute binding energy
 
-      const double Ti = startEnergyPerPoint[endPoint - 1],
-                   Tf = endEnergyPerPoint[endPoint - 1],
+      const double Ti = startEnergyPerPoint[endPoint - 1] - neutronMass,
+                   Tf = endEnergyPerPoint[endPoint - 1] - neutronMass,
                    density = densityPerPoint[endPoint - 1];
       const int intCode = intCodePerPoint[endPoint - 1];
+
+      //If a particle is outside the range covered by the MoNA paper's data, that's OK.
+      //Don't apply a weight for that particle.
+      if(Ti < fLowestMinKE || Ti > fHighestMaxKE) continue;
 
       //Inelastic interactions end any TG4Trajectory.  Figure out whether this
       //trajectory ended with an inelastic interaction.  If so, is it one of
@@ -209,7 +235,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
     //TODO: Aaron does this using FS particle branches because he only cares about FS particles.  Do I have momentum components for all neutrons?
     //      If not, I'm tempted to try just reweighting in neutron KE first.
     //      Nope, I don't have neutron direction.  Trying neutron KE until I see that it's a problem.
-    weight /= fKinENormalization->GetBinContent(fKinENormalization->FindBin(startEnergyPerPoint[startPoint] - neutronMass));
+    //weight /= fKinENormalization->GetBinContent(fKinENormalization->FindBin(startEnergyPerPoint[startPoint] - neutronMass));
   } //For each neutron
 
   return weight;
@@ -220,7 +246,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getNonInteractingWeight(cons
 {
   //TODO: Need a density correction.  Multiply density by 4.626e22 for MINERvA's CH scintillator
   //TODO: Multiply by total inelastic cross section.
-  return exp(-1.0 * density * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
+  return exp(-1.0 * density * (evalSigmaRatio(*channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(*channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
 }
 
 template <class UNIVERSE, class EVENT>
