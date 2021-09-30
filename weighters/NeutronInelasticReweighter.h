@@ -190,11 +190,19 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
       }
     }*/
 
-    if(endPoint > 0 && fGeometry.InTracker(/*xPerPoint[endPoint - 1]*/ xPerPoint.at(endPoint - 1), yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
+    if(startPoint != endPoint && fGeometry.InTracker(/*xPerPoint[endPoint - 1]*/ xPerPoint.at(endPoint - 1), yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
     {
       //A multi-set is a collection of numbers with a count of how many times each number came up.
       std::multiset<int> inelasticChildren(allInelChildren.begin() + startInelasticChild, allInelChildren.begin() + endInelasticChild);
       inelasticChildren.erase(22); //Ignore photons because GEANT tends to emit extra low energy photons to distribute binding energy
+
+      //Break up very short-lived nuclei
+      if(inelasticChildren.count(1000040080))
+      {
+        inelasticChildren.insert(1000020040);
+        inelasticChildren.insert(1000020040);
+        inelasticChildren.erase(1000040080);
+      }
 
       const double Ti = startEnergyPerPoint[endPoint - 1] - neutronMass,
                    Tf = endEnergyPerPoint[endPoint - 1] - neutronMass,
