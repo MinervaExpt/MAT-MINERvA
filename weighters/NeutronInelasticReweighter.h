@@ -18,11 +18,16 @@
 #include <memory>
 #include <numeric>
 
+namespace
+{
+  constexpr double scintDensityToNucleons = 4.626e22;
+}
+
 template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
 class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 {
   public:
-    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fGeometry()
+    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fGeometry(), fTotalInelastic("inelastic", {})
     {
       fChannels.reserve(fileNameToFS.size()); //If I don't use this, the program will often crash.  std::vector::emplace_back() will have to
                                               //reallocate memory many times.  When it does that, it copies the old Channels is made and then
@@ -43,24 +48,24 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       for(const auto& channel: fileNameToFS) fChannels.emplace_back(channel.first, channel.second);
 
       //Create an "Other" Channel that preserves the total cross section
-      fOther.fMin = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
-      fOther.fMax = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
+      /*fOther.fMin = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
+      fOther.fMax = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;*/
 
       fLowestMinKE = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
       fHighestMaxKE = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
 
-      fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/)
+      /*fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* p)
                                          {
                                            double result = 1;
                                            for(const auto& channel: this->fChannels) result -= channel.fOldSigmaRatio.Eval(x[0]);
                                            return result;
                                          }, fOther.fMin, fOther.fMax, 0);
-      fOther.fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/)
+      fOther.fNewSigmaRatio = TF1("new", [this](double* x, double* p)
                                          {
                                            double result = 1;
                                            for(const auto& channel: this->fChannels) result -= channel.fNewSigmaRatio.Eval(x[0]);
                                            return result;
-                                         }, fOther.fMin, fOther.fMax, 0);
+                                         }, fOther.fMin, fOther.fMax, 0);*/
     }
 
     ~NeutronInelasticReweighter() = default;
@@ -118,8 +123,8 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     };
 
     std::vector<Channel> fChannels; //channels that will be reweighted
-    Channel fOther; //All other channels that aren't reweighted are lumped into one.  This keeps the total inelastic cross section the same.
-    //Channel fTotalInelastic; //TODO: Not needed as long as I can get away with just weighting each neutron by exclusive cross section ratio
+    //Channel fOther; //All other channels that aren't reweighted are lumped into one.  This keeps the total inelastic cross section the same.
+    Channel fTotalInelastic; //TODO: Not needed as long as I can get away with just weighting each neutron by exclusive cross section ratio
 
     //KE range which at least some channel covers.  Any neutrons outside of this range just get a weight of 1.
     double fLowestMinKE;
@@ -174,7 +179,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
     //Possibly-elastic points where inelastic interaction did not happen
     //Stop before the last point because it may have ended with an inelastic interaction
-    /*for(int whichPoint = startPoint; whichPoint < endPoint; ++whichPoint)
+    for(int whichPoint = startPoint; whichPoint < endPoint; ++whichPoint)
     {
       //N.B.: material of -6 seems to be a special flag Jeffrey added to denote CH scintillator as opposed to pure carbon from target 3.
       if(materialPerPoint[whichPoint] != -6) continue; //We only have data for CH scintillator
@@ -186,9 +191,9 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
         const double density = densityPerPoint[whichPoint];
 
         for(const auto& channel: fChannels) weight *= getNonInteractingWeight(channel, density, Ti, Tf);
-        weight *= getNonInteractingWeight(fOther, density, Ti, Tf);
+        //weight *= getNonInteractingWeight(fOther, density, Ti, Tf);
       }
-    }*/
+    }
 
     if(startPoint != endPoint && fGeometry.InTracker(/*xPerPoint[endPoint - 1]*/ xPerPoint.at(endPoint - 1), yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
     {
@@ -225,17 +230,17 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
                                                  return channel.fInelasticChildren == inelasticChildren;
                                                });
         if(foundChannel != fChannels.end()) weight *= getInteractingWeight(*foundChannel, density, Ti, Tf);
-        else getInteractingWeight(fOther, density, Ti, Tf); //Other channel
+        //else getInteractingWeight(fOther, density, Ti, Tf); //Other channel
       }
-      /*else //If this trajectory ended by some process other than an inelastic interaction
+      else //If this trajectory ended by some process other than an inelastic interaction
       {
         //TODO: Only turn this on if I'm changing the total cross section.  Otherwise, it's always 1.
         //TODO: I think this is equivalent to reweighting based on the total cross section because I'm multiplying exponentials with the same
         //      coefficients.  But, I may pick up a larger roundoff error this way.  Do I need the total inelastic cross section to use
         //      getNonInteractingWeight() anyway?
         for(const auto& channel: fChannels) weight *= getNonInteractingWeight(channel, density, Ti, Tf);
-        weight *= getNonInteractingWeight(fOther, density, Ti, Tf);
-      }*/
+        //weight *= getNonInteractingWeight(fOther, density, Ti, Tf);
+      }
     } //If last point is in the tracker and CH scintillator
 
     //Divide by a kinematics-dependent normalization factor to keep the total neutrino cross section constant.
@@ -252,24 +257,22 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getNonInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
-  //TODO: Need a density correction.  Multiply density by 4.626e22 for MINERvA's CH scintillator
   //TODO: Multiply by total inelastic cross section.
-  return exp(-1.0 * density * (evalSigmaRatio(*channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(*channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
+  return exp(-1.0 * density * scintDensityToNucleons * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
 }
 
 template <class UNIVERSE, class EVENT>
-double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const Channel& channel, const double /*density*/, const double Ti, const double Tf) const
+double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
-  //TODO: Need distance and density correction
   //I don't need to reweight based on the total cross section because I'm implicitly keeping it the same.
-  /*const double denom = 1. - exp(-1. * density * distance * evalSigmaRatio(fTotalInelastic.fOldSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));
+  const double denom = 1. - exp(-1. * density * scintDensityToNucleons * evalSigmaRatio(fTotalInelastic.fOldSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));
   if(denom <= 0) return 0;
-  const double num = 1. - exp(-1. * density * distance * evalSigmaRatio(fTotalInelastic.fNewSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));*/
+  const double num = 1. - exp(-1. * density * scintDensityToNucleons * evalSigmaRatio(fTotalInelastic.fNewSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));
 
   const double a = evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax);
   const double b = evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax);
-  //return num / denom * a / b;
-  return a / b;
+  return num / denom * a / b;
+  //return a / b; //Case for when not changing the total inelastic cross section
 }
 
 //Adapt to graph evaluation pitfalls
