@@ -27,7 +27,7 @@ template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
 class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 {
   public:
-    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fGeometry(), fTotalInelastic("inelastic", {})
+    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fTotalInelastic("inelastic", {}), fGeometry()
     {
       fChannels.reserve(fileNameToFS.size()); //If I don't use this, the program will often crash.  std::vector::emplace_back() will have to
                                               //reallocate memory many times.  When it does that, it copies the old Channels is made and then
@@ -37,12 +37,20 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       //Load fKinENormalization from a file.  Do this first because it can fail.
       const std::string kinEFileName = "", 
                         kinENormHistName = "";
-      /*auto oldPwd = gDirectory;
-      std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
+      auto oldPwd = gDirectory;
+      /*std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
       fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
       if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
-      fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
-      gDirectory = oldPwd;*/
+      fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.*/
+
+      //Load total elastic cross section from a file
+      {
+        std::unique_ptr<TFile> totalElasticFile(TFile::Open("cross_section.root"));
+        assert(totalElasticFile);
+        auto totalElasticGraph = dynamic_cast<TGraph*>(totalElasticFile->Get("elastic"));
+        assert(totalElasticGraph);
+        fTotalElasticSpline = TSpline3("elastic", totalElasticGraph);
+      }
 
       //Load interaction channels from files
       for(const auto& channel: fileNameToFS) fChannels.emplace_back(channel.first, channel.second);
@@ -53,6 +61,8 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 
       fLowestMinKE = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
       fHighestMaxKE = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
+
+      fTotalElastic = TF1("total", [this](double* x, double* /*p*/) { return fTotalElasticSpline.Eval(x[0]); }, fLowestMinKE, fHighestMaxKE, 0);
 
       /*fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* p)
                                          {
@@ -66,6 +76,8 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
                                            for(const auto& channel: this->fChannels) result -= channel.fNewSigmaRatio.Eval(x[0]);
                                            return result;
                                          }, fOther.fMin, fOther.fMax, 0);*/
+
+      gDirectory = oldPwd;
     }
 
     ~NeutronInelasticReweighter() = default;
@@ -124,7 +136,9 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 
     std::vector<Channel> fChannels; //channels that will be reweighted
     //Channel fOther; //All other channels that aren't reweighted are lumped into one.  This keeps the total inelastic cross section the same.
-    Channel fTotalInelastic; //TODO: Not needed as long as I can get away with just weighting each neutron by exclusive cross section ratio
+    Channel fTotalInelastic; //Wouldn't be needed if I could get away with just weighting each neutron by exclusive cross section ratio
+    mutable TF1 fTotalElastic; //I really need the total cross section.  But the inelastic changes for MoNA while I'm assuming that the elastic doesn't.
+    TSpline3 fTotalElasticSpline; //This is referenced by a TF1, so I need to keep it alive as long as fTotalElastic is alive
 
     //KE range which at least some channel covers.  Any neutrons outside of this range just get a weight of 1.
     double fLowestMinKE;
@@ -257,7 +271,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getNonInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
-  //TODO: Multiply by total inelastic cross section.
+  //TODO: Use total cross section, not just total inelastic.  I don't think I can get out of involving the elastic cross section here.
+  //      Oh, wait, I just end up subtracting the total elastic part if it's the same for both.  Nevermind?
   return exp(-1.0 * density * scintDensityToNucleons * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)));
 }
 
@@ -265,9 +280,10 @@ template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
   //I don't need to reweight based on the total cross section because I'm implicitly keeping it the same.
-  const double denom = 1. - exp(-1. * density * scintDensityToNucleons * evalSigmaRatio(fTotalInelastic.fOldSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));
+  const double totalElastic = evalSigmaRatio(fTotalElastic, Ti, Tf, fLowestMinKE, fHighestMaxKE);
+  const double denom = 1. - exp(-1. * density * scintDensityToNucleons * (evalSigmaRatio(fTotalInelastic.fOldSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax) + totalElastic));
   if(denom <= 0) return 0;
-  const double num = 1. - exp(-1. * density * scintDensityToNucleons * evalSigmaRatio(fTotalInelastic.fNewSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax));
+  const double num = 1. - exp(-1. * density * scintDensityToNucleons * (evalSigmaRatio(fTotalInelastic.fNewSigmaRatio, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax) + totalElastic));
 
   const double a = evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax);
   const double b = evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax);
