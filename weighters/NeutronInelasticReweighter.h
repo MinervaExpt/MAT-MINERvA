@@ -52,7 +52,8 @@ namespace
     spline.GetCoeff(whichKnot, knotX, knotY, b, c, d);
     //const double dx = point - knotX;
   
-    return point*knotY + b*(point*point/2. - point*knotX) + c*(point*point*point/3. - point*point*knotX + point*knotX*knotX) + d*(point*point*point*point/4. - point*point*point*knotX + 3./2.*knotX*knotX*point*point - knotX*knotX*knotX*point);
+    const double knotX2 = knotX*knotX, knotX3 = knotX*knotX*knotX;
+    return point*(knotY - b*knotX + c*knotX2 - d*knotX3 + point*(b*0.5 - c*knotX + 3./2.*d*knotX2 + point*(c/3. - d*knotX + point*d*0.25)));
     //dx*dx*dx = (point - knotX)*(point - knotX)*(point - knotX)
     //         = (point*point - 2*point*knotX + knotX*knotX)*(point - knotX)
     //         = (point*point*point - 2*point*point*knotX + point*knotX*knotX - point*point*knotX + 2*point*knotX*knotX - knotX*knotX*knotX)
@@ -68,17 +69,20 @@ namespace
     double knotX, knotY;
     spline.GetKnot(startKnot+1, knotX, knotY);
   
-    double integral = antiderivative(spline, knotX, startKnot) - antiderivative(spline, start, startKnot); //First point.  Apparently, I was always getting this right?
+    double integral = antiderivative(spline, std::min(knotX, end), startKnot) - antiderivative(spline, start, startKnot); //First point.  Apparently, I was always getting this right?
   
-    spline.GetKnot(endKnot, knotX, knotY);
-    integral += antiderivative(spline, end, endKnot) - antiderivative(spline, knotX, endKnot);
-  
-    double secondKnotX, secondKnotY;
+    double secondKnotX = knotX;  //I never use knotY anyway, so just reuse it to save one variable.
     for(int whichKnot = startKnot+1; whichKnot < endKnot; ++whichKnot)
     {
-      spline.GetKnot(whichKnot, knotX, knotY);
-      spline.GetKnot(whichKnot+1, secondKnotX, secondKnotY);
-      integral += antiderivative(spline, secondKnotX, whichKnot) - antiderivative(spline, knotX, whichKnot); 
+      knotX = secondKnotX;
+      spline.GetKnot(whichKnot+1, secondKnotX, knotY);
+      integral += antiderivative(spline, secondKnotX, whichKnot) - antiderivative(spline, knotX, whichKnot);
+    }
+  
+    if(startKnot != endKnot)
+    {
+      spline.GetKnot(endKnot, knotX, knotY);
+      integral += antiderivative(spline, end, endKnot) - antiderivative(spline, knotX, endKnot);
     }
   
     return integral;
@@ -124,8 +128,6 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       fLowestMinKE = std::min_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMin < rhs.fMin; })->fMin;
       fHighestMaxKE = std::max_element(fChannels.begin(), fChannels.end(), [](const auto& lhs, const auto& rhs) { return lhs.fMax < rhs.fMax; })->fMax;
 
-      fTotalElastic = TF1("elastic", [this](double* x, double* /*p*/) { return fTotalElasticSpline.Eval(x[0]); }, fLowestMinKE, fHighestMaxKE, 0);
-
       /*fOther.fOldSigmaRatio = TF1("old", [this](double* x, double* p)
                                          {
                                            double result = 1;
@@ -154,14 +156,14 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     {
       std::multiset<int> fInelasticChildren;
 
-      //TODO: Remove TF1 entirely if ::integral() works out!
-      mutable TF1 fOldSigmaRatio; //N.B.: Using TF1s instead of TSpline3s or TGraphs so I can use Integral() function like Jeffrey did
-      mutable TF1 fNewSigmaRatio;
-
       double fMin;
       double fMax;
 
-      Channel(): fInelasticChildren(), fOldSigmaRatio(), fNewSigmaRatio(), fMin(), fMax(), fOldSigmaRatioSpline(), fNewSigmaRatioSpline()
+      //Associate previous cross section integrals with each channel for when Ti and Tf don't change much.
+      mutable double fOldSigmaCache;
+      mutable double fNewSigmaCache;
+
+      Channel(): fInelasticChildren(), fMin(), fMax(), fOldSigmaRatioSpline(), fNewSigmaRatioSpline()
       {
       }
 
@@ -183,9 +185,6 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 
         //fOldSigmaRatio = TF1("old", [this](double* x, double* /*p*/){ return fOldSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
         //fNewSigmaRatio = TF1("new", [this](double* x, double* /*p*/){ return fNewSigmaRatioSpline.Eval(x[0]); }, fMin, fMax, 0);
-
-        fOldSigmaRatio = TF1(("old" + channelName).c_str(), this, &Channel::evalOldSpline, fMin, fMax, 0);
-        fNewSigmaRatio = TF1(("new" + channelName).c_str(), this, &Channel::evalNewSpline, fMin, fMax, 0);
       }
 
       double evalOldSpline(double* x, double* /*p*/) const { return fOldSigmaRatioSpline.Eval(x[0]); }
@@ -198,10 +197,10 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     };
 
     std::vector<Channel> fChannels; //channels that will be reweighted
+                                            //and because ROOT couldn't be bothered to get const-ness right on TSpline3::Eval().
     //Channel fOther; //All other channels that aren't reweighted are lumped into one.  This keeps the total inelastic cross section the same.
     Channel fTotalInelastic; //Wouldn't be needed if I could get away with just weighting each neutron by exclusive cross section ratio
-    mutable TF1 fTotalElastic; //I really need the total cross section.  But the inelastic changes for MoNA while I'm assuming that the elastic doesn't.
-    mutable TSpline3 fTotalElasticSpline; //This is referenced by a TF1, so I need to keep it alive as long as fTotalElastic is alive
+    mutable TSpline3 fTotalElasticSpline;
 
     //KE range which at least some channel covers.  Any neutrons outside of this range just get a weight of 1.
     double fLowestMinKE;
@@ -255,7 +254,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
     //Possibly-elastic points where inelastic interaction did not happen
     //Stop before the last point because it may have ended with an inelastic interaction
-    //TODO: Turn this back on and see if the GSL error message went away
+    double oldTf = std::numeric_limits<double>::max(), //startEnergyPerPoint[startPoint] - ::neutronMass,
+           oldTi = std::numeric_limits<double>::max(); //endEnergyPerPoint[startPoint] - ::neutronMass;
     for(int whichPoint = startPoint; whichPoint < endPoint-1; ++whichPoint)
     {
       //N.B.: material of -6 seems to be a special flag Jeffrey added to denote CH scintillator as opposed to pure carbon from target 3.
@@ -267,9 +267,40 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
                      Tf = endEnergyPerPoint[whichPoint] - ::neutronMass;
         const double density = densityPerPoint[whichPoint];
 
-        //std::cout << "Before potential GSL error, Ti = " << Ti << ", Tf = " << Tf << ", and intCode = " << intCodePerPoint[whichPoint] << "\n";
-        for(const auto& channel: fChannels) weight *= getNonInteractingWeight(channel, density, Ti, Tf);
+        //Calculating integrals is expensive, and neutrons have a lot of trajectory points where
+        //the cross section integral doesn't really change.  So, only pre-calculate the cross section
+        //integral when either Tf or Ti changes a lot.
+        if(fabs(Tf - oldTf) > 1 || fabs(Ti - oldTi) > 1) //Reuse integrals if KE changes by less than 1 MeV
+        {
+          //std::cout << "Recalculating integrals because of a change of " << fabs(Tf - oldTf) << " in Tf and/or " << fabs(Ti - oldTi) << " in Ti...\n";
+
+          oldTf = Tf;
+          oldTi = Ti;
+
+          for(const auto& channel: fChannels)
+          {
+            if(Tf > channel.fMin && Ti < channel.fMax)
+            {
+              channel.fOldSigmaCache = evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
+              channel.fNewSigmaCache = evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
+            }
+          }
+
+          /*fOther.fOldSigmaCache = evalSigmaRatio(fOther.fOldSigmaRatioSpline, Ti, Tf, fOther.fMin, fOther.fMax);
+          fOther.fNewSigmaCache = evalSigmaRatio(fOther.fNewSigmaRatioSpline, Ti, Tf, fOther.fMin, fOther.fMax);*/
+        }
+        //else std::cout << "Reusing integrals...\n";
+
+        for(const auto& channel: fChannels)
+        {
+          //weight *= getNonInteractingWeight(channel, density, Ti, Tf);
+
+          //Calculate weight in place instead so I can cache weights when Ti and Tf don't change much.
+          if(Tf > channel.fMin && Ti < channel.fMax) weight *= exp(-1.0 * density * scintDensityToNucleons * (channel.fOldSigmaCache - channel.fNewSigmaCache));
+        }
+        //TODO: Some check on fOther Channel's range
         //weight *= getNonInteractingWeight(fOther, density, Ti, Tf); //TODO: Turn on Other channel?
+        //weight *= exp(-1.0 * density * scintDensityToNucleons * (fOther.fOldSigmaCache - fOther.fNewSigmaCache));
       }
     }
 
@@ -316,6 +347,9 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
         //TODO: I think this is equivalent to reweighting based on the total cross section because I'm multiplying exponentials with the same
         //      coefficients.  But, I may pick up a larger roundoff error this way.  Do I need the total inelastic cross section to use
         //      getNonInteractingWeight() anyway?
+        //TODO: Replace this by calculating the weight in place and removing getNonInteractingWeight from the code entirely.
+        //      There's no point in trying to cache the cross section integral because an inelastic interaction should
+        //      almost always cause a big change in kinetic energy.
         for(const auto& channel: fChannels) weight *= getNonInteractingWeight(channel, density, Ti, Tf);
         //weight *= getNonInteractingWeight(fOther, density, Ti, Tf);
       }
@@ -332,19 +366,17 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
   return weight;
 }
 
+//TODO: Remove this function entirely if caching the cross section integral works well.
 template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getNonInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const
 {
   //TODO: Use total cross section, not just total inelastic.  I don't think I can get out of involving the elastic cross section here.
   //      Oh, wait, I just end up subtracting the total elastic part if it's the same for both.  Nevermind?
-  //std::cout << "Ti = " << Ti << ", and Tf = " << Tf << " for channel " << channel.fOldSigmaRatio.GetName() << std::endl;
 
   if(Tf < channel.fMin || Ti > channel.fMax) return 1.; //When given KE outside the range where I have splines to compare to, don't reweight.
 
   const double oldRatio = evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
   const double newRatio = evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
-  //std::cout << "oldRatio = " << oldRatio << "; newRatio = " << newRatio << "; oldRatio - newRatio = " << oldRatio - newRatio << "; density is " << density << std::endl;
-  //std::cout << "Argument to exponential is " << -1.0 * density * scintDensityToNucleons * (evalSigmaRatio(channel.fOldSigmaRatio, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatio, Ti, Tf, channel.fMin, channel.fMax)) << std::flush << std::endl;
   return exp(-1.0 * density * scintDensityToNucleons * (evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax) - evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax)));
 }
 
@@ -394,8 +426,6 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::evalSigmaRatio(TSpline3& sig
     result = sigmaSpline.Eval(Ti);
   }
   else result = integral(sigmaSpline, Tf, Ti)/(Ti - Tf); //ratioFunc.Integral(Ti, Tf, 1e-6)/(Tf - Ti); //TF1::Integral() is supposedly a Gaussian quadrature algorithm in some cases
-
-  //return ratioFunc.Integral(Ti, Tf)/(Tf - Ti); //TF1::Integral() is supposedly a Gaussian quadrature algorithm in some cases
 
   if(result < 0) std::cout << "result = " << result << " < 0!  Ti = " << Ti << ", Tf = " << Tf << " for spline " << sigmaSpline.GetTitle() << ".  Ti - Tf = " << Ti - Tf << "\n";
   assert(result >= 0);
