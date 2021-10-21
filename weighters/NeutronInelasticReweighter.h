@@ -191,6 +191,7 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
     PlotUtils::TargetUtils fGeometry;
 
     double getInteractingWeight(const Channel& channel, const double density, const double Ti, const double Tf) const;
+    double getOtherInelasticWeight(const double density, const double Ti, const double Tf) const;
     double getConstantChannelWeight(const double density, const double Ti, const double Tf) const;
     double getNoInteractionWeight(const double density, const double Ti, const double Tf) const;
 
@@ -285,7 +286,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
                                                  return channel.fInelasticChildren == inelasticChildren;
                                                });
         if(foundChannel != fChannels.end()) weight *= getInteractingWeight(*foundChannel, density, Ti, Tf);
-        else weight *= getConstantChannelWeight(density, Ti, Tf);
+        else weight *= getOtherInelasticWeight(density, Ti, Tf); //getConstantChannelWeight(density, Ti, Tf);
       }
       else if(intCode == 3) weight *= getConstantChannelWeight(density, Ti, Tf); //Trajectory ends with an elastic interaction
       else weight *= getNoInteractionWeight(density, Ti, Tf); //If this trajectory ended by some process other than an inelastic interaction
@@ -325,6 +326,32 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const C
   assert(!isinf(num / denom * a / b));
   return num / denom * a / b;
   //return a / b; //Case for when not changing the total inelastic cross section
+}
+
+//Weight for a channel that I'm not reweighting while still keeping the total inelastic cross section at the predicted value.
+template <class UNIVERSE, class EVENT>
+double NeutronInelasticReweighter<UNIVERSE, EVENT>::getOtherInelasticWeight(const double density, const double Ti, const double Tf) const
+{
+  const double totalElastic = evalSigmaRatio(fTotalElasticSpline, Ti, Tf, fLowestMinKE, fHighestMaxKE),
+               oldTotalInelastic = evalSigmaRatio(fTotalInelastic.fOldSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax),
+               newTotalInelastic = evalSigmaRatio(fTotalInelastic.fNewSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax);
+  const double denom = 1. - exp(-1. * density * scintDensityToNucleons * (oldTotalInelastic + totalElastic));
+  if(denom <= 0) return 0;
+  const double num = 1. - exp(-1. * density * scintDensityToNucleons * (newTotalInelastic + totalElastic));
+
+  const double oldKnownInelastic = std::accumulate(fChannels.begin(), fChannels.end(), 0.,
+                                                   [this, density, Ti, Tf](double sum, const auto& channel)
+                                                   { return sum + evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax); }),
+               newKnownInelastic = std::accumulate(fChannels.begin(), fChannels.end(), 0.,
+                                                   [this, density, Ti, Tf](double sum, const auto& channel)
+                                                   { return sum + evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax); });
+
+  const double a = newTotalInelastic - newKnownInelastic;
+  const double b = oldTotalInelastic - oldKnownInelastic;
+  assert(!isinf(num / denom * a / b));
+  assert(a > 0);
+  assert(b > 0);
+  return num / denom * a / b;
 }
 
 //Weight for a channel that I'm not actually reweighting.  It turns out not to be 1 if I work out the math for MnvHadronReweight.
