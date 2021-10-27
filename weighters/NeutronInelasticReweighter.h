@@ -286,12 +286,11 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
                                                  return channel.fInelasticChildren == inelasticChildren;
                                                });
         if(foundChannel != fChannels.end()) weight *= getInteractingWeight(*foundChannel, density, Ti, Tf);
-        else weight *= getOtherInelasticWeight(density, Ti, Tf); //getConstantChannelWeight(density, Ti, Tf);
+        else weight *= getConstantChannelWeight(density, Ti, Tf); //getOtherInelasticWeight(density, Ti, Tf); //getConstantChannelWeight(density, Ti, Tf);
       }
       else if(intCode == 3) weight *= getConstantChannelWeight(density, Ti, Tf); //Trajectory ends with an elastic interaction
       else weight *= getNoInteractionWeight(density, Ti, Tf); //If this trajectory ended by some process other than an inelastic interaction
 
-      //TODO: Seems like getNoInteractionWeight is returning something that multiplies with weight to give inf when Ti = Tf ~= 5.47446!
       if(isinf(weight)) std::cout << "weight = " << weight << " is now inf at Ti = " << Ti << ", Tf = " << Tf << ", and intCode = " << intCode << ".  getNoInteractionWeight returns " << getNoInteractionWeight(density, Ti, Tf) << "\n";
     } //If last point is in the tracker and CH scintillator
 
@@ -304,6 +303,12 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
     assert(!isinf(weight));
   } //For each neutron
+
+  //TODO: Remove me
+  /*if(weight < 0) std::cout << "Final neutron inelastic weight is < 0: " << weight << "\n";
+  else if(weight < 0.2) std::cout << "Final neutron inelastic weight is < 0.2: " << weight << "\n";
+
+  if(weight > 10.) std::cout << "Final neutron inelastic weight is very large: " << weight << "\n";*/
 
   assert(!isinf(weight));
   assert(!isnan(weight));
@@ -332,6 +337,19 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const C
 template <class UNIVERSE, class EVENT>
 double NeutronInelasticReweighter<UNIVERSE, EVENT>::getOtherInelasticWeight(const double density, const double Ti, const double Tf) const
 {
+  int nChannelsActive = 0;
+  double oldKnownInelastic = 0, newKnownInelastic = 0;
+  for(const auto& channel: fChannels)
+  {
+    if(Tf >= channel.fMin && Ti <= channel.fMax)
+    {
+      ++nChannelsActive;
+      oldKnownInelastic += evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
+      newKnownInelastic += evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax);
+    }
+  }
+  if(nChannelsActive < 2) return 0;
+
   const double totalElastic = evalSigmaRatio(fTotalElasticSpline, Ti, Tf, fLowestMinKE, fHighestMaxKE),
                oldTotalInelastic = evalSigmaRatio(fTotalInelastic.fOldSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax),
                newTotalInelastic = evalSigmaRatio(fTotalInelastic.fNewSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax);
@@ -339,18 +357,40 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getOtherInelasticWeight(cons
   if(denom <= 0) return 0;
   const double num = 1. - exp(-1. * density * scintDensityToNucleons * (newTotalInelastic + totalElastic));
 
-  const double oldKnownInelastic = std::accumulate(fChannels.begin(), fChannels.end(), 0.,
-                                                   [this, density, Ti, Tf](double sum, const auto& channel)
-                                                   { return sum + evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax); }),
-               newKnownInelastic = std::accumulate(fChannels.begin(), fChannels.end(), 0.,
-                                                   [this, density, Ti, Tf](double sum, const auto& channel)
-                                                   { return sum + evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax); });
+  double a = newTotalInelastic - newKnownInelastic;
+  double b = oldTotalInelastic - oldKnownInelastic;
 
-  const double a = newTotalInelastic - newKnownInelastic;
-  const double b = oldTotalInelastic - oldKnownInelastic;
+  //std::cout << "Other channel ratio is " << a / b << "\n";
+
+  //TODO: Remove the following debugging lines
+  //if(a < 0 && a > -1) a = 0; //Small disagreement between splines where there's just the nGamma spline.
+
+  /*if(a < 0)
+  {
+    std::cout << "Got a negative new cross section at Ti = " << Ti << " and Tf = " << Tf << " for \"Other\" channel: " << a << "\nTotal new cross section is " << newTotalInelastic << "\n";
+    std::cout << "Channels in this region are:\n";
+    for(const auto& channel: fChannels)
+    {
+      std::cout << channel.fNewSigmaRatioSpline.GetName() << ": ";
+      if(Tf < channel.fMin || Ti > channel.fMax) std::cout << "0\n";
+      else std::cout << evalSigmaRatio(channel.fNewSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax) << "\n";
+    }
+  }
+  if(b < 0)
+  {
+    std::cout << "Got a negative old cross section for \"Other\" channel: " << b << "\nTotal old cross section is " << oldTotalInelastic << "\n";
+    std::cout << "Channels in this region are:\n";
+    for(const auto& channel: fChannels)
+    {
+      std::cout << channel.fOldSigmaRatioSpline.GetName() << ": ";
+      if(Tf < channel.fMin || Ti > channel.fMax) std::cout << "0\n";
+      else std::cout << evalSigmaRatio(channel.fOldSigmaRatioSpline, Ti, Tf, channel.fMin, channel.fMax) << "\n";
+    }
+  }*/
+
   assert(!isinf(num / denom * a / b));
-  assert(a > 0);
-  assert(b > 0);
+  assert(a >= 0);
+  assert(b >= 0);
   return num / denom * a / b;
 }
 
