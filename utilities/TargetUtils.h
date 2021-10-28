@@ -431,8 +431,8 @@ namespace PlotUtils
       double GetTrackerNCarbonAtoms( double minZ, double maxZ, bool isMC, double apothem = 850. ) const;
 
       //! In tracker?
-      bool InTrackerZ( double vtx_z );
-      bool InTracker( double vtx_x, double vtx_y, double vtx_z, double apothem = 850. );
+      bool InTrackerZ( double vtx_z ) const;
+      bool InTracker( double vtx_x, double vtx_y, double vtx_z, double apothem = 850. ) const;
 
       //! In nuclear target region?
       bool InNukeRegionZ( double vtx_z );
