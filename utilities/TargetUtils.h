@@ -231,12 +231,11 @@ namespace PlotUtils
       const double Fe  = 7.87  * gcm3_to_gmm3;
       const double Pb  = 11.35 * gcm3_to_gmm3;
 
-      //Mass of the water in the MC is 459.12 kg for a transverse radius of 90 cm (J. Kleykamp)
-      //Using the ratio of hexagon apothem mass to water volume in 90 cm radius leads to 
-      //  452.96 kg of water in a volume with hexagon apothem of 85 cm
+      //Mass of the water in the MC is 460.5 kg for a transverse radius of 90 cm (K. McFarland) (docdb 13294)
+      //Mass of the water in the MC is 454.1 kg for a hexagonal apothem of 85 cm (K. McFarland)
       //The volume of the water target is difficult to quantify (lenticular shape)
       //Assuming a hexagonal prism of 22 cm thickness and 85 cm apothem
-      const double H2O = 0.822  * gcm3_to_gmm3;
+      const double H2O = 0.825  * gcm3_to_gmm3;
     }
 
     //! What is the measured thicknes of passive targets?
