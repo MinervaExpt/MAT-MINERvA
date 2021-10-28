@@ -239,7 +239,6 @@ double PlotUtils::TargetMassScintillatorUniverse<T>::GetTargetMassWeight() const
 
   double cv_wgt = T::GetTargetMassWeight();
 
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
   int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
@@ -266,7 +265,6 @@ double PlotUtils::TargetMassScintillatorUniverse<T>::GetWeightRatioToCV() const 
 
   double cv_wgt = T::GetTargetMassWeight();
 
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
   int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
@@ -305,9 +303,6 @@ double PlotUtils::TargetMassCarbonUniverse<T>::GetTargetMassWeight() const {
 
   double cv_wgt = T::GetTargetMassWeight();
 
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
-
   double wgt_shift;
 
   if( PlotUtils::TargetUtils::Get().InCarbonTargetVolMC( T::GetVecElem("mc_vtx",0), T::GetVecElem("mc_vtx",1),
@@ -325,9 +320,6 @@ template<typename T>
 double PlotUtils::TargetMassCarbonUniverse<T>::GetWeightRatioToCV() const {
 
   double cv_wgt = T::GetTargetMassWeight();
-
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
 
@@ -360,7 +352,6 @@ double PlotUtils::TargetMassWaterUniverse<T>::GetTargetMassWeight() const {
   double cv_wgt = T::GetTargetMassWeight();
 
   int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
 
@@ -381,7 +372,6 @@ double PlotUtils::TargetMassWaterUniverse<T>::GetWeightRatioToCV() const {
   double cv_wgt = T::GetTargetMassWeight();
 
   int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
 
@@ -413,9 +403,6 @@ double PlotUtils::TargetMassIronUniverse<T>::GetTargetMassWeight() const {
 
   double cv_wgt = T::GetTargetMassWeight();
 
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
-
   double wgt_shift;
 
   if( PlotUtils::TargetUtils::Get().InIronTargetVolMC( T::GetVecElem("mc_vtx",0), T::GetVecElem("mc_vtx",1),
@@ -433,9 +420,6 @@ template<typename T>
 double PlotUtils::TargetMassIronUniverse<T>::GetWeightRatioToCV() const {
 
   double cv_wgt = T::GetTargetMassWeight();
-
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
 
@@ -467,9 +451,6 @@ double PlotUtils::TargetMassLeadUniverse<T>::GetTargetMassWeight() const {
 
   double cv_wgt = T::GetTargetMassWeight();
 
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
-
   double wgt_shift;
 
   if( PlotUtils::TargetUtils::Get().InLeadTargetVolMC( T::GetVecElem("mc_vtx",0), T::GetVecElem("mc_vtx",1),
@@ -487,9 +468,6 @@ template<typename T>
 double PlotUtils::TargetMassLeadUniverse<T>::GetWeightRatioToCV() const {
 
   double cv_wgt = T::GetTargetMassWeight();
-
-  int targetZ = T::GetTargetZTrue(); // atomic number of struck nucleus
-  int targetVtxZ = T::GetVertexZTrue(); // z-coordinate of interaction vertex
 
   double wgt_shift;
 
