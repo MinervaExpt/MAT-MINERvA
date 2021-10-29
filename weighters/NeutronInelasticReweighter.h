@@ -101,13 +101,13 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
                                               //original (now deleted) Channels.
 
       //Load fKinENormalization from a file.  Do this first because it can fail.
-      const std::string kinEFileName = "", 
-                        kinENormHistName = "";
+      const std::string kinEFileName = "MoNA_FS_normalizations.root", 
+                        kinENormHistName = "Tracker_Signal_FSParticleKE_Truth_Neutron";
       auto oldPwd = gDirectory;
-      /*std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
+      std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
       fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
       if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
-      fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.*/
+      fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
 
       //Load total elastic cross section from a file
       {
@@ -303,6 +303,23 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
     assert(!isinf(weight));
   } //For each neutron
+
+  //Now, normalize so that the number of FS neutrons in the entire playlist doesn't change.
+  //This should keep the total neutrino cross section from changing too.
+  const auto fsPDGs = univ.GetVecInt("mc_FSPartPDG");
+  const auto fsEnergies = univ.GetVecDouble("mc_FSPartE");
+  const auto fsPx = univ.GetVecDouble("mc_FSPartPx"), fsPy = univ.GetVecDouble("mc_FSPartPy"), fsPz = univ.GetVecDouble("mc_FSPartPz");
+
+  const size_t nFSPart = fsPDGs.size();
+  for(size_t whichFS = 0; whichFS < nFSPart; ++whichFS)
+  {
+    if(fsPDGs[whichFS] == 2112) //for each FS neutron
+    {
+      const double KE = fsEnergies[whichFS] - ::neutronMass;
+      const double cosTheta = fsPz[whichFS]/std::sqrt(fsPx[whichFS]*fsPx[whichFS] + fsPy[whichFS]*fsPy[whichFS]);
+      weight /= fKinENormalization->GetBinContent(fKinENormalization->FindBin(KE, cosTheta));
+    }
+  }
 
   //TODO: Remove me
   /*if(weight < 0) std::cout << "Final neutron inelastic weight is < 0: " << weight << "\n";
