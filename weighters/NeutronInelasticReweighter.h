@@ -2,6 +2,9 @@
 //Brief: A Reweighter that changes MINERvA's neutron inelastic cross sections for several channels into the inelastic cross sections from low energy neutron data.
 //Author: Andrew Olivier aolivier@ur.rochester.edu
 
+//MAT includes
+#include "PlotUtils/ErrorHandler.h" //For ROOT::exception in case it's being used to react to non-existent files.
+
 //MAT-MINERvA includes
 #include "utilities/TargetUtils.h"
 
@@ -104,10 +107,20 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       const std::string kinEFileName = "MoNA_FS_normalizations.root", 
                         kinENormHistName = "Tracker_Signal_FSParticleKE_Truth_Neutron";
       auto oldPwd = gDirectory;
-      std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
-      fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
-      //if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
-      if(fKinENormalization) fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
+      try
+      {
+        std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
+        if(kinEFile)
+        {
+          fKinENormalization = dynamic_cast<TH1D*>(kinEFile->Get(kinENormHistName.c_str())->Clone()); //Make a Clone() so I don't have to keep kinEFile open while the job runs.
+          //if(!fKinENormalization) throw std::runtime_error("Failed to load a histogram named " + kinENormHistName + " from a file named " + kinEFileName + " for neutron inelastic reweight normalization.");
+          if(fKinENormalization) fKinENormalization->SetDirectory(nullptr); //Make sure fKineENormalization is no longer tied to its parent object's file because that file will eventually be closed.
+        }
+      }
+      catch(const ROOT::exception& /*e*/)
+      {
+        std::cerr << "Failed to load neutron inelastic reweight's renormalization file from " << kinEFileName << ".  Proceeding without renormalization...\n";
+      }
 
       //Load total elastic cross section from a file
       {
