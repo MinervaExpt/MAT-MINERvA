@@ -51,7 +51,11 @@ Follow the [tutorial](https://github.com/MinervaExpt/MINERvA-101-Cross-Section) 
     }
   }
 }
-```  
+```
+
+## More Expert Options
+- Developing the flux files: During the installation procedure, when you run `cmake ...`, add this flag on the command line: `-DFLUX_FILE_DIR=none`.
+- Keeping only 1 copy of the flux files without CVMFS: During the installation procedure, when you run `cmake ...`, add this flag on the command line: `-DFLUX_FILE_DIR=/path/to/flux/files`.  This is a good way to save several GB per MAT installation if you have multiple installations.
 
 ## Contributing
 - Commit directly to the main branch for now, effectively the way CVS used to work.  If we get more breaking changes than we can handle, the respository maintainers will move to a pull-request-powered contribution workflow.

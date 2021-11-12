@@ -162,6 +162,13 @@ namespace PlotUtils {
   template <class T>
   double PlotUtils::MuonUniverseMinos<T>::GetFluxAndCVWeight(double Enu,
                                                              int nu_pdg) const {
+    //Pretty unique in the MAT to have a lateral shift and a vertical shift.  
+    //This universe represents a shift in a reconstructed quantity, however
+    //we try to cancel out the uncertainties in the flux for the efficiency correction,
+    //So does the efficiency denominator also need this shift in the flux weight?
+    //I'm putting this in little piece of code, but not enabling it. L. Fields feels it's safest to shift this everywhere
+    //if( T::IsTruth() ) return 1;  
+
     // If this playlist is not ME, `GetFluxAndCVWeight` shouldn't change
     if (!T::IsPlaylistME(T::GetPlaylist())) return T::GetFluxAndCVWeight();
     // If this playlist is ME RHC, `GetFluxAndCVWeight` shouldn't change
