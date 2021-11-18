@@ -11,6 +11,9 @@
 //reweighters includes
 #include "weighters/Reweighter.h"
 
+//c++ includes
+#include <memory>
+
 namespace PlotUtils
 {
   template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
