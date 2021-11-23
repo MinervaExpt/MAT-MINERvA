@@ -120,6 +120,22 @@ namespace reco
       }
   };
 
+  // the antineutrino version                                          
+  template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
+    class IsAntiNeutrino: public PlotUtils::Cut<UNIVERSE, EVENT>
+    {
+    public:
+    IsAntiNeutrino(): PlotUtils::Cut<UNIVERSE, EVENT>("Muon Charge Sign") {}
+
+    private:
+    bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
+    {
+      return univ.GetMuonQP() > 0;
+    }
+    };
+
+
+
   //Other Cuts I need to reproduce Dan's ME 2D inclusive analysis
   template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
   class MaxMuonAngle: public PlotUtils::Cut<UNIVERSE, EVENT>
