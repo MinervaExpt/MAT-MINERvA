@@ -107,6 +107,7 @@ add_subdirectory(style)
 add_subdirectory(universes)
 add_subdirectory(utilities)
 add_subdirectory(weighters)
+add_subdirectory(python)
 add_subdirectory(legacy)
 
 #Now, build libMAT-MINERvA.
