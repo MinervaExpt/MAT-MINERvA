@@ -96,7 +96,7 @@ template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
 class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 {
   public:
-    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fTotalInelastic("inelastic", {}), fGeometry(), fKinENormalization(nullptr)
+    NeutronInelasticReweighter(const std::map<std::string, std::vector<int>>& fileNameToFS): fTotalInelastic("inelastic", {}), fKinENormalization(nullptr), fGeometry()
     {
       fChannels.reserve(fileNameToFS.size()); //If I don't use this, the program will often crash.  std::vector::emplace_back() will have to
                                               //reallocate memory many times.  When it does that, it copies the old Channels is made and then
@@ -124,7 +124,10 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 
       //Load total elastic cross section from a file
       {
-        std::unique_ptr<TFile> totalElasticFile(TFile::Open("cross_section.root"));
+        std::string weightFileDir = "";
+        if(std::getenv("PLOTUTILSROOT")) weightFileDir = std::string(std::getenv("PLOTUTILSROOT")) + "/data/neutronInelasticReweight/";
+
+        std::unique_ptr<TFile> totalElasticFile(TFile::Open((weightFileDir + "minerva_neutron_cross_sections.root").c_str()));
         assert(totalElasticFile);
         auto totalElasticGraph = dynamic_cast<TGraph*>(totalElasticFile->Get("elastic"));
         assert(totalElasticGraph);
@@ -165,19 +168,21 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
 
       Channel(const std::string& channelName, const std::vector<int> inelChildren): fInelasticChildren(inelChildren.begin(), inelChildren.end())
       {
-        const std::string oldFileName = "cross_section.root"; //TODO: Use PlotUtilsROOT or something to find this file
+        std::string weightFileDir = "";
+        if(std::getenv("PLOTUTILSROOT")) weightFileDir = std::string(std::getenv("PLOTUTILSROOT")) + "/data/neutronInelasticReweight/";
+
+        const std::string oldFileName = weightFileDir + "minerva_neutron_cross_sections.root";
         std::unique_ptr<TFile> oldGraphFile(TFile::Open(oldFileName.c_str()));
         if(!oldGraphFile) throw std::runtime_error("Failed to open a file named " + oldFileName + " for a GEANT cross section graph in InelasticNeutronReweighter::Channel.");
-        //TGraph oldRatioGraph(oldFile.c_str());
         auto oldRatioGraph = dynamic_cast<TGraph*>(oldGraphFile->Get(channelName.c_str()));
         if(!oldRatioGraph) throw std::runtime_error("Failed to load a TGraph named " + channelName + " from a file named " + oldFileName + " for NeutronInelasticReweighter::Channel");
         fOldSigmaRatioSpline = TSpline3(channelName.c_str(), oldRatioGraph);
 
-        TGraph newRatioGraph((channelName + ".csv").c_str());
+        TGraph newRatioGraph((weightFileDir + channelName + ".csv").c_str());
         fNewSigmaRatioSpline = TSpline3(channelName.c_str(), &newRatioGraph);
 
-        fMin = std::max(oldRatioGraph->GetPointX(findFirstNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findFirstNonZeroPoint(newRatioGraph)));//std::max(fOldSigmaRatioSpline.GetXmin(), fNewSigmaRatioSpline.GetXmin());
-        fMax = std::min(oldRatioGraph->GetPointX(findLastNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findLastNonZeroPoint(newRatioGraph))); //std::min(fOldSigmaRatioSpline.GetXmax(), fNewSigmaRatioSpline.GetXmax());
+        fMin = std::max(oldRatioGraph->GetPointX(findFirstNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findFirstNonZeroPoint(newRatioGraph)));
+        fMax = std::min(oldRatioGraph->GetPointX(findLastNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findLastNonZeroPoint(newRatioGraph)));
       }
 
       double evalOldSpline(double* x, double* /*p*/) const { return fOldSigmaRatioSpline.Eval(x[0]); }
@@ -261,7 +266,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
         else weight *= getNoInteractionWeight(density, Ti, Tf); //if no interaction.  Signaled by intCode is 0 or 2, according to MnvHadronReweight comments
       } //If point is in tracker
     } //For each point in whichNeutron's trajectory
-    assert(!isinf(weight)); //TODO: Something above this line is making the weight inf.
+    assert(!isinf(weight));
 
     //Weight for final trajectory point.  This is a special case because it's the only time inelastic interactions can happen.
     if(startPoint != endPoint && fGeometry.InTracker(xPerPoint[endPoint - 1], yPerPoint[endPoint - 1], zPerPoint[endPoint - 1]) && materialPerPoint[endPoint - 1] == -6)
@@ -336,12 +341,6 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
       }
     }
   }
-
-  //TODO: Remove me
-  /*if(weight < 0) std::cout << "Final neutron inelastic weight is < 0: " << weight << "\n";
-  else if(weight < 0.2) std::cout << "Final neutron inelastic weight is < 0.2: " << weight << "\n";
-
-  if(weight > 10.) std::cout << "Final neutron inelastic weight is very large: " << weight << "\n";*/
 
   assert(!isinf(weight));
   assert(!isnan(weight));
