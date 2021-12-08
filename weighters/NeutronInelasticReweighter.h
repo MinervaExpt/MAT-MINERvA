@@ -26,23 +26,27 @@ namespace
   constexpr double scintDensityToNucleons = 4.626e22 * 1e-27; //Nucleons per cubic millimeter times cm^2 per millibarn
   constexpr double neutronMass = 939.6; //MeV/c^2
 
-  int findFirstNonZeroPoint(const TGraph& graph)
+  double findFirstNonZeroPointX(const TGraph& graph)
   {
     const int nPoints = graph.GetN();
+    double x, y;
     for(int whichPoint = 0; whichPoint < nPoints; ++whichPoint)
     {
-      if(graph.GetPointY(whichPoint) > 0) return whichPoint;
+      graph.GetPoint(whichPoint, x, y);
+      if(y > 0) return x;
     }
 
     return nPoints;
   }
 
-  int findLastNonZeroPoint(const TGraph& graph)
+  double findLastNonZeroPointX(const TGraph& graph)
   {
     const int nPoints = graph.GetN();
+    double x, y;
     for(int whichPoint = nPoints-1; whichPoint >= 0; --whichPoint)
     {
-      if(graph.GetPointY(whichPoint) > 0) return whichPoint;
+      graph.GetPoint(whichPoint, x, y);
+      if(y > 0) return x;
     }
 
     return 0;
@@ -181,8 +185,8 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
         TGraph newRatioGraph((weightFileDir + channelName + ".csv").c_str());
         fNewSigmaRatioSpline = TSpline3(channelName.c_str(), &newRatioGraph);
 
-        fMin = std::max(oldRatioGraph->GetPointX(findFirstNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findFirstNonZeroPoint(newRatioGraph)));
-        fMax = std::min(oldRatioGraph->GetPointX(findLastNonZeroPoint(*oldRatioGraph)), newRatioGraph.GetPointX(findLastNonZeroPoint(newRatioGraph)));
+        fMin = std::max(findFirstNonZeroPointX(*oldRatioGraph), findFirstNonZeroPointX(newRatioGraph));
+        fMax = std::min(findLastNonZeroPointX(*oldRatioGraph), findLastNonZeroPointX(newRatioGraph));
       }
 
       double evalOldSpline(double* x, double* /*p*/) const { return fOldSigmaRatioSpline.Eval(x[0]); }
