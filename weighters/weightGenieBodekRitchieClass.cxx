@@ -18,7 +18,7 @@ double PlotUtils::weightGenieBodekRitchieClass::getWeightInternal(	int rwBRtail,
 								const std::vector<double>& mc_er_Px,
 								const std::vector<double>& mc_er_Py,
 								const std::vector<double>& mc_er_Pz,
-								bool verbose){
+								bool verbose) const{
  
   double gevmev = 0.001 ;
   double weight=1.0; 
@@ -73,7 +73,7 @@ double PlotUtils::weightGenieBodekRitchieClass::getWeight( int rwBRtail,
 					const std::vector<double>& mc_er_Px,
 					const std::vector<double>& mc_er_Py,
 					const std::vector<double>& mc_er_Pz,
-					bool verbose){
+					bool verbose) const{
 
   return getWeightInternal(rwBRtail, mc_er_nPart, mc_intType, mc_targetA, mc_er_status, mc_er_ID, mc_er_Px, mc_er_Py, mc_er_Pz, verbose);
 

@@ -22,7 +22,7 @@ namespace PlotUtils{
 			   const std::vector<double>& mc_er_Px,
 			   const std::vector<double>& mc_er_Py,
 			   const std::vector<double>& mc_er_Pz,
-			   bool verbose = false); //in GeV
+			   bool verbose = false) const; //in GeV
 
 	  private:
 	  double getWeightInternal(int rwBRtail,
@@ -34,7 +34,7 @@ namespace PlotUtils{
 				   const std::vector<double>& mc_er_Px,
 				   const std::vector<double>& mc_er_Py,
 				   const std::vector<double>& mc_er_Pz,
-				   bool verbose);
+				   bool verbose) const;
 	  
 	  
 	};
