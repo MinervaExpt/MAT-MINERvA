@@ -141,12 +141,11 @@ virtual double GetPhimu() const { /* radians w.r.t. incident nu dirn */
 //! 4 vector
 virtual ROOT::Math::PxPyPzEVector GetMuon4V() const { /* MeV */
   double p = GetPmu();
-  double thetax = GetThetaXmu();
-  double thetay = GetThetaYmu();
   double theta = GetThetamu();
-  double px = p * std::sin(thetax);
-  double py = GetPmu() * std::sin(thetay);
-  double pz = GetPmu() * std::cos(theta);
+  double phi = GetPhimu();
+  double px = p * std::sin(theta) * std::cos(phi);
+  double py = p * std::sin(theta) * std::sin(phi);
+  double pz = p * std::cos(theta);
   double E = GetEmu();
   return ROOT::Math::PxPyPzEVector(px, py, pz, E);
 }
