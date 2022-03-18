@@ -18,7 +18,7 @@ namespace PlotUtils
   class LowRecoil2p2hReweighter: public Reweighter<UNIVERSE, EVENT>
   {
     public:
-      LowRecoil2p2hReweighter(): Reweighter<UNIVERSE, EVENT>()
+      LowRecoil2p2hReweighter(const int mode = 0): Reweighter<UNIVERSE, EVENT>(), fMode(mode)
       {
       }
 
@@ -29,11 +29,14 @@ namespace PlotUtils
         //variation 0 is the CV
         return PlotUtils::GetLowRecoil2p2hWeight(univ, univ.Getq0True() / 1000 /* GeV */,
                                            univ.Getq3True() / 1000 /* GeV */,
-                                           0);
+                                           fMode);
       }
 
       std::string GetName() const override { return "LowRecoil2p2hTune"; }
       bool DependsReco() const override { return false; }
+
+    private:
+      int fMode; //Turns on different 2p2h variations.  0 is our CV for MnvTunev1.  1 and 2 weight only np and nn/pp events.  3 weights up QE events instead of 2p2h.
   };
 }
 
