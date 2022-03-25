@@ -14,7 +14,8 @@ virtual double GetGenieWeight() const {
                                                   NSFDefaults::GENIE_MaRES, 
                                                   NSFDefaults::GENIE_MaRES_1Sig ) * 
                     NSFDefaults::DEUTERIUM_RES_NORM ) : 1.;
-  return nonResPiWgt * deutWgt;
+  double zexpWgt = UseZExpansionFaReweight()? GetZExpWeight() : 1;
+  return nonResPiWgt * deutWgt *zexpWgt;
 }
 
 virtual double GetRPAWeight() const {
@@ -99,6 +100,13 @@ virtual double GetGeantHadronWeight() const {
     return PlotUtils::weight_hadron<PlotUtils::TreeWrapper*>().reweightNeutronCV( *this );
   }
   else return 1.;
+}
+
+virtual double GetZExpWeight() const {
+  if (GetInt("mc_intType")!=1 || GetInt("mc_targetZ")<6) return 1;
+  const double q2 = GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
+  static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
+  return zExpWeighter.getWeight(q2);
 }
 
 #endif  // WEIGHTFUNCTIONS
