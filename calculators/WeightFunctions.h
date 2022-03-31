@@ -33,11 +33,20 @@ virtual double GetLowRecoil2p2hWeight() const {
 
 virtual double GetLowQ2PiWeight(std::string channel) const {
   int variation = 0;  // CV
-  if (!PlotUtils::IsCCRes(*this))
+  if( channel == "MENU1PI" )
+  {
+    //if( PlotUtils::IsCCCoh(*this) ) return 1.;
+    if( !PlotUtils::IsCCNucleonPion(*this) ) return 1.;
+    else
+      return PlotUtils::weight_lowq2pi().getWeight(GetQ2True() * 1e-6 /*GeV^2*/,
+                                                   channel, variation, GetInt("mc_targetNucleus"));
+  }
+
+  if (!PlotUtils::IsCCRes(*this) )
     return 1.;
   else
     return PlotUtils::weight_lowq2pi().getWeight(GetQ2True() * 1e-6 /*GeV^2*/,
-                                                 channel, variation);
+                                                 channel, variation, GetInt("mc_targetNucleus"));
 }
 
 virtual double GetCoherentPiWeight(double thpi_true /*deg*/,

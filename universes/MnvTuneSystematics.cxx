@@ -132,11 +132,32 @@ namespace PlotUtils{
   //=================================================================================
 
     template <typename T>
+    bool IsCCCoh(const T& universe) {
+      bool is_cccoh = universe.GetInt("mc_intType") == 4  // Coherent
+                      &&
+                      universe.GetInt("mc_current") == 1; // CC
+      return is_cccoh;
+    }
+
+    template <typename T>
     bool IsCCRes(const T& universe) {
       bool is_ccres = universe.GetInt("mc_intType") == 2  // Res
                       &&
                       universe.GetInt("mc_current") == 1; // CC
       return is_ccres;
+    }
+
+    template <typename T>
+    bool IsCCNucleonPion(const T& universe) {
+      bool is_ccpion = ( universe.GetInt("mc_current") == 1 )
+                         &&
+                       ( universe.GetInt("mc_intType") == 2 // Res (Delta+Higher)
+                         ||
+                       ( universe.GetInt("mc_intType") == 3
+                         &&
+                         universe.GetInt("mc_w") < 2000. ) );
+                         
+      return is_ccpion;
     }
 
 
@@ -244,7 +265,7 @@ namespace PlotUtils{
     if(!PlotUtils::IsCCRes(*this)) 
       return 1.;
     else
-      return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True()*1e-6 /*GeV^2*/, channel, T::m_nsigma);
+      return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True()*1e-6 /*GeV^2*/, channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.

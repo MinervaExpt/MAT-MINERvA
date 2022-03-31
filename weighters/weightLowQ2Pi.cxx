@@ -13,7 +13,9 @@ weightLowQ2Pi::weightLowQ2Pi()
     h_cvweight_NUPI0(nullptr),
     h_cvweight_shift_NUPI0(nullptr),
     h_cvweight_NUBARPI0(nullptr),
-    h_cvweight_shift_NUBARPI0(nullptr)
+    h_cvweight_shift_NUBARPI0(nullptr),
+    h_cvweight_MENU1PI(nullptr),
+    h_cvweight_shift_MENU1PI(nullptr)
 {
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string f = std::string(mparalocation) + "/data/Reweight/lowQ2pi_weights.root";
@@ -36,6 +38,8 @@ void weightLowQ2Pi::read(const std::string f)
     h_cvweight_shift_NUPI0    = (TGraph*)weights_file->Get("NUPI0_weight_shifts");
     h_cvweight_NUBARPI0       = (TGraph*)weights_file->Get("NUBARPI0_weights");
     h_cvweight_shift_NUBARPI0 = (TGraph*)weights_file->Get("NUBARPI0_weight_shifts");
+    h_cvweight_MENU1PI        = (TGraph*)weights_file->Get("MENU1PI_weights");
+    h_cvweight_shift_MENU1PI  = (TGraph*)weights_file->Get("MENU1PI_weight_shifts");
     std::cout << "Done readings weights and weight shifts from file " 
               << f << std::endl;
   }
@@ -44,7 +48,7 @@ void weightLowQ2Pi::read(const std::string f)
 }
 
 
-double weightLowQ2Pi::getWeight(const double Q2 /*(GeV/c)^2*/, std::string channel, int shift)
+double weightLowQ2Pi::getWeight(const double Q2 /*(GeV/c)^2*/, std::string channel, int shift, int mc_nuclei)
 {
   // shift
   //  0 : CV weight
@@ -56,6 +60,17 @@ double weightLowQ2Pi::getWeight(const double Q2 /*(GeV/c)^2*/, std::string chann
 
   double cvweight = 1.0;
   double cvweight_shift = 0.0;
+  
+  if (channel == "MENU1PI"){
+    if( mc_nuclei == 2212 ) return 1.0;
+    assert(h_cvweight_MENU1PI);
+    assert(h_cvweight_shift_MENU1PI);
+    cvweight = h_cvweight_MENU1PI->Eval(Q2);
+    if (shift != 0) cvweight_shift = h_cvweight_shift_MENU1PI->Eval(Q2);
+    //Well, this is crappy
+    return cvweight + shift*cvweight_shift;
+  }
+    
 
   if (Q2 < 0.0 || Q2 >= 0.7) {
     cvweight = 1.0;
