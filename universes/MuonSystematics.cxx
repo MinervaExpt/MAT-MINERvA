@@ -173,7 +173,7 @@ namespace PlotUtils {
     if (!T::IsPlaylistME(T::GetPlaylist())) return T::GetFluxAndCVWeight();
     // If this playlist is ME RHC, `GetFluxAndCVWeight` shouldn't change
     // This will change if/when RHC correlated fluxes become available
-    if (!T::isFHC()) return T::GetFluxAndCVWeight();
+    //if (!T::isFHC()) return T::GetFluxAndCVWeight(); Commented out now that RHC correlated fluxes are available as in Amit's CVS commits 1.19/20 -David L.
 
     if (Enu == -99.)   Enu    = T::GetDouble("mc_incomingE")*1e-3;
     if (nu_pdg == -99) nu_pdg = T::GetInt("mc_incoming");
@@ -181,7 +181,7 @@ namespace PlotUtils {
     // This universes's flux weight is modified because the flux is strongly correlated with the muon energy scale.
     // The fluxes used for these systematic universes were extracted as part of Amit's wiggle studies.
     double wgtMod = PlotUtils::flux_reweighter(
-      T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy",universe);
+      T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy_MINOS",universe); // Putting in Amit's CVS commit 1.19/20 changes -David L.
     return wgtMod*T::GetFluxAndCVWeight();
   }
 
@@ -191,7 +191,7 @@ namespace PlotUtils {
     if (!T::IsPlaylistME(T::GetPlaylist())) return 1;
     // If this playlist is ME RHC, `GetFluxAndCVWeight` shouldn't change
     // This will change if/when RHC correlated fluxes become available
-    if (!T::isFHC()) return 1;
+    //if (!T::isFHC()) return 1; Commented out now that RHC correlated fluxes are available as in Amit's CVS commits 1.19/20 -David L.
 
     const double Enu    = T::GetDouble("mc_incomingE")*1e-3;
     const int nu_pdg = T::GetInt("mc_incoming");
@@ -199,7 +199,7 @@ namespace PlotUtils {
     // This universes's flux weight is modified because the flux is strongly correlated with the muon energy scale.
     // The fluxes used for these systematic universes were extracted as part of Amit's wiggle studies.
     double wgtMod = PlotUtils::flux_reweighter(
-      T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy",universe);
+      T::GetPlaylist(),nu_pdg,T::UseNuEConstraint(),T::GetNFluxUniverses()).GetSysUniFluxWeightCorrection(Enu,nu_pdg,"Muon_Energy_MINOS",universe); // Putting in Amit's CVS commit 1.19/20 changes -David L.
     return wgtMod;
   }
 

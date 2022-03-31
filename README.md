@@ -52,6 +52,12 @@ Follow the [tutorial](https://github.com/MinervaExpt/MINERvA-101-Cross-Section) 
   }
 }
 ```
+## Testing older python binding that allows `from PlotUtils import *`
+
+Try this to get PlotUtils into your PYTHONPATH - this likely needs to go into opt/build/setup.sh
+
+```export PYTHONPATH=<path to MAT>/MAT-MINERvA/python:<path to MAT>/MAT-MINERvA/python/PlotUtils ```
+
 
 ## More Expert Options
 - Developing the flux files: During the installation procedure, when you run `cmake ...`, add this flag on the command line: `-DFLUX_FILE_DIR=none`.

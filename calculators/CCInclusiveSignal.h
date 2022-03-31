@@ -21,6 +21,24 @@ namespace truth
       }
   };
 
+
+  template <class UNIVERSE>
+    class IsAntiNeutrino: public PlotUtils::SignalConstraint<UNIVERSE>
+    {
+    public:
+    IsAntiNeutrino(): PlotUtils::SignalConstraint<UNIVERSE>("IsAntiNeutrino")
+	{
+	}
+
+    private:
+      bool checkConstraint(const UNIVERSE& univ) const override
+      {
+	return univ.GetTruthNuPDG() == -14;
+      }
+    };
+
+
+
   template <class UNIVERSE>
   class IsCC: public PlotUtils::SignalConstraint<UNIVERSE>
   {
