@@ -23,7 +23,7 @@ namespace PlotUtils{
 
 
       // Provide Q2 in ()GeV/c)^2
-          double getWeight(const double Q2, std::string channel, int shift = 0);
+          double getWeight(const double Q2, std::string channel, int shift = 0, int mc_nuclei = 0);
       double getMinosWeight(const double Q2 /*, int variation*/); //TODO MINOS uncertainties
                                                                   //TODO don't hardcode minos params
 
@@ -41,6 +41,8 @@ namespace PlotUtils{
       TGraph *h_cvweight_shift_NUPI0;
       TGraph *h_cvweight_NUBARPI0;
       TGraph *h_cvweight_shift_NUBARPI0;
+      TGraph *h_cvweight_MENU1PI;
+      TGraph *h_cvweight_shift_MENU1PI;
 
       void read(const std::string f);
   };
