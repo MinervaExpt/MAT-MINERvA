@@ -315,7 +315,7 @@ namespace PlotUtils{
     // for n_universes > 0, provide the z-expansion weights
     else{
       for (int i = 0; i < n_universes; ++i)
-        ret["GENIE_MaCCQE"].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i));
+        ret["GENIE_MaZExpCCQE"].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i));
     }
     return ret;
   }
