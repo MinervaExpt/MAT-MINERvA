@@ -112,7 +112,7 @@ virtual double GetGeantHadronWeight() const {
 }
 
 virtual double GetZExpWeight() const {
-  if (GetInt("mc_intType")!=1 || GetInt("mc_targetZ")<6) return 1;
+  if (GetInt("mc_intType")!=1) return 1; // removed condition (mc_targetZ < 6) should be applied to H,D,He   
   const double q2 = GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
   static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
   return zExpWeighter.getWeight(q2);
