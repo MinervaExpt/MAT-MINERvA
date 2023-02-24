@@ -17,7 +17,9 @@ class HyperDimLinearizer{
   TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
   PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);// This is for type==1, 2D result only!!
   void TestFunctionality();// a bunch of prints.
- private:
+  bool IsUnderflow(int lin_bin, int axis); // Check if a bin in linearized is an underflow bin in phase space, axis defaulted
+  bool IsOverflow(int lin_bin, int axis);  // Check if a bin in linearized is an overflow bin in phase space, axis defaulted
+private:
   int Get1DBin(double value,int el); //Get the bin number for one of the dimensions
   int m_analysis_type; // type 0 is 2D analysis, ignore Y coordinate since that is just used. type1 is full blown 1D.
   std::vector<int> m_el_size;//how many bins are we talking about

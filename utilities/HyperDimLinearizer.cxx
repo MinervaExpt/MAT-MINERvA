@@ -289,7 +289,67 @@ namespace PlotUtils
       }
       std::cout << std::endl;
     }
-  }    
+  }
 
-} //namespace PlotUtils
+  bool HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1)
+  {
+    if(m_analysis_type!=1)
+    {
+      std::cout << "WARNING: HyperDimLinearizer::IsUnderflow is only configured for type 1 analyses" << std::endl;
+      return false;
+    }
+    // Given a bin in linearized space, check if it's an underflow bin in phase space
+    std::vector<int> ps_coords = GetValues(lin_bin);
+    // For a given axis...
+    if (axis >= 0){
+      if (ps_coords[axis]==0)
+      {
+        return true;
+      }
+    }
+    // In general...
+    else {
+      for (int i = 0; i < ps_coords.size(); i++)
+      {
+        if (ps_coords[i] == 0)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  bool HyperDimLinearizer::IsOverflow(int lin_bin, int axis = -1)
+  {
+     if (m_analysis_type != 1)
+     {
+      std::cout << "WARNING: HyperDimLinearizer::IsOverflow is only configured for type 1 analyses" << std::endl;
+      return false;
+     }
+    // Given a bin in linearized space, check if it's an overflow bin in phase space
+    std::vector<int> ps_coords = GetValues(lin_bin);
+    // For a given axis...
+    if (axis >= 0)
+    {
+      if (ps_coords[axis] == m_el_size[axis])
+      {
+        return true;
+      }
+    }
+    // In general...
+    else {
+      for (int i = 0; i < ps_coords.size(); i++)
+      {
+        if (ps_coords[i] == m_el_size[i])
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+} // namespace PlotUtils
 #endif
