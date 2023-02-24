@@ -12,6 +12,7 @@
 
   <class name="PlotUtils::TargetUtils" />
   <class name="PlotUtils::POTCounter" />
+  <class name="PlotUtils::HyperDimLinearizer" />
   <!-- PlotUtils systematic universes classes (new sys framework)-->
   <class name="PlotUtils::MinervaUniverse" />
 

@@ -78,7 +78,7 @@ CLASSES_TO_LOAD = [
     #"TargetMassSystematics",
     #"TrueProtonKECutSystematics",
     #"AnaBinning",
-    #"HyperDimLinearizer",
+    "HyperDimLinearizer",
     #"MnvNormalization",
     #"NSFDefaults",
     "POTCounter",

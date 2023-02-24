@@ -27,7 +27,7 @@ double GetEAvailable() const {
 }
 
 double GetCalorimetryQ0() const {
-  return GetDouble("MasterAnaDev_recoil_E");
+  return GetDouble((MinervaUniverse::GetTreeName()+"_recoil_E").c_str());
 }
 
 double GetSubdetE(Subdet subdet) const {

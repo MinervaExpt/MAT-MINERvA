@@ -47,6 +47,41 @@ namespace PlotUtils
     return ret;
   }
 
+  //Overloaded version used to pass a specific recoil name for the response branches
+  template <class T>
+  std::vector<T*>GetResponseSystematics(typename T::config_t chain, int sigma, std::string name_tag, 
+					bool NEUTRON=false, bool use_new_part_resp = false, bool PROTON = false){
+    std::cout << "Recoil Systematics created with neutron " << NEUTRON << std::endl;
+    std::cout << "Recoil Systematics created with proton "  << PROTON << std::endl;
+                                                                       
+    std::vector<T*>ret;                                                
+                                                                       
+    std::vector<std::string> response_systematics;                     
+      if(PROTON)
+      {
+        response_systematics.push_back("low_proton");
+        response_systematics.push_back("mid_proton");
+        response_systematics.push_back("high_proton");
+      }
+      else response_systematics.push_back("proton");
+      response_systematics.push_back("meson");
+      response_systematics.push_back("em");
+      //response_systematics.push_back("xtalk"); //DO NOT USE
+      response_systematics.push_back("other");
+      if(NEUTRON){
+        response_systematics.push_back("low_neutron");
+        response_systematics.push_back("mid_neutron");
+        response_systematics.push_back("high_neutron");
+      }
+ 
+    for(std::vector<std::string>::const_iterator syst = response_systematics.begin(); 
+            syst != response_systematics.end(); ++syst){
+      ret.push_back( new PlotUtils::ResponseUniverse<T>(chain, sigma, name_tag, *syst, use_new_part_resp) );
+    }
+    
+    return ret;
+  }
+
   template <class T>
   std::map< std::string, std::vector<T*> > GetResponseSystematicsMap(typename T::config_t chain, bool NEUTRON=false, bool use_new_part_resp = false, bool PROTON = false) {
     std::map< std::string, std::vector<T*> > ret;
@@ -83,6 +118,44 @@ namespace PlotUtils
 
     return ret;
   }
+
+  //Overloaded version used to pass a specific recoil name for the response branches
+  template <class T>
+  std::map< std::string, std::vector<T*> > GetResponseSystematicsMap(typename T::config_t chain, std::string name_tag, bool NEUTRON=false, bool use_new_part_resp = false, bool PROTON = false) {
+    std::map< std::string, std::vector<T*> > ret;
+
+    std::vector<double> sigmas;
+    sigmas.push_back(-1.);
+    sigmas.push_back(+1.);
+
+    std::vector<std::string> response_systematics;
+      if(PROTON)
+      {
+        response_systematics.push_back("low_proton");
+        response_systematics.push_back("mid_proton");
+        response_systematics.push_back("high_proton");
+      }
+      else response_systematics.push_back("proton");
+      response_systematics.push_back("meson");
+      response_systematics.push_back("em");
+      //response_systematics.push_back("xtalk"); //DO NOT USE
+      response_systematics.push_back("other");
+      if(NEUTRON){
+        response_systematics.push_back("low_neutron");
+        response_systematics.push_back("mid_neutron");
+        response_systematics.push_back("high_neutron");
+      }
+
+    for(std::vector<double>::const_iterator sigma = sigmas.begin(); 
+            sigma != sigmas.end(); ++sigma) {
+      for(std::vector<std::string>::const_iterator syst = response_systematics.begin(); 
+              syst != response_systematics.end(); ++syst){
+        ret[*syst].push_back(new PlotUtils::ResponseUniverse<T>(chain, *sigma, name_tag, *syst, use_new_part_resp));
+      }
+    }
+
+    return ret;
+  }
 }
   
 //=================================================================================
@@ -91,9 +164,22 @@ namespace PlotUtils
 // Constructor
 template <class T>
 ResponseUniverse<T>::ResponseUniverse(typename T::config_t chw, 
-                                          double nsigma, std::string response_name, bool use_new_part_resp)
+				      double nsigma, std::string response_name, bool use_new_part_resp)
   : T(chw, nsigma), 
-    m_name(response_name), m_branch_name("part_response_recoil_" + response_name + "_id_err"), 
+    m_name(response_name), m_branch_name("part_response_recoil_" + response_name + "_id_err"),
+    m_use_new_part_resp(use_new_part_resp), 
+    m_particle_passive_name("part_response_recoil_passive_" + response_name + "_id"),
+    m_container_particle_passive_name("part_response_container_recoil_passive_"+response_name+"_id")
+{
+  m_frac_unc = PartRespDefaults::GetDefaultPartRespFracUnc( response_name ); 
+}
+
+//Constructor to allow for a specific recoil name being added
+template <class T>
+ResponseUniverse<T>::ResponseUniverse(typename T::config_t chw, 
+				      double nsigma, std::string name_tag, std::string response_name, bool use_new_part_resp)
+  : T(chw, nsigma), 
+    m_name(response_name), m_branch_name( name_tag.length() == 0 ? "part_response_recoil_" + response_name + "_id_err": "part_response_recoil_" + name_tag + "_" + response_name + "_id_err"),
     m_use_new_part_resp(use_new_part_resp), 
     m_particle_passive_name("part_response_recoil_passive_" + response_name + "_id"),
     m_container_particle_passive_name("part_response_container_recoil_passive_"+response_name+"_id")

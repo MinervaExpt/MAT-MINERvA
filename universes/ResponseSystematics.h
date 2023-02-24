@@ -20,6 +20,7 @@ namespace PlotUtils
   {
     public:
       ResponseUniverse(typename T::config_t chw, double nsigma, std::string response_name, bool use_new_part_resp = false);
+      ResponseUniverse(typename T::config_t chw, double nsigma, std::string name_tag, std::string response_name, bool use_new_part_resp = false);
 
       double GetRecoilShift() const;
       virtual double GetCalRecoilEnergy() const; /* override */

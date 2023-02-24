@@ -315,7 +315,7 @@ namespace PlotUtils{
     // for n_universes > 0, provide the z-expansion weights
     else{
       for (int i = 0; i < n_universes; ++i)
-        ret["GENIE_MaCCQE"].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i));
+        ret["GENIE_MaZExpCCQE"].push_back(new PlotUtils::GenieFaCCQEUniverse<T>(chain, 1.0, i));
     }
     return ret;
   }
@@ -422,11 +422,11 @@ double GenieUniverse<T>::GetGenieWeight() const {
   // Protections against unphysical weights due to a potential lack of a
   // constraint in the GENIE FSI reweighter. i.e. bug in GENIE version 
   // used to generate NX sample
-  if(m_name.compare("MFP_N")==0&&wgt>10.){
+  if( (m_name.compare("MFP_N")==0 || m_name.compare("MFP_pi")==0)  && wgt>10.){
     wgt = 5.0;
   }
   // Any negative weight is unphysical
-  if(m_name.compare("MFP_N")==0&&wgt<0.){
+  if( (m_name.compare("MFP_N")==0 || m_name.compare("MFP_pi")==0)  && wgt<0.){
     wgt = 0.0;
   }
   // This systematic universe's modified the CV weight,
@@ -441,11 +441,11 @@ double GenieUniverse<T>::GetWeightRatioToCV() const {
   // Protections against unphysical weights due to a potential lack of a
   // constraint in the GENIE FSI reweighter. i.e. bug in GENIE version 
   // used to generate NX sample
-  if(m_name.compare("MFP_N")==0&&wgt>10.){
+  if( (m_name.compare("MFP_N")==0 || m_name.compare("MFP_pi")==0) &&wgt>10.){
     wgt = 5.0;
   }
   // Any negative weight is unphysical
-  if(m_name.compare("MFP_N")==0&&wgt<0.){
+  if( (m_name.compare("MFP_N")==0 || m_name.compare("MFP_pi")==0) &&wgt<0.){
     wgt = 0.0;
   }
   // This systematic universe's modified the CV weight,
@@ -844,8 +844,7 @@ double GenieFaCCQEUniverse<T>::GetGenieWeight() const {
     // which includes the effect of the nonResPi Reweight
     return wgt*T::GetGenieWeight();
   }
-  if(T::GetInt("mc_intType")!=1) return T::GetGenieWeight();  // Only reweight CCQE events
-  if(T::GetInt("mc_targetZ")<6) return T::GetGenieWeight(); // Don't reweight hydrogen
+  if(T::GetInt("mc_intType")!=1) return T::GetGenieWeight();  // Only reweight CCQE events // Should be applied to H, D, and He  
   const double q2 = T::GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
   static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
   double cvWgt = zExpWeighter.getWeight(q2);
@@ -864,8 +863,7 @@ double GenieFaCCQEUniverse<T>::GetWeightRatioToCV() const {
     // which includes the effect of the nonResPi Reweight
     return wgt;
   }
-  if(T::GetInt("mc_intType")!=1) return 1;  // Only reweight CCQE events
-  if(T::GetInt("mc_targetZ")<6) return 1; // Don't reweight hydrogen
+  if(T::GetInt("mc_intType")!=1) return 1;  // Only reweight CCQE events // Should be applied to H, D, and He 
   const double q2 = T::GetDouble("mc_Q2")/(1000*1000); // Convert to GeV
   static PlotUtils::weightZExp zExpWeighter = PlotUtils::weightZExp("$MPARAMFILESROOT/data/Reweight/Z_Expansion_Reweight_v2126.root");
   double cvWgt = zExpWeighter.getWeight(q2);
@@ -875,7 +873,8 @@ double GenieFaCCQEUniverse<T>::GetWeightRatioToCV() const {
 
 template <class T>
 std::string GenieFaCCQEUniverse<T>::ShortName() const {
-  return "GENIE_MaCCQE";
+ return T::UseZExpansionFaReweight() ? "GENIE_MaZExpCCQE"  : "GENIE_MaCCQE";
+//return "GENIE_MaCCQE";
 };
 
 
