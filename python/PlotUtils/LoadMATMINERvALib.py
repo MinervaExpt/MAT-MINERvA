@@ -102,6 +102,7 @@ CLASSES_TO_LOAD = [
     #"RPAReweighter",
     #"Reweighter",
     #"SuSAFromValencia2p2hReweighter",
+    "VariableHyperDBase",
     #"weightCoherentPi",
     #"weightDIS",
     #"weightGenieBodekRitchieClass",

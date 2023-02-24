@@ -98,6 +98,7 @@ utilities/POTCounter.cxx
 utilities/ParticleResponseDefaults.cxx
 utilities/PhysicsVariables.cxx
 utilities/TargetUtils.cxx
+utilities/VariableHyperDBase.cxx
 weighters/MinosMuonEfficiencyCorrection.cxx
 weighters/MnvHadronReweight.cxx
 weighters/weightCoherentPi.cxx
@@ -186,6 +187,7 @@ utilities/ParticleResponseDefaults.h
 utilities/PhysicsVariables.h
 utilities/PlotUtilsPhysicalConstants.h
 utilities/TargetUtils.h
+utilities/VariableHyperDBase.h
 weighters/AMUDISReweighter.h
 weighters/FSIReweighter.h
 weighters/FluxAndCVReweighter.h
