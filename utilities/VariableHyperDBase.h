@@ -4,7 +4,8 @@
 #include <memory>
 
 #include "PlotUtils/VariableBase.h"
-#include "PlotUtils/HyperDimLinearizer.h"
+#include "utilities/HyperDimLinearizer.h"
+// #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
 enum EAnalysisType {k2D,k1D}; // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D available.
