@@ -1,10 +1,10 @@
-#ifndef MATMINERVADICT_H 
+#ifndef MATMINERVADICT_H
 #define MATMINERVADICT_H 1
 
 // Include files for PlotUtils dictionary.
 
 /** @file PlotUtilsDict.h
- *  
+ *
  *
  *  @author Jeremy Wolcott <jwolcott@fnal.gov>
  *  @date   2012-11-25
@@ -36,6 +36,7 @@
 #include "MichelSystematics.h"
 #include "AngleSystematics.h"
 #include "ResponseSystematics.h"
+#include "HyperDimLinearizer.h"
 
 //Utils
 #include "TargetUtils.h"
@@ -55,4 +56,3 @@
 
 #endif
 #endif // MATMINERVADICT_H
-
