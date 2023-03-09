@@ -155,7 +155,10 @@ bool MinervaUniverse::SetHornCurrent(std::string& playlist) {
         playlist.compare("minervame6c") == 0 ||
         playlist.compare("minervame6d") == 0 ||
         playlist.compare("minervame6e") == 0 ||
-        playlist.compare("minervame6g") == 0)
+        playlist.compare("minervame6g") == 0 ||
+        playlist.compare("minervame6h") == 0 ||
+        playlist.compare("minervame6i") == 0 ||
+        playlist.compare("minervame6j") == 0)
       m_is_RHC = true;
 
     if (!m_is_FHC && !m_is_RHC)
