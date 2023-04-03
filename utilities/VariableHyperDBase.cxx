@@ -17,27 +17,27 @@ using namespace PlotUtils;
 //==============================================================================
 // Default. Recommended if using a derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase() 
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const EAnalysisType t2D_t1D)
 {
-  m_analysis_type = k1D; // default, 2D not set up yet
+  m_analysis_type = t2D_t1D; // default is 1D, 2D not set up yet
   // You will need to add variables, etc.
 }
 
 // Default but set the name too. Recommended if using a derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name)
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const EAnalysisType t2D_t1D)
 {
   m_name = name;
-  m_analysis_type = k1D; // default,  2D not set up yet
+  m_analysis_type = t2D_t1D; // default is 1D,  2D not set up yet
   // You will need to add variables, etc.
 }
 
 // Constructor with vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE>*> &d)
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &d, const EAnalysisType t2D_t1D)
 {
   m_vars_vec = d;
-  m_analysis_type = k1D;
+  m_analysis_type = t2D_t1D;
   for (int i = 0;i < d.size(); i++)
   {
     if (d[i]->HasRecoBinning()) m_has_reco_binning = true;
@@ -48,11 +48,11 @@ VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<
 
 // Constructor with user designated name & vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::vector<VariableBase<UNIVERSE> *> &d)
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::vector<VariableBase<UNIVERSE> *> &d, const EAnalysisType t2D_t1D)
 {
   m_name = name;
   m_vars_vec = d;
-  m_analysis_type = k1D;
+  m_analysis_type = t2D_t1D;
   for (int i = 0; i < d.size(); i++)
   {
     if (d[i]->HasRecoBinning()) m_has_reco_binning = true;
@@ -69,29 +69,19 @@ VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::ve
 template <class UNIVERSE>
 std::string VariableHyperDBase<UNIVERSE>::SetName(const std::string name)
 {
-return m_name = name;
+  return m_name = name;
 }
 
 // Change the analysis type. Right now it is fixed to 1D, or "type 1"
 template <class UNIVERSE>
 void VariableHyperDBase<UNIVERSE>::SetAnalysisType(const EAnalysisType t2D_t1D)
-  {
-    m_analysis_type = t2D_t1D;
-    if (t2D_t1D==k2D)
-    { 
-      // Dan uses 2D/type 0, but most people will probably be fine with 1D/type 1. I don't plan on implimenting 2D anytime soon -NHV 2/22/23
-      std::cout << "VariableHyperDBase: WARNING, type 0, 2D analysis not configured yet. Setting to type 1, 1D..." <<std::endl;
-      m_analysis_type = k1D; 
-    }
-    std::cout << "VariableHyperDBase: WARNING you may be changing your analysis type." << std::endl;
-    m_hyperdim = new HyperDimLinearizer(m_vars_binnings, m_analysis_type);
-    
-    //Now do reco
-    if (m_has_reco_binning)
-    {
-      m_reco_hyperdim = new HyperDimLinearizer(m_vars_reco_binnings, m_analysis_type);
-    }
-  }
+{
+  m_analysis_type = t2D_t1D;
+  std::cout << "VariableHyperDBase: WARNING you may be changing your analysis type to " << m_analysis_type << std::endl;
+  
+  // Reset everything given new analysis type.
+  Setup(GetName());
+}
 
 // Add another variable, useful if using default constructor and derived Variable class
 template <class UNIVERSE>
@@ -122,21 +112,19 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) // i_name def
 
   for (int i = 0; i < m_dimension; i++)
   {
-    // Make the name and axis label
-    name += m_vars_vec[i]->GetName();
-    std::cout << name << std::endl;
-    lin_axis_label += m_vars_vec[i]->GetAxisLabel();
-    if (i < (m_dimension - 1))
-    {
-      name += "_";
-      lin_axis_label += ", ";
-    }
-
     // Make vector of binnings, count number of bins
     std::vector<double> var_binning = m_vars_vec[i]->GetBinVec();
     vars_bins.push_back(var_binning);
-    // Need to add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
-    n_lin_bins *= (var_binning.size() + 1);
+    // // Need to add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
+    // n_lin_bins *= (var_binning.size() + 1);
+
+    int tmp_bin_scale = 1;
+    if (i == 1 && m_analysis_type == k2D) // if doing 2D projection, skip y-axis
+      tmp_bin_scale = 1;
+    else // if (m_analysis_type == k1D)   // Need to add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
+      tmp_bin_scale = (var_binning.size() + 1);
+
+    n_lin_bins *= tmp_bin_scale;
 
     // If recobinning is set (should happen at initialization or setup), do this too
     if (m_has_reco_binning)
@@ -144,9 +132,30 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) // i_name def
       // Make vector of binnings, count number of bins
       std::vector<double> var_reco_binning = m_vars_vec[i]->GetRecoBinVec();
       vars_reco_bins.push_back(var_reco_binning);
-      // Add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
-      n_lin_reco_bins *= (var_reco_binning.size() + 1);
+      int tmp_reco_bin_scale = 1;
+      // // Add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
+      // n_lin_reco_bins *= (var_reco_binning.size() + 1);
+
+      if (m_analysis_type == k2D && i == 1) // if doing 2D projection, skip y-axis
+        tmp_reco_bin_scale = 1;
+      else // if (m_analysis_type == k1D) // Add underflow and overflow bins (+2) and take out one from bin edges (-1) => var_binning.size()+1
+        tmp_reco_bin_scale = (var_reco_binning.size() + 1);
+      
+      n_lin_reco_bins *= tmp_reco_bin_scale;
     }
+
+    // Make the name and axis label
+    name += m_vars_vec[i]->GetName();
+    if (i < (m_dimension - 1)) 
+      name += "_";
+    if (m_analysis_type == k2D && i == 1) // if doing 2D, set y axis label and don't add it to the linearized axis label
+    {
+      m_y_axis_label = m_vars_vec[i]->GetAxisLabel();
+      continue;
+    }
+    lin_axis_label += m_vars_vec[i]->GetAxisLabel();
+    if (i < (m_dimension - 1))
+      lin_axis_label += ", ";
   }
   
   // If there's an input name, it will use that one, otherwise it'll use the one it just made
@@ -161,6 +170,7 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) // i_name def
 
   // Make a bin vector in linearized bin index space
   std::vector<double> lin_binning;
+  // TODO: Does this need to start at 1 instead?
   for (int i = 0; i < n_lin_bins + 1; i++) lin_binning.push_back(i);
   m_lin_binning = lin_binning;
 
@@ -169,7 +179,8 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) // i_name def
   {
     m_vars_reco_binnings = vars_reco_bins;
     m_reco_hyperdim = new HyperDimLinearizer(vars_reco_bins, m_analysis_type);
-
+    
+    // TODO: Does this need to start at 1 instead?
     std::vector<double> lin_reco_binning;
     for (int i = 0; i < n_lin_reco_bins + 1; i++) lin_reco_binning.push_back(i);
     m_lin_reco_binning = lin_reco_binning;
@@ -256,6 +267,16 @@ void VariableHyperDBase<UNIVERSE>::PrintBinning() const
   std::cout << GetName() << " binning: ";
   for (const auto b : m_lin_binning) std::cout << b << " ";
   std::cout << "\n";
+
+  if (m_analysis_type == k2D)
+  {
+    std::cout << " y axis: ";
+    for (const auto b : m_vars_vec[1]->GetBinVec())
+    {
+      std::cout << b << " ";
+    }
+    std::cout << "\n";
+  }
 }
 
 // Print the binning of an axis
@@ -272,17 +293,21 @@ PlotUtils::HyperDimLinearizer *VariableHyperDBase<UNIVERSE>::GetHyperDimLineariz
   return m_hyperdim;
 }
 
-// Get the phase space volume for a given linearized bin // TODO: Maybe this belongs to hyperdim?
+// Get the phase space volume for a given linearized bin. If doing a 2D (type 0) analysis, this does not include the bin width of y axis.
+// TODO: Maybe this belongs to hyperdim?
 template <class UNIVERSE>
 double VariableHyperDBase<UNIVERSE>::GetBinVolume(int lin_bin) const
 {
   double ps_bin_vol = 1.;
   // Given the linearized bin number, get corresponding bin index in phase space coordinates
-  std::vector<int> ps_coords = m_hyperdim->GetValues(lin_bin);
+  std::vector<int> ps_coords = m_hyperdim->GetValues(lin_bin); // This automatically skips y axis for 2D
   for (int i = 0; i < ps_coords.size(); i++)
   {
     int var_bin = ps_coords[i];
-    // Get the binning for that axis
+    // Get the binning for that axis. Need to do some trickery to index properly if doing 2D.
+    int var = i;
+    if (m_analysis_type == k2D && i >= 1)
+      var += 1;
     std::vector<double> var_binning = m_vars_vec[i]->GetBinVec();
     double bin_width = var_binning[var_bin] - var_binning[var_bin-1];
     if (bin_width < 0)
@@ -364,14 +389,23 @@ void VariableHyperDBase<UNIVERSE>::PrintRecoBinning() const
 {
   if (!m_has_reco_binning)
   {
-    std::cout << GetName() << " reco binning same as true: ";
-    for (const auto b : m_lin_binning) {std::cout << b << " ";}
-    std::cout << "\n";
+    std::cout << GetName() << " reco binning same as true" << std::endl;
+    PrintBinning();
   }
   else {
     std::cout << GetName() << " reco binning: ";
     for (const auto b : GetRecoBinVec()) {std::cout << b << " ";}
     std::cout << "\n";
+
+    if (m_analysis_type == k2D)
+    {
+      std::cout << " y axis: ";
+      for (const auto b : m_vars_vec[1]->GetRecBinVec())
+      {
+        std::cout << b << " ";
+      }
+      std::cout << "\n";
+    }
   }
 }
 
@@ -393,7 +427,8 @@ PlotUtils::HyperDimLinearizer* VariableHyperDBase<UNIVERSE>::GetRecoHyperDimLine
   return m_reco_hyperdim;
 }
 
-// Get the phase space volume for a given linearized reco bin // TODO: Maybe this belongs to hyperdim?
+// Get the phase space volume for a given linearized reco bin. If doing a 2D (type 0) analysis, this does not include the bin width of y axis.
+// TODO: Maybe this belongs to hyperdim?
 template <class UNIVERSE>
 double VariableHyperDBase<UNIVERSE>::GetRecoBinVolume(int lin_bin) const
 {
@@ -403,12 +438,14 @@ double VariableHyperDBase<UNIVERSE>::GetRecoBinVolume(int lin_bin) const
   }
   // Given the linearized bin number, get corresponding bin number in phase space coordinates
   double ps_bin_vol = 1.;
-  std::vector<int> ps_coords;
-  if (!m_reco_hyperdim) ps_coords = GetRecoHyperDimLinearizer();
-  else{ps_coords = m_reco_hyperdim->GetValues(lin_bin);} 
+  std::vector<int> ps_coords = m_reco_hyperdim->GetValues(lin_bin); // This automatically skips y axis for 2D 
   
   for (int i = 0; i < ps_coords.size(); i++)
   {
+    // Get the binning for that axis. Need to do some trickery to index properly if doing 2D.
+    int var = i;
+    if (m_analysis_type == k2D && i >= 1)
+      var += 1;
     int var_bin = ps_coords[i];
     std::vector<double> var_binning = m_vars_vec[i]->GetRecoBinVec();
     double bin_width = var_binning[var_bin] - var_binning[var_bin-1];
@@ -426,6 +463,11 @@ double VariableHyperDBase<UNIVERSE>::GetRecoBinVolume(int lin_bin) const
 template <class UNIVERSE>
 std::vector<int> PlotUtils::VariableHyperDBase<UNIVERSE>::GetRecoUnderflow(int axis) const
 {
+  if (m_analysis_type > 1)
+  {
+    std::cout << "VariableHyperDBase: analysis type selected uses global underflow bins. " << std::endl; 
+    return std::vector<int>();
+  }
   // TODO: Get a vector of indices in of bins linearized space that are underflow bins in phase space
   std::cout << "WARNING: VariableHyperDBase::GetRecoUnderflow() not set up yet... " << std::endl;
   return std::vector<int>();
@@ -434,6 +476,11 @@ std::vector<int> PlotUtils::VariableHyperDBase<UNIVERSE>::GetRecoUnderflow(int a
 template <class UNIVERSE>
 std::vector<int> PlotUtils::VariableHyperDBase<UNIVERSE>::GetRecoOverflow(int axis) const
 {
+  if (m_analysis_type > 1)
+  {
+    std::cout << "VariableHyperDBase: analysis type selected uses global overflow bins. " << std::endl;
+    return std::vector<int>();
+  }
   // TODO: Get a vector of indices in of bins linearized space that are overflow bins in phase space
   std::cout << "WARNING: VariableHyperDBase::GetRecoOverflow() not set up yet... " << std::endl;
   return std::vector<int>();
@@ -477,7 +524,7 @@ double VariableHyperDBase<UNIVERSE>::GetTrueValue(const UNIVERSE &universe,
   return (m_hyperdim->GetBin(val_vec).first) + 0.0001; // 0.0001 offset to so fillers can put it in that bin
 }
 
-// Return phase space value of a single component variable
+// Return phase space value of a single component variable, use axis = 1 to get y-value for "type 0" 2D analyses.
 template <class UNIVERSE>
 double VariableHyperDBase<UNIVERSE>::GetRecoValue(const int axis, 
                                                   const UNIVERSE& universe,
@@ -487,7 +534,7 @@ double VariableHyperDBase<UNIVERSE>::GetRecoValue(const int axis,
   return m_vars_vec[axis]->GetRecoValue(universe, idx1, idx2);
 }
 
-// Return phase space value of a single component variable
+// Return phase space value of a single component variable, use axis = 1 to get y-value for "type 0" 2D analyses.
 template <class UNIVERSE>
 double VariableHyperDBase<UNIVERSE>::GetTrueValue(const int axis,
                                                   const UNIVERSE &universe,

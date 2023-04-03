@@ -8,7 +8,8 @@
 // #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
-enum EAnalysisType {k2D,k1D}; // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D available.
+enum EAnalysisType {k2D,k1D,k2D_lite,k1D_lite}; // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D available.
+                                                // k2D_lite and k1D_lite are experimental and not implemented yet.
 
 #ifndef __CINT__
 template <class UNIVERSE>
@@ -17,11 +18,14 @@ public:
   //============================================================================
   // CTORS
   //============================================================================
-  VariableHyperDBase();                                               // Defualt, recommended if using derived Variable class.
-  VariableHyperDBase(const std::string name);                         // Just sets name, recommended if using derived Variable class
-  VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &d); // Build from vector of input VariableBases, can get tricky if using derived Variable class
-  VariableHyperDBase(const std::string name,                          // Build from vector of input VariableBases and set a name, can get tricky if using derived Variable class
-                     const std::vector<VariableBase<UNIVERSE> *> &d);
+  VariableHyperDBase(const EAnalysisType t2D_t1D = k1D);             // Defualt, recommended if using derived Variable class.
+  VariableHyperDBase(const std::string name,                         // Just sets name, recommended if using derived Variable class
+                     const EAnalysisType t2D_t1D = k1D);
+  VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &d, // Build from vector of input VariableBases, can get tricky if using derived Variable class
+                     const EAnalysisType t2D_t1D = k1D);
+  VariableHyperDBase(const std::string name,                         // Build from vector of input VariableBases and set a name, can get tricky if using derived Variable class
+                     const std::vector<VariableBase<UNIVERSE> *> &d,
+                     const EAnalysisType t2D_t1D = k1D);
 
 public:
   //============================================================================
@@ -91,6 +95,7 @@ public:
 protected:
 
   std::string m_lin_axis_label;
+  std::string m_y_axis_label; // y axis label if doing a 2D analysis (type 0)
 
 private:
   //============================================================================
