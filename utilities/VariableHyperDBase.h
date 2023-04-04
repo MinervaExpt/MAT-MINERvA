@@ -8,7 +8,7 @@
 // #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
-enum EAnalysisType {k2D,k1D,k2D_lite,k1D_lite}; // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D available.
+enum EAnalysisType {k2D,k1D,k2D_lite,k1D_lite}; // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D available and tested.
                                                 // k2D_lite and k1D_lite are experimental and not implemented yet.
 
 #ifndef __CINT__
@@ -31,7 +31,7 @@ public:
   //============================================================================
   // Setters/Getters
   //============================================================================
-  std::string SetName(const std::string name);
+  std::string SetName(const std::string name);       // Change the name of the Variable
   void SetAnalysisType(const EAnalysisType t2D_t1D); // Set hyperdim to project to 2D or 1D, 2D not configured yet -NHV 2/21/23
   void AddVariable(VariableBase<UNIVERSE> &var);     // Add variables individually and setup, recommended used with default or name only ctr
 
@@ -93,9 +93,11 @@ public:
                       const int idx2 = -1) const;
 
 protected:
+  EAnalysisType m_analysis_type; // This sets the "Analysis type" from Hyperdim: k2D (not configured yet) is type 0, k1D (default) is type 1
+  int m_dimension;               // Number of axes/dimensions in variable phase space
 
-  std::string m_lin_axis_label;
-  std::string m_y_axis_label; // y axis label if doing a 2D analysis (type 0)
+  std::string m_lin_axis_label;  // Label for linearized x axis. Excludes y axis if doing a 2D (type 0) analysis
+  std::string m_y_axis_label;    // y axis label if doing a 2D (type 0) analysis
 
 private:
   //============================================================================
@@ -103,8 +105,6 @@ private:
   //============================================================================
   std::string m_name;                                              // Name of variable, should be var1name_var2name_var3name etc
 
-  int m_dimension;                                                 // Number of axes/dimensions in variable phase space
-  EAnalysisType m_analysis_type;                                   // This sets the "Analysis type" from Hyperdim: k2D (not configured yet) is type 0, k1D (default) is type 1
   bool m_has_reco_binning;                                         // Bool to note if there's separate reco binning or not
 
   PlotUtils::HyperDimLinearizer* m_hyperdim;                       // Member HyperDim
