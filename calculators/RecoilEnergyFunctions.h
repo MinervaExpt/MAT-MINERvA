@@ -13,7 +13,7 @@ virtual std::vector<int> GetNonCalIndices() { return m_non_cal_idx; }
 // Recoil Energy
 // Analyzer should specify what their recoil energy is (in MeV) in CVUniverse)
 double GetRecoilEnergy() const {
-  return GetCalRecoilEnergy() + GetNonCalRecoilEnergy();  //  LOOK AT PlotUtils/SystCalcs/RecoilEnergyFunctions.h
+  return ApplyCaloTuning(GetCalRecoilEnergy()) + GetNonCalRecoilEnergy();  //  LOOK AT PlotUtils/SystCalcs/RecoilEnergyFunctions.h
                                                           //  If you're here because GetCalRecoilEnergy or GetNonCalRecoilEnergy doesn't eixt
                                                           //  Please look below
 }
