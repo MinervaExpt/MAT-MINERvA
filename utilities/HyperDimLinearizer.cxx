@@ -1,355 +1,436 @@
 #ifndef MNV_HYPERDIMLINEARIZER_cxx
 #define MNV_HYPERDIMLINEARIZER_cxx 1
 #include "utilities/HyperDimLinearizer.h"
+
 #include <string>
 
-namespace PlotUtils
-{
+namespace PlotUtils {
 
-  //!Get a set of bins
-  HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double> > input, int type)
-  {
+//! Get a set of bins
+// ==========================================================================
+// CTOR
+// ==========================================================================
+// HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, int type) {
+    
+// }
+
+HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, EAnalysisType type) {
+    m_invec = input;
     int n_dim = input.size();
-    m_invec= input;
     m_analysis_type = type;
-  
-    std::cout << "Contructing class with " << n_dim << " dimensions of type "<< type << std::endl;
-    for(unsigned int i=0;i<input.size();i++){
-      std::cout << "Bin number " << i << "\t" << input[i].size()+1 << std::endl;
-      m_el_size.push_back(input[i].size()+1);//number of bins = vector size-1+2 assuming under/overflow.  
+
+    std::cout << "Contructing class with " << n_dim << " dimensions of type " << type << std::endl;
+    if (type == k2D_lite || type == k1D_lite)
+        std::cout << " Selected lightweight type. Under/overflow bins will not be counted.";
+
+    m_cell_size = {1};      // vector to put sizes of each cell for each bin in each axis. Should start with x-axis which is always 1 bin.
+    m_n_global_x_bins = 1;  // will tell you how many bins you have on your linearized axis
+
+    for (unsigned int i = 0; i < input.size(); i++) {
+        // Figure out size of each axis in phase space depending on analysis type
+        int tmp_el_size;
+        if (type == k2D || type == k1D) {  // number of bins = (vector size - 1 + 2) counting under/overflow for each axis
+            tmp_el_size = input[i].size() + 1;
+        } else if (type == k2D_lite || type == k1D_lite) {  // number of bins = (vector size - 1) using global under/overflow
+            tmp_el_size = input[i].size() - 1;
+        }
+        std::cout << "Bin number " << i << "\t" << tmp_el_size << std::endl;
+        m_el_size.push_back(tmp_el_size);
+
+        // Count the number of bins in linearized space and size of cells
+        if (type == k1D || type == k1D_lite) {  // for type 1 and 3 fully linearized, this is simple
+            m_n_global_x_bins *= tmp_el_size;
+            if (i < input.size() - 1)  // skip last element since we already start with x-axis cell size
+                m_cell_size.pushback(tmp_el_size * m_cell_size[i]);
+        } else {         // Type 0 and 2 keep y axis so need to do some kerjiggering
+            if (i != 1)  // For counting number of bins, skip y axis if doing type 0, 2
+                m_n_global_x_bins *= tmp_el_size;
+            if (i == 0) {
+                m_cell_size.push_back(0);                             // y-axis should have cell size of 0 in type 0 and 2
+                m_cell_size.push_back(tmp_el_size * m_cell_size[i]);  // This takes care of z-axis, so we skip i = 2 to avoid duplicate
+            } else if (i > 1 && i < input.size() - 1) {               // When looking at higher than 3D
+                m_cell_size.push_back(tmp_el_size * m_cell_size[i]);
+            }
+        }
+    }
+}
+
+// ==========================================================================
+// Getter values between spaces
+// ==========================================================================
+
+//! Giving x,y,z... get the x,y bin//This is templated
+std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
+    int global_x = 0;
+    int y_bin = 0;
+
+    if (m_analysis_type == k2D || m_analysis_type == k1D) { // These include under/overflow bins
+        for (unsigned int i = 0; i < values.size(); i++) {
+            int tmp_bin = Get1DBin(values[i], i);  // Find the bin index on a given axis given a value in that axis
+            global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
+        }
+        if (global_x == 0 || global_x == m_n_global_x_bins) {
+            std::cout "HyperDimLinearizer::GetBin WARNING: type 0 or 1 analysis is returning a global under/overflow index which should not happen." << std::endl;
+        }
+    } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use global under/overflow bins
+        int x_bin = Get1DBin(values[0], 0);                                   // Do x alone since it is indexed differently for other dims for these types
+        if (x_bin == 0) {                                                     // If x is in underflow, go to global underflow and break
+            global_x = 0;
+        } else if (x_bin > m_el_size[0]) {                                    // If x is in overflow, go to global overflow and break
+            global_x = m_n_global_x_bins + 1;
+        } else {                                                              // If x is fine, check the other dimensions
+            global_x += x_bin;
+            for (unsigned int i = 1; i < values.size(); i++) {
+                if (m_analysis_type == k2D_lite && i == 1)  // Need to skip y if doing 2D to avoid adding under/over of y to global_x under/over bins
+                    continue;
+                int tmp_bin = Get1DBin(values[i], i);  // Get bin index on that axis and check if under/overflow
+                if (tmp_bin == 0) {
+                    global_x = 0;
+                    break;
+                } else if (tmp_bin > m_el_size[i]) {
+                    global_x = m_n_global_x_bins + 1;
+                    break;
+                }
+                global_x += (tmp_bin - 1) * m_cell_size[i];  // Have to index minus 1, since 0 and n+1 indexes are not allowed here.
+            }
+        }
     }
     
-  }
-  
-  //!Giving x,y,z... get the x,y bin//This is templated
-  std::pair<int,int> HyperDimLinearizer::GetBin(std::vector<double> values)
-  {
-    //can I generalize this? YUP
-    int y_bin=0;
-    int global_x=0;
-    std::vector<int> sizes;
-    if(m_analysis_type==0){
-      for(unsigned int i=0;i<values.size();i++){
-        int scale=1;
-        int tmp_bin = Get1DBin(values[i],i);
-        if(i!=1){
-  	for(unsigned int j=0;j<values.size();j++){
-  	  if(i==j) break;
-  	  if(j!=1) scale *= m_el_size[j];
-  	}
-  	global_x+=tmp_bin*scale;
-        }
-        else y_bin = tmp_bin;
-      }
-    }
-    else if(m_analysis_type==1){
-      for(unsigned int i=0;i<values.size();i++){
-        int tmp_bin = Get1DBin(values[i],i);
-        int scale=1;
-        for(unsigned int j=0;j<values.size();j++){
-  	if(i==j) break;
-  	scale *= m_el_size[j];
-        }
-        global_x+=tmp_bin*scale;
-      }
-    }
-    std::pair<int,int> mypair = std::make_pair(global_x,y_bin);
-    return mypair;
-    
-  }
-  
-  int HyperDimLinearizer::Get1DBin(double value, int el)
-  {
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) // Get the y-bin if doing 2D
+        y_bin = Get1DBin(values[1], 1);
+    std::pair<int> lin_bin = std::make_pair(global_x, y_bin); // Make them a pair. If doing 1D, should get 0 there
+    return lin_bin;
+}
+
+// TODO: This should work for type 2 and 3 based on how "GetBin" is setup?
+int HyperDimLinearizer::Get1DBin(double value, int el) {
     int b = 0;
-    for(unsigned int i=0;i<m_invec[el].size();i++){//loop over bin boundaries
-      if(value<m_invec[el][i]){
-        break;
-      }
-      b+=1;//didn't find the bin, add 1. Underflow is 0 and overflow is size()+1
+    for (unsigned int i = 0; i < m_invec[el].size(); i++) {  // loop over bin boundaries
+        if (value < m_invec[el][i]) {
+            break;
+        }
+        b += 1;  // didn't find the bin, add 1. Underflow is 0 and overflow is size()+1
     }
     return b;
-  }
-  
-  //!Giving the x bin get the x,z... bin (or xyz in the schema of a fully linearlized model.
-  std::vector<int> HyperDimLinearizer::GetValues(int x)
-  {
-    //given global x return vector of x,y,z... bin coordinates.
+}
+
+// TODO: Make this work for type 2 (2D no under/overflow) and 3 (1D no under/overflow)
+//! Giving the x bin get the x,z... bin (or xyz in the schema of a fully linearlized model.
+std::vector<int> HyperDimLinearizer::GetValues(int x) {
+    // given global x return vector of x,y,z... bin coordinates.
     std::vector<int> ValueCoordinates;
-    std::vector<int> ValueReverse;
-    if(m_analysis_type==0){
-      for(unsigned int i=0;i<m_invec.size();i++){//loop over coordinates
-        int scale = 1;
-        if(i==1){//skip y
-  	ValueCoordinates.push_back(0);
-  	continue;
+    std::vector<int> cell_size = {1};
+    for (unsigned int i = 1; i < m_invec.size(); i++) {
+        if (i = 1 && (m_analysis_type == k2D || m_analysis_type == k2D_lite)) {  // Put place holder, skip y-axis if doing 2D analysis
+            cell_size.push_back(0);
+            continue;
         }
-        for(unsigned int j=0;j<m_invec.size();j++){
-  	if(j==i) break;//don't scale by bigger super cells
-  	if(j==1)continue;//skip y
-  	scale*=m_el_size[j];
-        }
-        ValueCoordinates.push_back((x/scale)%m_el_size[i]);
-      }
+        cell_size.push_back(m_el_size[i - 1] * cell_size[i - 1]);
     }
-    else if(m_analysis_type==1){
-      for(unsigned int i=0;i<m_invec.size();i++){//loop over coordinates
-        int scale = 1;
-        for(unsigned int j=0;j<m_invec.size();j++){
-  	if(j==i) break;//don't scale by bigger super cells
-  	scale*=m_el_size[j];
+
+    for (int i = m_invec.size() - 1; i > -1; i--) {
+        if (i = 1 && (m_analysis_type == k2D || m_analysis_type == k2D_lite)) {  // Put place holder, skip y-axis if doing 2D analysis
+            ValueCoordinates.push_back(0);
+            continue;
         }
-        ValueCoordinates.push_back((x/scale)%m_el_size[i]);
-      }
+
+        int tmp_x = x;
+        for (unsigned int j = 1; j < m_el_size[i] + 1; j++) {
+            int cell_max = cell_size[i] * j;
+            if (tmp_x > cell_max)
+                continue;
+            else {
+                ValueCoordinates.push_back(j);
+                tmp_x = tmp_x % cell_size[i];
+                break;
+            }
+        }
+        // std::vector<int> ValueReverse; // TODO: is this used?
+        if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {
+            for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
+                int scale = 1;
+                if (i == 1)  // skip y
+                {
+                    ValueCoordinates.push_back(0);
+                    continue;
+                }
+                for (unsigned int j = 0; j < m_invec.size(); j++) {
+                    if (j == i)
+                        break;  // don't scale by bigger super cells
+                    if (j == 1)
+                        continue;  // skip y
+                    scale *= m_el_size[j];
+                }
+                ValueCoordinates.push_back((x / scale) % m_el_size[i]);
+            }
+        } else if (m_analysis_type == k1D || m_analysis_type == k1D_lite) {
+            for (unsigned int i = 0; i < m_invec.size(); i++)  // loop over coordinates
+            {
+                int scale = 1;
+                for (unsigned int j = 0; j < m_invec.size(); j++) {
+                    if (j == i)
+                        break;  // don't scale by bigger super cells
+                    scale *= m_el_size[j];
+                }
+                ValueCoordinates.push_back((x / scale) % m_el_size[i]);
+            }
+        }
+        return ValueCoordinates;
     }
-    return ValueCoordinates;
-  }
-  
-  
-  std::vector<TH2D*> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false){
+}
+
+// ==========================================================================
+// Get Histograms
+// ==========================================================================
+
+// TODO: Make sure this all works for type 2,3
+std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     //  std::cout <<"Entering Get2DHistos"  << std::endl;
-    std::vector<TH2D*> expanded_results;
+    std::vector<TH2D *> expanded_results;
     TH2D mybigmap;
-    if(!IncludeSys) mybigmap = result->GetCVHistoWithStatError();
-    else mybigmap = result->GetCVHistoWithError();
-    if(m_analysis_type==0){
-      //    std::cout << "Starting up get 2D histos with analysis type 0" << std::endl;
-      //projected N dims (less Y) come in chunks of X bins (including under/over)
-      int num_chunks = 1;
-      const int num_x_bins = m_invec[0].size()-1;
-      const int num_y_bins = m_invec[1].size()-1;
-      //    std::cout << "Master Plot has x " << num_x_bins << "\ty\t" << num_y_bins << std::endl;
-      for(unsigned int i=2;i<m_invec.size();i++)num_chunks*=(m_invec[i].size()+1);
-      //    std::cout << "I have number of chunks = " << num_chunks << std::endl;
-      for(int i=0;i<num_chunks;i++){
-        TH2D *tmp_bin = new TH2D(Form("Chunk_%d",i),Form("Chunk_%d",i),num_x_bins,&m_invec[0][0],num_y_bins,&m_invec[1][0]);
-        int offset_x = (num_x_bins+2)*i+1;//need to know low bin for chunk
-        for(int j=0;j<num_x_bins+2;j++){
-  	for(int k=0;k<num_y_bins+2;k++){
-  	  double tmpval = mybigmap.GetBinContent(j+offset_x,k);
-  	  double tmperr = mybigmap.GetBinError(j+offset_x,k);
-  	  tmp_bin->SetBinContent(j,k,tmpval);
-  	  tmp_bin->SetBinError(j,k,tmperr);
-  	}//end loop over subset y
-        }//end loop over subset x
-        expanded_results.push_back((TH2D*)tmp_bin->Clone(Form("Clone_%d",i)));//woohoo got a 2D result for one of the chunks!
-      }//end loop over chunks
+    if (!IncludeSys)
+        mybigmap = result->GetCVHistoWithStatError();
+    else
+        mybigmap = result->GetCVHistoWithError();
+    if (m_analysis_type == k2D) {
+        //    std::cout << "Starting up get 2D histos with analysis type 0" << std::endl;
+        // projected N dims (less Y) come in chunks of X bins (including under/over)
+        int num_chunks = 1;
+        const int num_x_bins = m_invec[0].size() - 1;
+        const int num_y_bins = m_invec[1].size() - 1;
+        //    std::cout << "Master Plot has x " << num_x_bins << "\ty\t" << num_y_bins << std::endl;
+        for (unsigned int i = 2; i < m_invec.size(); i++)
+            num_chunks *= (m_invec[i].size() + 1);
+        //    std::cout << "I have number of chunks = " << num_chunks << std::endl;
+        for (int i = 0; i < num_chunks; i++) {
+            TH2D *tmp_bin = new TH2D(Form("Chunk_%d", i), Form("Chunk_%d", i), num_x_bins, &m_invec[0][0], num_y_bins, &m_invec[1][0]);
+            int offset_x = (num_x_bins + 2) * i + 1;  // need to know low bin for chunk
+            for (int j = 0; j < num_x_bins + 2; j++) {
+                for (int k = 0; k < num_y_bins + 2; k++) {
+                    double tmpval = mybigmap.GetBinContent(j + offset_x, k);
+                    double tmperr = mybigmap.GetBinError(j + offset_x, k);
+                    tmp_bin->SetBinContent(j, k, tmpval);
+                    tmp_bin->SetBinError(j, k, tmperr);
+                }                                                                     // end loop over subset y
+            }                                                                         // end loop over subset x
+            expanded_results.push_back((TH2D *)tmp_bin->Clone(Form("Clone_%d", i)));  // woohoo got a 2D result for one of the chunks!
+        }                                                                             // end loop over chunks
     }
     return expanded_results;
-  
-  }
-  
-  
-  std::vector<PlotUtils::MnvH2D*> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false){
-    std::cout << "Entering Get2DMnvHistos"  << std::endl;
-    std::vector<PlotUtils::MnvH2D*> expanded_results;
-    std::vector<TH2D*> CV_vals = Get2DHistos(result,false);//get CV
+}
+
+// TODO: Make sure this works for type 2,3
+std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
+    std::cout << "Entering Get2DMnvHistos" << std::endl;
+    std::vector<PlotUtils::MnvH2D *> expanded_results;
+    std::vector<TH2D *> CV_vals = Get2DHistos(result, false);  // get CV
     std::cout << "I have " << CV_vals.size() << " CV histograms" << std::endl;
-    for(uint i=0;i<CV_vals.size();i++) expanded_results.push_back(new PlotUtils::MnvH2D(*CV_vals[i]));
-  
+    for (uint i = 0; i < CV_vals.size(); i++)
+        expanded_results.push_back(new PlotUtils::MnvH2D(*CV_vals[i]));
+
     std::vector<std::string> vertnames = result->GetVertErrorBandNames();
     std::vector<std::string> latnames = result->GetLatErrorBandNames();
-    
-    //Do vert first
-    for(uint i=0;i<vertnames.size();i++){
-      std::cout << "Working on " << vertnames[i] << std::endl;
-      std::vector<std::vector<TH2D*> > unihists;
-      PlotUtils::MnvVertErrorBand2D *band = result->GetVertErrorBand(vertnames[i]);
-      int bandsize = band->GetNHists();
-      for(int uni=0;uni<bandsize;uni++){
-        std::vector<TH2D*> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
-        unihists.push_back(tmpbandset);
-      }
-      //Have an N by uni matrix of TH2D. Now time to push back into the primary
-      std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size()  << std::endl;
-  
-      for(int j=0;j<unihists[0].size();j++){//unihists[0].size() is the number of projections needed
-        std::vector<TH2D*> tmpband;
-        for(int uni=0;uni<bandsize;uni++){
-  	tmpband.push_back(unihists[uni][j]);
+
+    // Do vert first
+    for (uint i = 0; i < vertnames.size(); i++) {
+        std::cout << "Working on " << vertnames[i] << std::endl;
+        std::vector<std::vector<TH2D *>> unihists;
+        PlotUtils::MnvVertErrorBand2D *band = result->GetVertErrorBand(vertnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH2D *> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
         }
-        expanded_results[j]->AddVertErrorBand(vertnames[i],tmpband);
-      }
-      
-    }
-  
-    //now lat
-     for(uint i=0;i<latnames.size();i++){
-      std::cout << "Working on " << latnames[i] << std::endl;
-      std::vector<std::vector<TH2D*> > unihists;
-      PlotUtils::MnvLatErrorBand2D *band = result->GetLatErrorBand(latnames[i]);
-      int bandsize = band->GetNHists();
-      for(int uni=0;uni<bandsize;uni++){
-        std::vector<TH2D*> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
-        unihists.push_back(tmpbandset);
-      }
-      //Have an N by uni matrix of TH2D. Now time to push back into the primary
-  
-      std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size()  << std::endl;
-  
-      for(uint j=0;j<unihists[0].size();j++){//unihists[0].size() is the number of projections needed
-        std::vector<TH2D*> tmpband;
-        for(int uni=0;uni<bandsize;uni++){
-  	tmpband.push_back(unihists[uni][j]);
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (int j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH2D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_results[j]->AddVertErrorBand(vertnames[i], tmpband);
         }
-        expanded_results[j]->AddLatErrorBand(latnames[i],tmpband);
-      }
     }
-  
+    // now lat
+    for (uint i = 0; i < latnames.size(); i++) {
+        std::cout << "Working on " << latnames[i] << std::endl;
+        std::vector<std::vector<TH2D *>> unihists;
+        PlotUtils::MnvLatErrorBand2D *band = result->GetLatErrorBand(latnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH2D *> tmpbandset = Get2DHistos(new PlotUtils::MnvH2D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (uint j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH2D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_results[j]->AddLatErrorBand(latnames[i], tmpband);
+        }
+    }
     return expanded_results;
-  }
-  
-  
-  TH2D* HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false){
-    if(m_invec.size()!=2) std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
-    std::string myname = Form("Unmapped_%s",result->GetTitle());
-    TH1D* mybigmap = NULL;
-    if(!IncludeSys) mybigmap = new TH1D(result->GetCVHistoWithStatError());
-    else mybigmap = new TH1D(result->GetCVHistoWithError());
-    const int num_x_bins = m_invec[0].size()-1;
-    const int num_y_bins = m_invec[1].size()-1;
-    TH2D* my2D = new TH2D(myname.c_str(),myname.c_str(),num_x_bins,&m_invec[0][0],num_y_bins,&m_invec[1][0]);
-    if(m_analysis_type==1){
-      std::cout << "Starting up get 2D histo with analysis type 1" << std::endl;
-      for(int i=0;i<num_x_bins+2;i++){//includes under/over
-        for(int j=0;j<num_y_bins+2;j++){//includes under/over
-  	double tmpval = mybigmap->GetBinContent(j*(num_x_bins+2)+(i+1));
-  	double tmperr = mybigmap->GetBinError(j*(num_x_bins+2)+(i+1));
-  	my2D->SetBinContent(i,j,tmpval);
-  	my2D->SetBinError(i,j,tmperr);
+}
+
+TH2D *HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+    if (m_invec.size() != 2)
+        std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
+    std::string myname = Form("Unmapped_%s", result->GetTitle());
+    TH1D *mybigmap = NULL;
+    if (!IncludeSys)
+        mybigmap = new TH1D(result->GetCVHistoWithStatError());
+    else
+        mybigmap = new TH1D(result->GetCVHistoWithError());
+    const int num_x_bins = m_invec[0].size() - 1;
+    const int num_y_bins = m_invec[1].size() - 1;
+    TH2D *my2D = new TH2D(myname.c_str(), myname.c_str(), num_x_bins, &m_invec[0][0], num_y_bins, &m_invec[1][0]);
+    if (m_analysis_type == k1D) {
+        std::cout << "Starting up get 2D histo with analysis type 1" << std::endl;
+        for (int i = 0; i < num_x_bins + 2; i++)  // includes under/over
+        {
+            for (int j = 0; j < num_y_bins + 2; j++)  // includes under/over
+            {
+                double tmpval = mybigmap->GetBinContent(j * (num_x_bins + 2) + (i + 1));
+                double tmperr = mybigmap->GetBinError(j * (num_x_bins + 2) + (i + 1));
+                my2D->SetBinContent(i, j, tmpval);
+                my2D->SetBinError(i, j, tmperr);
+            }
         }
-      }
     }
-  
     return my2D;
-  
-  }
-  
-  PlotUtils::MnvH2D* HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false){
-    std::cout << "Entering Get2DMnvHisto"  << std::endl;
-    if(m_invec.size()!=2) std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
-  
-    TH2D* CV_vals = Get2DHisto(result,false);
+}
+
+// TODO: Make sure this works for type 2,3
+PlotUtils::MnvH2D *HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+    std::cout << "Entering Get2DMnvHisto" << std::endl;
+    if (m_invec.size() != 2)
+        std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
+
+    TH2D *CV_vals = Get2DHisto(result, false);
     PlotUtils::MnvH2D *expanded_result = new PlotUtils::MnvH2D(*CV_vals);
-    
+
     std::vector<std::string> vertnames = result->GetVertErrorBandNames();
     std::vector<std::string> latnames = result->GetLatErrorBandNames();
-  
-      //Do vert first
-    for(uint i=0;i<vertnames.size();i++){
-      std::cout << "Working on " << vertnames[i] << std::endl;
-      std::vector<TH2D*> unihists;
-      PlotUtils::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
-      int bandsize = band->GetNHists();
-      for(int uni=0;uni<bandsize;uni++){
-        TH2D* tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
-        unihists.push_back(tmpbandset);
-      }
-      expanded_result->AddVertErrorBand(vertnames[i],unihists);
+
+    for (uint i = 0; i < vertnames.size(); i++)  // Do vert first
+    {
+        std::cout << "Working on " << vertnames[i] << std::endl;
+        std::vector<TH2D *> unihists;
+        PlotUtils::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            TH2D *tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        expanded_result->AddVertErrorBand(vertnames[i], unihists);
     }
-  
-    for(uint i=0;i<latnames.size();i++){
-      std::cout << "Working on " << latnames[i] << std::endl;
-      std::vector<TH2D*> unihists;
-      PlotUtils::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
-      int bandsize = band->GetNHists();
-      for(int uni=0;uni<bandsize;uni++){
-        TH2D* tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));//Get the universe hist and spit out the N 2D results.
-        unihists.push_back(tmpbandset);
-      }
-      expanded_result->AddLatErrorBand(latnames[i],unihists);
+
+    for (uint i = 0; i < latnames.size(); i++) {
+        std::cout << "Working on " << latnames[i] << std::endl;
+        std::vector<TH2D *> unihists;
+        PlotUtils::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            TH2D *tmpbandset = Get2DHisto(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        expanded_result->AddLatErrorBand(latnames[i], unihists);
     }
-  
-  
     return expanded_result;
-  
-  }
-  
-  
-  
-  void HyperDimLinearizer::TestFunctionality()
-  {
-    std::cout << "Initializing funcationality test"<<std::endl;
-  
-    //how many bins
+}
+
+// ==========================================================================
+// Test
+// ==========================================================================
+
+void HyperDimLinearizer::TestFunctionality() {
+    std::cout << "Initializing funcationality test" << std::endl;
+
+    // how many bins
     int n_bins = 1;
     std::cout << "Running with n-dimensions = " << m_invec.size() << std::endl;
-    for(unsigned int i=0;i<m_invec.size();i++){
-      if(m_analysis_type==0 && i==1) continue;
-      std::cout << "Coord " << i << " has " << m_el_size[i] << " bins " << std::endl;
-      n_bins*=m_el_size[i];
+    for (unsigned int i = 0; i < m_invec.size(); i++) {
+        if (m_analysis_type == k2D && i == 1)
+            continue;
+        std::cout << "Coord " << i << " has " << m_el_size[i] << " bins " << std::endl;
+        n_bins *= m_el_size[i];
     }
     std::cout << "This gives us a total of " << n_bins << " bins" << std::endl;
-  
-  
-    for(int i=0;i<n_bins;i++){
-      std::vector<int> coordinates = GetValues(i);
-      std::cout << i << "\t";
-      for(unsigned int j=0;j<coordinates.size();j++){
-        std::cout << coordinates[j] << "\t";
-      }
-      std::cout << std::endl;
-    }
-  }
 
-  bool HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1)
-  {
-    if(m_analysis_type!=1)
-    {
-      std::cout << "WARNING: HyperDimLinearizer::IsUnderflow is only configured for type 1 analyses" << std::endl;
-      return false;
+    for (int i = 0; i < n_bins; i++) {
+        std::vector<int> coordinates = GetValues(i);
+        std::cout << i << "\t";
+        for (unsigned int j = 0; j < coordinates.size(); j++) {
+            std::cout << coordinates[j] << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// ==========================================================================
+// Helpers
+// ==========================================================================
+
+bool HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1) {
+    if (m_analysis_type != 1) {
+        std::cout << "WARNING: HyperDimLinearizer::IsUnderflow is only configured for type 1 analyses" << std::endl;
+        return false;
+    }
+    if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {
+        std::cout << "Analysis type 2 or 3, so no underflow bins in normal bins." << std::endl;
+        return false;
     }
     // Given a bin in linearized space, check if it's an underflow bin in phase space
     std::vector<int> ps_coords = GetValues(lin_bin);
     // For a given axis...
-    if (axis >= 0){
-      if (ps_coords[axis]==0)
-      {
-        return true;
-      }
+    if (axis >= 0) {
+        if (ps_coords[axis] == 0) {
+            return true;
+        }
     }
     // In general...
     else {
-      for (int i = 0; i < ps_coords.size(); i++)
-      {
-        if (ps_coords[i] == 0)
-        {
-          return true;
+        for (int i = 0; i < ps_coords.size(); i++) {
+            if (ps_coords[i] == 0) {
+                return true;
+            }
         }
-      }
     }
     return false;
-  }
+}
 
-
-  bool HyperDimLinearizer::IsOverflow(int lin_bin, int axis = -1)
-  {
-     if (m_analysis_type != 1)
-     {
-      std::cout << "WARNING: HyperDimLinearizer::IsOverflow is only configured for type 1 analyses" << std::endl;
-      return false;
-     }
+bool HyperDimLinearizer::IsOverflow(int lin_bin, int axis = -1) {
+    if (m_analysis_type != 1) {
+        std::cout << "WARNING: HyperDimLinearizer::IsOverflow is only configured for type 1 analyses" << std::endl;
+        return false;
+    }
+    if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {
+        std::cout << "Analysis type 2 or 3, so no overflow bins in normal bins." << std::endl;
+        return false;
+    }
     // Given a bin in linearized space, check if it's an overflow bin in phase space
     std::vector<int> ps_coords = GetValues(lin_bin);
     // For a given axis...
-    if (axis >= 0)
-    {
-      if (ps_coords[axis] == m_el_size[axis])
-      {
-        return true;
-      }
+    if (axis >= 0) {
+        if (ps_coords[axis] == m_el_size[axis]) {
+            return true;
+        }
     }
     // In general...
     else {
-      for (int i = 0; i < ps_coords.size(); i++)
-      {
-        if (ps_coords[i] == m_el_size[i])
-        {
-          return true;
+        for (int i = 0; i < ps_coords.size(); i++) {
+            if (ps_coords[i] == m_el_size[i]) {
+                return true;
+            }
         }
-      }
     }
     return false;
-  }
+}
 
-} // namespace PlotUtils
+}  // namespace PlotUtils
 #endif
