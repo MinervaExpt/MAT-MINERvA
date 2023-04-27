@@ -1,5 +1,5 @@
-#ifndef MNV_HYPERDIMLINEARIZER_h
-#define MNV_HYPERDIMLINEARIZER_h 1
+#ifndef MNV_HYPERDIMLINEARIZER_v1_h
+#define MNV_HYPERDIMLINEARIZER_v1_h 1
 #include <vector>
 #include <iostream>
 #include <utility>

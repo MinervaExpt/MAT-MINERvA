@@ -1,6 +1,6 @@
-#ifndef MNV_HYPERDIMLINEARIZER_cxx
-#define MNV_HYPERDIMLINEARIZER_cxx 1
-#include "utilities/HyperDimLinearizer.h"
+#ifndef MNV_HYPERDIMLINEARIZER_v1_cxx
+#define MNV_HYPERDIMLINEARIZER_v1_cxx 1
+#include "utilities/HyperDimLinearizer_v1.h"
 #include <string>
 
 namespace PlotUtils
