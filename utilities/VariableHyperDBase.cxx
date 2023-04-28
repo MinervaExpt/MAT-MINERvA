@@ -166,7 +166,7 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name)  // i_name de
     // Make a bin vector in linearized bin index space
     std::vector<double> lin_binning;
     // TODO: Does this need to start at 1 instead?
-    for (int i = 1; i < n_lin_bins + 2; i++) lin_binning.push_back(i);
+    for (int i = 0; i < n_lin_bins + 1; i++) lin_binning.push_back(i);
     m_lin_binning = lin_binning;
 
     // If you have reco binning, do that here too
@@ -176,7 +176,7 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name)  // i_name de
 
         // TODO: Does this need to start at 1 instead?
         std::vector<double> lin_reco_binning;
-        for (int i = 1; i < n_lin_reco_bins + 2; i++) lin_reco_binning.push_back(i);
+        for (int i = 0; i < n_lin_reco_bins + 1; i++) lin_reco_binning.push_back(i);
         m_lin_reco_binning = lin_reco_binning;
     }
 }
