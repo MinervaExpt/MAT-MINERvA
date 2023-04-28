@@ -8,11 +8,11 @@
 // #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
-enum EAnalysisType { k2D,
-                     k1D,
-                     k2D_lite,
-                     k1D_lite };  // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D tested.
-                                  // k2D_lite and k1D_lite use globol under/overflow bins and are experimental and not implemented yet.
+// enum EAnalysisType { k2D,
+//                      k1D,
+//                      k2D_lite,
+//                      k1D_lite };  // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D tested.
+//                                   // k2D_lite and k1D_lite use globol under/overflow bins and are experimental and not implemented yet.
 
 #ifndef __CINT__
 template <class UNIVERSE>
