@@ -17,13 +17,22 @@ class HyperDimLinearizer {
 
     std::pair<int, int> GetBin(std::vector<double> values);                                      // Template get bin for 2,3,4D cases
     std::vector<int> GetValues(int x);                                                           //
+    
     std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH2D* result, bool IncludeSys);                  // This is for type==0
     std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);  // This is for type==0
+    
     TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                                // This is for type==1, 2D result only!!
     PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                // This is for type==1, 2D result only!!
+    
     void TestFunctionality();                                                                    // a bunch of prints.
+    EAnalysisType GetAnalysisType();
+    std::vector<int> GetAxesSizes();
+    std::vector<int> GetCellSizes();
+    int GetNLinBins();
+
     bool IsUnderflow(int lin_bin, int axis);                                                     // Check if a bin in linearized is an underflow bin in phase space, axis defaulted
     bool IsOverflow(int lin_bin, int axis);                                                      // Check if a bin in linearized is an overflow bin in phase space, axis defaulted
+
    private:
     int Get1DBin(double value, int el);  // Get the bin number for one of the dimensions
 
