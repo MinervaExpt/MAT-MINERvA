@@ -134,7 +134,7 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name)  // i_name de
             if (i == 1 && (m_analysis_type == k2D || m_analysis_type == k2D_lite))  // if doing 2D projection, skip y-axis
                 n_lin_reco_bins *= 1;
             else
-                n_lin_reco_bins *= tmp_bin_scale;
+                n_lin_reco_bins *= tmp_reco_bin_scale;
         }
 
         // Make the name and axis label. Won't use name if input name is defined.
@@ -285,7 +285,7 @@ double VariableHyperDBase<UNIVERSE>::GetBinVolume(int lin_bin) const {
         int var = i;
         if (m_analysis_type == k2D && i >= 1)
             var += 1;
-        std::vector<double> var_binning = m_vars_vec[i]->GetBinVec();
+        std::vector<double> var_binning = m_vars_vec[var]->GetBinVec();
         double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
         if (bin_width < 0)
             std::cout << "VariableHyperDBase: WARNING, negative binwidth, will affect bin volume" << std::endl;
@@ -407,7 +407,7 @@ double VariableHyperDBase<UNIVERSE>::GetRecoBinVolume(int lin_bin) const {
         if (m_analysis_type == k2D && i >= 1)
             var += 1;
         int var_bin = ps_coords[i];
-        std::vector<double> var_binning = m_vars_vec[i]->GetRecoBinVec();
+        std::vector<double> var_binning = m_vars_vec[var]->GetRecoBinVec();
         double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
 
         if (bin_width < 0)
