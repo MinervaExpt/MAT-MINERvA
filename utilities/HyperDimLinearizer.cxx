@@ -10,9 +10,20 @@ namespace PlotUtils {
 // ==========================================================================
 // CTOR
 // ==========================================================================
-// HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, int type) {
+HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, int type) {
+    if (type == 0) {
+        m_analysis_type = k2D;
+    } else if (type == 1) {
+        m_analysis_type = k1D;
+    } else if (type == 2) {
+        m_analysis_type = k2D_lite;
+    } else if (type == 3) {
+        m_analysis_type = k1D_lite;
+    }
     
-// }
+    // Jank to make things build right for now.
+    HyperDimLinearizer(input, m_analysis_type);
+}
 
 HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, EAnalysisType type) {
     m_invec = input;
@@ -41,7 +52,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
         if (type == k1D || type == k1D_lite) {  // for type 1 and 3 fully linearized, this is simple
             m_n_global_x_bins *= tmp_el_size;
             if (i < input.size() - 1)  // skip last element since we already start with x-axis cell size
-                m_cell_size.pushback(tmp_el_size * m_cell_size[i]);
+                m_cell_size.push_back(tmp_el_size * m_cell_size[i]);
         } else {         // Type 0 and 2 keep y axis so need to do some kerjiggering
             if (i != 1)  // For counting number of bins, skip y axis if doing type 0, 2
                 m_n_global_x_bins *= tmp_el_size;
@@ -70,7 +81,7 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
             global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
         }
         if (global_x == 0 || global_x == m_n_global_x_bins) {
-            std::cout "HyperDimLinearizer::GetBin WARNING: type 0 or 1 analysis is returning a global under/overflow index which should not happen." << std::endl;
+            std::cout << "HyperDimLinearizer::GetBin WARNING: type 0 or 1 analysis is returning a global under/overflow index which should not happen." << std::endl;
         }
     } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use global under/overflow bins
         int x_bin = Get1DBin(values[0], 0);                                   // Do x alone since it is indexed differently for other dims for these types
@@ -98,7 +109,7 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
     
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) // Get the y-bin if doing 2D
         y_bin = Get1DBin(values[1], 1);
-    std::pair<int> lin_bin = std::make_pair(global_x, y_bin); // Make them a pair. If doing 1D, should get 0 there
+    std::pair<int,int> lin_bin = std::make_pair(global_x, y_bin); // Make them a pair. If doing 1D, should get 0 there
     return lin_bin;
 }
 

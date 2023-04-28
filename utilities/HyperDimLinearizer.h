@@ -12,7 +12,7 @@ enum EAnalysisType { k2D,
                      k1D_lite };  
 class HyperDimLinearizer {
    public:
-    // HyperDimLinearizer(std::vector<std::vector<double> > input, int type);                       // constructor
+    HyperDimLinearizer(std::vector<std::vector<double> > input, int type);                       // constructor
     HyperDimLinearizer(std::vector<std::vector<double> > input, EAnalysisType type);             // constructor
 
     std::pair<int, int> GetBin(std::vector<double> values);                                      // Template get bin for 2,3,4D cases
