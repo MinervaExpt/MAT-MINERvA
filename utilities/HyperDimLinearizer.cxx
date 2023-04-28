@@ -21,7 +21,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, i
         m_analysis_type = k1D_lite;
     }
     
-    // Jank to make things build right for now.
+    // Jank to make things build right for now. TODO: Make less jank
     HyperDimLinearizer(input, m_analysis_type);
 }
 
@@ -32,7 +32,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
 
     std::cout << "Contructing class with " << n_dim << " dimensions of type " << type << std::endl;
     if (type == k2D_lite || type == k1D_lite)
-        std::cout << " Selected lightweight type. Under/overflow bins will not be counted.";
+        std::cout << " Selected lightweight type. Under/overflow bins will not be counted." << std::endl;
 
     m_cell_size = {1};      // vector to put sizes of each cell for each bin in each axis. Should start with x-axis which is always 1 bin.
     m_n_global_x_bins = 1;  // will tell you how many bins you have on your linearized axis
@@ -80,13 +80,13 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
             int tmp_bin = Get1DBin(values[i], i);  // Find the bin index on a given axis given a value in that axis
             global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
         }
-        if (global_x == 0 || global_x == m_n_global_x_bins) {
+        if (global_x < 0 || global_x > m_n_global_x_bins) {
             std::cout << "HyperDimLinearizer::GetBin WARNING: type 0 or 1 analysis is returning a global under/overflow index which should not happen." << std::endl;
         }
     } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use global under/overflow bins
         int x_bin = Get1DBin(values[0], 0);                                   // Do x alone since it is indexed differently for other dims for these types
         if (x_bin == 0) {                                                     // If x is in underflow, go to global underflow and break
-            global_x = 0;
+            global_x = -1;
         } else if (x_bin > m_el_size[0]) {                                    // If x is in overflow, go to global overflow and break
             global_x = m_n_global_x_bins + 1;
         } else {                                                              // If x is fine, check the other dimensions
@@ -94,7 +94,9 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
             for (unsigned int i = 1; i < values.size(); i++) {
                 if (m_analysis_type == k2D_lite && i == 1)  // Need to skip y if doing 2D to avoid adding under/over of y to global_x under/over bins
                     continue;
+                
                 int tmp_bin = Get1DBin(values[i], i);  // Get bin index on that axis and check if under/overflow
+                
                 if (tmp_bin == 0) {
                     global_x = 0;
                     break;
@@ -381,6 +383,23 @@ void HyperDimLinearizer::TestFunctionality() {
         }
         std::cout << std::endl;
     }
+}
+
+// These get you some values to check it worked as expected
+EAnalysisType HyperDimLinearizer::GetAnalysisType() {
+    return m_analysis_type;
+}
+
+std::vector<int> HyperDimLinearizer::GetAxesSizes() {
+    return m_el_size;
+}
+
+std::vector<int> HyperDimLinearizer::GetCellSizes() {
+    return m_cell_size;
+}
+
+int HyperDimLinearizer::GetNLinBins() {
+    return m_n_global_x_bins;
 }
 
 // ==========================================================================
