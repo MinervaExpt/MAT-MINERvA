@@ -129,34 +129,63 @@ int HyperDimLinearizer::Get1DBin(double value, int el) {
 
 // TODO: Make this work for type 2 (2D no under/overflow) and 3 (1D no under/overflow)
 //! Giving the x bin get the x,z... bin (or xyz in the schema of a fully linearlized model.
-std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin = 0) {  //  Default ybin to 0 to maintain behaviour from Dan's version
+std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin) {  //  Default ybin to 0 to maintain behaviour from Dan's version
     // given global x return vector of x,y,z... bin coordinates.
     std::vector<int> ValueCoordinates;
-    std::vector<int> ValueReverse;
-    if (m_analysis_type == k2D) {
-        for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
-            int scale = 1;
-            if (i == 1) {  // skip y
-                ValueCoordinates.push_back(0);
-                continue;
+    if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {
+        if (x_linbin >= m_n_global_x_bins) { // TODO: what should you do if under/overflow for lite types cases?
+            std::cout << "HyperDimLinearizer::GetValues: WARNING: lite analysis type under/overflow not implemented yet..." << std::endl;
+            for (unsigned int i = 0; i < m_invec.size(); i++) {
+                if ((m_analysis_type == k2D_lite) && i == 1) {
+                    ValueCoordinates.push_back(y_bin);  // If doing 2D, put in y bin and skip the other steps.
+                    continue;
+                }
+                ValueCoordinates.push_back(-1);
             }
-            for (unsigned int j = 0; j < m_invec.size(); j++) {
-                if (j == i) break;     // don't scale by bigger super cells
-                if (j == 1) continue;  // skip y
-                scale *= m_el_size[j];
-            }
-            ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
-        }
-    } else if (m_analysis_type == k1D) {
-        for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
-            int scale = 1;
-            for (unsigned int j = 0; j < m_invec.size(); j++) {
-                if (j == i) break;  // don't scale by bigger super cells
-                scale *= m_el_size[j];
-            }
-            ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
+            return ValueCoordinates;
         }
     }
+
+    int mod_bin = x_linbin; // Place holder
+    for (unsigned int i = 0; i < m_invec.size(); i++) { // Loop over coordinates
+        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1 ) {
+            ValueCoordinates.push_back(y_bin);  // If doing 2D, put in y bin and skip the other steps.
+            continue;
+        }
+        int val = (mod_bin / m_cell_size[i]) % m_el_size[i]; 
+        if ((m_analysis_type == k2D || m_analysis_type == k1D)) {
+            ValueCoordinates.push_back(val);
+        } else {  // If doing lite types need to index bins up one since underflow is binned differently.
+            ValueCoordinates.push_back(val + 1);
+        }
+        mod_bin += -(val * m_cell_size[i]);  // Trim off the cells so you're always on the "left side" of a cell for next axis, prevents rounding issues from division
+    }
+
+    // std::vector<int> ValueCoordinates;
+    // if (m_analysis_type == k2D) {
+    //     for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
+    //         int scale = 1;
+    //         if (i == 1) {  // skip y
+    //             ValueCoordinates.push_back(0);
+    //             continue;
+    //         }
+    //         for (unsigned int j = 0; j < m_invec.size(); j++) {
+    //             if (j == i) break;     // don't scale by bigger super cells
+    //             if (j == 1) continue;  // skip y
+    //             scale *= m_el_size[j];
+    //         }
+    //         ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
+    //     }
+    // } else if (m_analysis_type == k1D) {
+    //     for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
+    //         int scale = 1;
+    //         for (unsigned int j = 0; j < m_invec.size(); j++) {
+    //             if (j == i) break;  // don't scale by bigger super cells
+    //             scale *= m_el_size[j];
+    //         }
+    //         ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
+    //     }
+    // }
     return ValueCoordinates;
 }
 

@@ -9,29 +9,29 @@ namespace PlotUtils {
 enum EAnalysisType { k2D,
                      k1D,
                      k2D_lite,
-                     k1D_lite };  
+                     k1D_lite };
 class HyperDimLinearizer {
    public:
-    HyperDimLinearizer(std::vector<std::vector<double> > input, int type);                       // constructor
-    HyperDimLinearizer(std::vector<std::vector<double> > input, EAnalysisType type);             // constructor
+    HyperDimLinearizer(std::vector<std::vector<double> > input, int type);            // constructor
+    HyperDimLinearizer(std::vector<std::vector<double> > input, EAnalysisType type);  // constructor
 
-    std::pair<int, int> GetBin(std::vector<double> values);                                      // Template get bin for 2,3,4D cases
-    std::vector<int> GetValues(int x);                                                           //
-    
+    std::pair<int, int> GetBin(std::vector<double> values);   // Template get bin for 2,3,4D cases
+    std::vector<int> GetValues(int x_linbin, int y_bin = 0);  // Given linearized x (and y if doing 2D), get coords in phase space. y_bin defaults to 0 to maintain behaviour with Dan's stuff.
+
     std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH2D* result, bool IncludeSys);                  // This is for type==0
     std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);  // This is for type==0
-    
-    TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                                // This is for type==1, 2D result only!!
-    PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                // This is for type==1, 2D result only!!
-    
-    void TestFunctionality();                                                                    // a bunch of prints.
+
+    TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                  // This is for type==1, 2D result only!!
+    PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);  // This is for type==1, 2D result only!!
+
+    void TestFunctionality();  // a bunch of prints.
     EAnalysisType GetAnalysisType();
     std::vector<int> GetAxesSizes();
     std::vector<int> GetCellSizes();
     int GetNLinBins();
 
-    bool IsUnderflow(int lin_bin, int axis);                                                     // Check if a bin in linearized is an underflow bin in phase space, axis defaulted
-    bool IsOverflow(int lin_bin, int axis);                                                      // Check if a bin in linearized is an overflow bin in phase space, axis defaulted
+    bool IsUnderflow(int lin_bin, int axis);  // Check if a bin in linearized is an underflow bin in phase space, axis defaulted
+    bool IsOverflow(int lin_bin, int axis);   // Check if a bin in linearized is an overflow bin in phase space, axis defaulted
 
    private:
     int Get1DBin(double value, int el);  // Get the bin number for one of the dimensions
@@ -44,6 +44,6 @@ class HyperDimLinearizer {
     std::vector<int> m_cell_size;               // For each axis, how big are the cells of a single bin of that axis in bin space
     std::vector<std::vector<double> > m_invec;  // internal vector of boundaries
     int m_n_global_x_bins;
-};
+}; // class HyperDimLinearizer
 }  // namespace PlotUtils
 #endif
