@@ -42,7 +42,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
         int tmp_el_size;
         if (type == k2D || type == k1D) {  // number of bins = (vector size - 1 + 2) counting under/overflow for each axis
             tmp_el_size = input[i].size() + 1;
-        } else if (type == k2D_lite || type == k1D_lite) {  // number of bins = (vector size - 1) using global under/overflow
+        } else { // if (type == k2D_lite || type == k1D_lite) {  // number of bins = (vector size - 1) using global under/overflow
             tmp_el_size = input[i].size() - 1;
         }
         std::cout << "Bin number " << i << "\t" << tmp_el_size << std::endl;
@@ -80,35 +80,35 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
             int tmp_bin = Get1DBin(values[i], i);  // Find the bin index on a given axis given a value in that axis
             global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
         }
-        if (global_x < 0 || global_x > m_n_global_x_bins) {
-            std::cout << "HyperDimLinearizer::GetBin WARNING: type 0 or 1 analysis is returning a global under/overflow index which should not happen." << std::endl;
-        }
     } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use global under/overflow bins
-        int x_bin = Get1DBin(values[0], 0);                                   // Do x alone since it is indexed differently for other dims for these types
-        if (x_bin == 0) {                                                     // If x is in underflow, go to global underflow and break
-            global_x = -1;
-        } else if (x_bin > m_el_size[0]) {                                    // If x is in overflow, go to global overflow and break
-            global_x = m_n_global_x_bins + 1;
-        } else {                                                              // If x is fine, check the other dimensions
-            global_x += x_bin;
-            for (unsigned int i = 1; i < values.size(); i++) {
-                if (m_analysis_type == k2D_lite && i == 1)  // Need to skip y if doing 2D to avoid adding under/over of y to global_x under/over bins
-                    continue;
-                
-                int tmp_bin = Get1DBin(values[i], i);  // Get bin index on that axis and check if under/overflow
-                
-                if (tmp_bin == 0) {
-                    global_x = 0;
-                    break;
-                } else if (tmp_bin > m_el_size[i]) {
-                    global_x = m_n_global_x_bins + 1;
-                    break;
-                }
-                global_x += (tmp_bin - 1) * m_cell_size[i];  // Have to index minus 1, since 0 and n+1 indexes are not allowed here.
+        int tmp_global_x = 1;                                                 // Need to start at 1 for these types
+        bool underover_bool = false;                                          // Switch turns on if you are in under/overflow on any axis (except y for 2D)
+        int flow_x = 1;                                                       // Bin in the under/overflow bins at end of linearized x axis
+        int flow_cell = 1;                                                    // Cell size for over/underflow bins (gets changed in the loop)
+
+        for (unsigned int i = 0; i < values.size(); i++) {
+            if (i == 1 && m_analysis_type == k2D_lite)  // Skip y axis if doing 2D, necessary to avoid putting y under/overflow in the global_x over/under
+                continue;
+            int tmp_bin = Get1DBin(values[i], i);
+            if (tmp_bin == 0) {                                 // If underflow on axis
+                // flow_x += 0;                                 // (# of flow cells - 1) * (flow cell size), but # of flow cells is always 0 here
+                underover_bool = true;                          // Switch on under/over
+            } else if (tmp_bin == m_el_size[i] + 1) {           // If overflow on axis
+                flow_x += 2 * flow_cell;
+                underover_bool = true;
+            } else {                                             // If normally binned on axis
+                flow_x += 1 * flow_cell;                         // (# of flow cells - 1) * (flow cell size)
+                tmp_global_x += (tmp_bin - 1) * m_cell_size[i];  // Add to global_x while we're here
             }
+            flow_cell *= 3; // Bump up to next size of flow cells, accounts for underflow, normalflow, & overflow
+        }
+        if (!underover_bool) { // Event was normally binned on all axes
+            global_x = tmp_global_x;
+        } else {  // If any number of axes were in under/overflow
+            global_x = m_n_global_x_bins + flow_x; // all under/overflow gets put out at the end.
         }
     }
-    
+
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) // Get the y-bin if doing 2D
         y_bin = Get1DBin(values[1], 1);
     std::pair<int,int> lin_bin = std::make_pair(global_x, y_bin); // Make them a pair. If doing 1D, should get 0 there
@@ -132,64 +132,32 @@ int HyperDimLinearizer::Get1DBin(double value, int el) {
 std::vector<int> HyperDimLinearizer::GetValues(int x) {
     // given global x return vector of x,y,z... bin coordinates.
     std::vector<int> ValueCoordinates;
-    std::vector<int> cell_size = {1};
-    for (unsigned int i = 1; i < m_invec.size(); i++) {
-        if (i = 1 && (m_analysis_type == k2D || m_analysis_type == k2D_lite)) {  // Put place holder, skip y-axis if doing 2D analysis
-            cell_size.push_back(0);
-            continue;
-        }
-        cell_size.push_back(m_el_size[i - 1] * cell_size[i - 1]);
-    }
-
-    for (int i = m_invec.size() - 1; i > -1; i--) {
-        if (i = 1 && (m_analysis_type == k2D || m_analysis_type == k2D_lite)) {  // Put place holder, skip y-axis if doing 2D analysis
-            ValueCoordinates.push_back(0);
-            continue;
-        }
-
-        int tmp_x = x;
-        for (unsigned int j = 1; j < m_el_size[i] + 1; j++) {
-            int cell_max = cell_size[i] * j;
-            if (tmp_x > cell_max)
+    std::vector<int> ValueReverse;
+    if (m_analysis_type == 0) {
+        for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
+            int scale = 1;
+            if (i == 1) {  // skip y
+                ValueCoordinates.push_back(0);
                 continue;
-            else {
-                ValueCoordinates.push_back(j);
-                tmp_x = tmp_x % cell_size[i];
-                break;
             }
+            for (unsigned int j = 0; j < m_invec.size(); j++) {
+                if (j == i) break;     // don't scale by bigger super cells
+                if (j == 1) continue;  // skip y
+                scale *= m_el_size[j];
+            }
+            ValueCoordinates.push_back((x / scale) % m_el_size[i]);
         }
-        // std::vector<int> ValueReverse; // TODO: is this used?
-        if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {
-            for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
-                int scale = 1;
-                if (i == 1)  // skip y
-                {
-                    ValueCoordinates.push_back(0);
-                    continue;
-                }
-                for (unsigned int j = 0; j < m_invec.size(); j++) {
-                    if (j == i)
-                        break;  // don't scale by bigger super cells
-                    if (j == 1)
-                        continue;  // skip y
-                    scale *= m_el_size[j];
-                }
-                ValueCoordinates.push_back((x / scale) % m_el_size[i]);
+    } else if (m_analysis_type == 1) {
+        for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
+            int scale = 1;
+            for (unsigned int j = 0; j < m_invec.size(); j++) {
+                if (j == i) break;  // don't scale by bigger super cells
+                scale *= m_el_size[j];
             }
-        } else if (m_analysis_type == k1D || m_analysis_type == k1D_lite) {
-            for (unsigned int i = 0; i < m_invec.size(); i++)  // loop over coordinates
-            {
-                int scale = 1;
-                for (unsigned int j = 0; j < m_invec.size(); j++) {
-                    if (j == i)
-                        break;  // don't scale by bigger super cells
-                    scale *= m_el_size[j];
-                }
-                ValueCoordinates.push_back((x / scale) % m_el_size[i]);
-            }
+            ValueCoordinates.push_back((x / scale) % m_el_size[i]);
         }
-        return ValueCoordinates;
     }
+    return ValueCoordinates;
 }
 
 // ==========================================================================
@@ -399,6 +367,17 @@ std::vector<int> HyperDimLinearizer::GetCellSizes() {
 }
 
 int HyperDimLinearizer::GetNLinBins() {
+    if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) { // If doing lightweight, you'll also have under/overflow out at the end.
+        std::cout << "Lite analysis type, returning (# of global bins) + (# of under/overflow bins)" << std::endl;
+        int flow_bins = 1;
+        for (unsigned int i = 0; i < m_invec.size(); i++) {
+            if (m_analysis_type == k2D_lite && i == 1)
+                continue;
+            flow_bins *= 3;
+        }
+        return m_n_global_x_bins + flow_bins;
+    }
+
     return m_n_global_x_bins;
 }
 
