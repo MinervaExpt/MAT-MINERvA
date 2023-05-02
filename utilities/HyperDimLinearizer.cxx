@@ -81,9 +81,9 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
             global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
         }
     } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use global under/overflow bins
-        int tmp_global_x = 1;                                                 // Need to start at 1 for these types
+        int tmp_global_x = 0;                                                 
         bool underover_bool = false;                                          // Switch turns on if you are in under/overflow on any axis (except y for 2D)
-        int flow_x = 1;                                                       // Bin in the under/overflow bins at end of linearized x axis
+        int flow_x = 0;                                                       // Bin in the under/overflow bins at end of linearized x axis
         int flow_cell = 1;                                                    // Cell size for over/underflow bins (gets changed in the loop)
 
         for (unsigned int i = 0; i < values.size(); i++) {
@@ -129,11 +129,11 @@ int HyperDimLinearizer::Get1DBin(double value, int el) {
 
 // TODO: Make this work for type 2 (2D no under/overflow) and 3 (1D no under/overflow)
 //! Giving the x bin get the x,z... bin (or xyz in the schema of a fully linearlized model.
-std::vector<int> HyperDimLinearizer::GetValues(int x) {
+std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin = 0) {  //  Default ybin to 0 to maintain behaviour from Dan's version
     // given global x return vector of x,y,z... bin coordinates.
     std::vector<int> ValueCoordinates;
     std::vector<int> ValueReverse;
-    if (m_analysis_type == 0) {
+    if (m_analysis_type == k2D) {
         for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
             int scale = 1;
             if (i == 1) {  // skip y
@@ -145,16 +145,16 @@ std::vector<int> HyperDimLinearizer::GetValues(int x) {
                 if (j == 1) continue;  // skip y
                 scale *= m_el_size[j];
             }
-            ValueCoordinates.push_back((x / scale) % m_el_size[i]);
+            ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
         }
-    } else if (m_analysis_type == 1) {
+    } else if (m_analysis_type == k1D) {
         for (unsigned int i = 0; i < m_invec.size(); i++) {  // loop over coordinates
             int scale = 1;
             for (unsigned int j = 0; j < m_invec.size(); j++) {
                 if (j == i) break;  // don't scale by bigger super cells
                 scale *= m_el_size[j];
             }
-            ValueCoordinates.push_back((x / scale) % m_el_size[i]);
+            ValueCoordinates.push_back((x_linbin / scale) % m_el_size[i]);
         }
     }
     return ValueCoordinates;
