@@ -6,10 +6,11 @@
 
 #include "PlotUtils/MnvH2D.h"
 namespace PlotUtils {
-enum EAnalysisType { k2D,
-                     k1D,
-                     k2D_lite,
-                     k1D_lite };
+enum EAnalysisType { k2D = 0,         // "type 0"
+                     k1D = 1,         // "type 1"
+                     k2D_lite = 2,    // "type 2"
+                     k1D_lite = 3 };  // "type 3"
+
 class HyperDimLinearizer {
    public:
     HyperDimLinearizer(std::vector<std::vector<double> > input, int type);            // constructor
@@ -44,6 +45,6 @@ class HyperDimLinearizer {
     std::vector<int> m_cell_size;               // For each axis, how big are the cells of a single bin of that axis in bin space
     std::vector<std::vector<double> > m_invec;  // internal vector of boundaries
     int m_n_global_x_bins;
-}; // class HyperDimLinearizer
+};  // class HyperDimLinearizer
 }  // namespace PlotUtils
 #endif
