@@ -77,24 +77,26 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
 std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
     int global_x = 0;  // Returned linearized bin
     int y_bin = 0;
-
+    
     if (m_analysis_type == k2D || m_analysis_type == k1D) {  // These include under/overflow bins
         for (unsigned int i = 0; i < values.size(); i++) {
-            int tmp_bin = Get1DBin(values[i], i);  // Find the bin index on a given axis given a value in that axis
-            global_x += tmp_bin * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space, if doing 2D, y should have cell size of 0
+            // int tmp_bin = Get1DBin(values[i], i);                 // Find the bin index on a given axis given a value in that axis
+            global_x += Get1DBin(values[i], i) * m_cell_size[i];  // Add that many cells of that axis to global_x in linearized space; for 2D, y should have cell size of 0
         }
     } else if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // These use more global under/overflow bins out at the end
-        int tmp_global_x = 0;                                                 // Placeholder
-        bool underover_bool = false;                                          // Switch turns on if you are in under/overflow on any axis (except y for 2D)
-        int flow_x = 0;                                                       // Bin in the under/overflow bins at end of linearized x axis
-        int flow_cell = 1;                                                    // Cell size for over/underflow bins (gets changed in the loop)
+
+        int tmp_global_x = 0;         
+        bool underover_bool = false;  // Switch turns on if you are in under/overflow on any axis (except y for 2D)
+        int flow_x = 0;               // Bin in the under/overflow bins at end of linearized x axis
+        int flow_cell = 1;            // Cell size for over/underflow bins (gets changed in the loop)
 
         for (unsigned int i = 0; i < values.size(); i++) {
             if (i == 1 && m_analysis_type == k2D_lite)  // Skip y axis if doing 2D, necessary to avoid putting y under/overflow in the global_x over/under
                 continue;
+
             int tmp_bin = Get1DBin(values[i], i);
-            if (tmp_bin == 0) {  // If underflow
-                // flow_x += 0;                                 // (# of flow cells - 1) * (flow cell size), but # of flow cells is always 0 here
+            if (tmp_bin == 0) {                        // If underflow
+                // flow_x += 0;                           // (# of flow cells - 1) * (flow cell size), but # of flow cells is always 0 here
                 underover_bool = true;
             } else if (tmp_bin == m_el_size[i] + 1) {  // If overflow
                 flow_x += 2 * flow_cell;               // (# of flow cells - 1) * (flow cell size)
@@ -103,8 +105,10 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
                 flow_x += 1 * flow_cell;                         // (# of flow cells - 1) * (flow cell size)
                 tmp_global_x += (tmp_bin - 1) * m_cell_size[i];  // Add to global_x while we're here, tmp_bin - 1 since we don't have underflow like it was before
             }
+
             flow_cell *= 3;  // Bump up to next size of flow cells, accounts for underflow, normalflow, & overflow for each axis
         }
+
         if (!underover_bool) {  // Event was normally binned on all axes
             global_x = tmp_global_x;
         } else {                                    // If any number of axes were in under/overflow
