@@ -108,7 +108,7 @@ class VariableHyperDBase {
     PlotUtils::HyperDimLinearizer *m_hyperdim;       // Member HyperDim
     PlotUtils::HyperDimLinearizer *m_reco_hyperdim;  // Member HyperDim for reco bins
 
-    std::vector<std::unique_ptr<VariableBase<UNIVERSE>>> m_vars_vec;  // Vector of component variables
+    std::vector<VariableBase<UNIVERSE>*> m_vars_vec;  // Vector of component variables
 
     std::vector<std::vector<double>> m_vars_binnings;       // Vector of binnings each variable's binning in phase space
     std::vector<std::vector<double>> m_vars_reco_binnings;  // Vector of reco binnings each variable's binning in phase space
