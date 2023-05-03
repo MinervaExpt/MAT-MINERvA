@@ -8,11 +8,6 @@
 // #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
-// enum EAnalysisType { k2D,
-//                      k1D,
-//                      k2D_lite,
-//                      k1D_lite };  // Enum used for denoting "analysis type" of hyperdim. Right now only type 1 with fully linearized 1D tested.
-//                                   // k2D_lite and k1D_lite use globol under/overflow bins and are experimental and not implemented yet.
 
 #ifndef __CINT__
 template <class UNIVERSE>
@@ -21,22 +16,22 @@ class VariableHyperDBase {
     //============================================================================
     // CTORS
     //============================================================================
-    VariableHyperDBase(const EAnalysisType t2D_t1D = k1D);  // Defualt, recommended if using derived Variable class.
-    VariableHyperDBase(const std::string name,              // Just sets name, recommended if using derived Variable class
-                       const EAnalysisType t2D_t1D = k1D);
+    VariableHyperDBase(const EAnalysisType type);  // Defualt, recommended if using derived Variable class.
+    VariableHyperDBase(const std::string name,     // Just sets name, recommended if using derived Variable class
+                       const EAnalysisType type);
     VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &d,  // Build from vector of input VariableBases, can get tricky if using derived Variable class
-                       const EAnalysisType t2D_t1D = k1D);
+                       const EAnalysisType type);
     VariableHyperDBase(const std::string name,  // Build from vector of input VariableBases and set a name, can get tricky if using derived Variable class
                        const std::vector<VariableBase<UNIVERSE> *> &d,
-                       const EAnalysisType t2D_t1D = k1D);
+                       const EAnalysisType type);
 
     //============================================================================
     // Setters/Getters
     //============================================================================
    public:
-    std::string SetName(const std::string name);        // Change the name of the Variable
-    void SetAnalysisType(const EAnalysisType t2D_t1D);  // Set hyperdim to project to 2D or 1D, 2D not configured yet -NHV 2/21/23
-    void AddVariable(VariableBase<UNIVERSE> &var);      // Add variables individually and setup, recommended used with default or name only ctr
+    std::string SetName(const std::string name);     // Change the name of the Variable
+    void SetAnalysisType(const EAnalysisType type);  // Set hyperdim to project to 2D or 1D, 2D not configured yet -NHV 2/21/23
+    void AddVariable(VariableBase<UNIVERSE> &var);   // Add variables individually and setup, recommended used with default or name only ctr
 
    private:
     void Setup(const std::string i_name = "");  // Setup a variable based off current state of input variables (e.g after adding another variable), should only be used internally for now
@@ -100,11 +95,11 @@ class VariableHyperDBase {
     // Member Variables
     //============================================================================
    protected:                       // Allow user access to read, but not write.
-    EAnalysisType m_analysis_type;  // This sets the "Analysis type" from HyperDimLinearizer: k2D is type 0, k1D is type 1. k2D_lite is type 2, k1D_lite type 3 are without under/overflow (not yet implemented)
+    EAnalysisType m_analysis_type;  // "Analysis type" from HyperDimLinearizer: k2D, k1D, k2D_lite, k1D_lite
     int m_dimension;                // Number of axes/dimensions in variable phase space
 
     std::string m_lin_axis_label;  // Label for linearized x axis. Excludes y axis if doing a 2D (type 0) analysis
-    std::string m_y_axis_label;    // y axis label if doing a 2D (type 0) analysis
+    std::string m_y_axis_label;    // y axis label if doing a 2D (k2D, k2D_lite) analysis
    private:
     std::string m_name;  // Name of variable, should be var1name_var2name_var3name etc
 
