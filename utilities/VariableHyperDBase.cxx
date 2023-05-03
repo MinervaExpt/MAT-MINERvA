@@ -83,6 +83,7 @@ void VariableHyperDBase<UNIVERSE>::AddVariable(VariableBase<UNIVERSE> &var) {
     if (var.HasRecoBinning()) m_has_reco_binning = true;
     // Reset everything given new vars.
     Setup();
+    std::cout << "PlotUtils::VariableHyperDBase: Added 1D Variable " << var.GetName() << std::endl;
 }
 
 // Setup variable. This is private and should only be used internally for now.
