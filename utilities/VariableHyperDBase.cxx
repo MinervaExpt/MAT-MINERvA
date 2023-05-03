@@ -224,9 +224,8 @@ void VariableHyperDBase<UNIVERSE>::PrintBinning() const {
 
     if (m_analysis_type == k2D || m_analysis_type = k2D_lite) {
         std::cout << " y axis: ";
-        for (const auto b : m_vars_vec[1]->GetBinVec()) {
+        for (const auto b : m_vars_vec[1]->GetBinVec())
             std::cout << b << " ";
-        }
         std::cout << "\n";
     }
 }
@@ -334,16 +333,14 @@ void VariableHyperDBase<UNIVERSE>::PrintRecoBinning() const {
         PrintBinning();
     } else {
         std::cout << GetName() << " reco binning: ";
-        for (const auto b : GetRecoBinVec()) {
+        for (const auto b : GetRecoBinVec()) 
             std::cout << b << " ";
-        }
         std::cout << "\n";
 
         if (m_analysis_type == k2D) {
             std::cout << " y axis: ";
-            for (const auto b : m_vars_vec[1]->GetRecBinVec()) {
+            for (const auto b : m_vars_vec[1]->GetRecBinVec()) 
                 std::cout << b << " ";
-            }
             std::cout << "\n";
         }
     }
@@ -426,12 +423,10 @@ double VariableHyperDBase<UNIVERSE>::GetRecoValue(const UNIVERSE &universe,
                                                   const int idx1,
                                                   const int idx2) const {
     std::vector<double> val_vec;
-    for (int i = 0; i < m_dimension; i++) {
+    for (int i = 0; i < m_dimension; i++) 
         val_vec.push_back(m_vars_vec[i]->GetRecoValue(universe, idx1, idx2));
-    }
-    if (!m_has_reco_binning) {
+    if (!m_has_reco_binning) 
         return ((m_hyperdim->GetBin(val_vec)).first) + 0.0001;  // 0.0001 offset to so value isn't exactly on a bin edge and fillers can put it in that bin
-    }
     return ((m_reco_hyperdim->GetBin(val_vec)).first) + 0.0001;  // If there's reco binning, use that hyperdim
 }
 
@@ -441,9 +436,8 @@ double VariableHyperDBase<UNIVERSE>::GetTrueValue(const UNIVERSE &universe,
                                                   const int idx1,
                                                   const int idx2) const {
     std::vector<double> val_vec;
-    for (int i = 0; i < m_dimension; i++) {
+    for (int i = 0; i < m_dimension; i++) 
         val_vec.push_back(m_vars_vec[i]->GetTrueValue(universe, idx1, idx2));
-    }
     return ((m_hyperdim->GetBin(val_vec)).first) + 0.0001;  // 0.0001 offset to so fillers can put it in that bin
 }
 
@@ -471,9 +465,9 @@ std::vector<double> VariableHyperDBase<UNIVERSE>::GetRecoValueVec(const UNIVERSE
                                                                   const int idx1,
                                                                   const int idx2) const {
     std::vector<double> value_vec;
-    for (int i = 0; i < m_dimension; i++) {
+    for (int i = 0; i < m_dimension; i++) 
         value_vec.push_back(m_vars_vec[i]->GetRecoValue(universe, idx1, idx2));
-    }
+    
     return value_vec;
 }
 
@@ -483,9 +477,8 @@ std::vector<double> VariableHyperDBase<UNIVERSE>::GetTrueValueVec(const UNIVERSE
                                                                   const int idx1,
                                                                   const int idx2) const {
     std::vector<double> value_vec;
-    for (int i = 0; i < m_dimension; i++) {
+    for (int i = 0; i < m_dimension; i++) 
         value_vec.push_back(m_vars_vec[i]->GetTrueValue(universe, idx1, idx2));
-    }
     return value_vec;
 }
 
