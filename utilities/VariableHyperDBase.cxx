@@ -102,7 +102,7 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) {  // i_name 
 
         // If recobinning is set (should happen at initialization or setup), do this for reco too
         if (m_has_reco_binning)
-            vars_reco_bins.push_back(m_vars_vec[i]->GetRecoBinVec(););
+            vars_reco_bins.push_back(m_vars_vec[i]->GetRecoBinVec());
 
         // Make the name and axis label. Won't use name if input name is defined.
         name += m_vars_vec[i]->GetName();
@@ -222,7 +222,7 @@ void VariableHyperDBase<UNIVERSE>::PrintBinning() const {
     for (const auto b : m_lin_binning) std::cout << b << " ";
     std::cout << "\n";
 
-    if (m_analysis_type == k2D || m_analysis_type = k2D_lite) {
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {
         std::cout << " y axis: ";
         for (const auto b : m_vars_vec[1]->GetBinVec())
             std::cout << b << " ";
