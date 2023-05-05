@@ -30,13 +30,15 @@ class VariableHyperDBase {
     //============================================================================
    public:
     std::string SetName(const std::string name);     // Change the name of the Variable
-    void SetAnalysisType(const EAnalysisType type);  // Set hyperdim to project to 2D or 1D, 2D not configured yet -NHV 2/21/23
+    void SetAnalysisType(const EAnalysisType type);  // Set hyperdim to project to 2D (k2D), 1D (k1D), and lite types (k2D_lite, k1D_lite)
     void AddVariable(VariableBase<UNIVERSE> &var);   // Add variables individually and setup, recommended used with default or name only ctr
 
    private:
-    void Setup(const std::string i_name = "");  // Setup a variable based off current state of input variables (e.g after adding another variable), should only be used internally for now
+    void Setup();  // Setup a variable based off current state of input variables (e.g after adding another variable), should only be used internally for now
 
    public:
+    
+    EAnalysisType GetAnalysisType() const;             // Get the analysis type.
     std::string GetName() const;                       // Get Name of linearized variable
     std::string GetName(int axis) const;               // Get name of an input Variable on an axis in phase space
     std::string GetAxisLabel() const;                  // Get axis label for linearzed variable
@@ -101,7 +103,8 @@ class VariableHyperDBase {
     std::string m_lin_axis_label;  // Label for linearized x axis. Excludes y axis if doing a 2D (type 0) analysis
     std::string m_y_axis_label;    // y axis label if doing a 2D (k2D, k2D_lite) analysis
    private:
-    std::string m_name;  // Name of variable, should be var1name_var2name_var3name etc
+    std::string m_name;  // Name of variable,  should be var1name_var2name_var3name... if you don't manually set
+    bool m_is_named;     // Boolean hack so it knows if you named it (true) or it named itself/doesn't have a name (false);
 
     bool m_has_reco_binning;  // Bool to note if there's separate reco binning or not
 

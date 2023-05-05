@@ -16,44 +16,44 @@ using namespace PlotUtils;
 //==============================================================================
 // CTORS
 //==============================================================================
-// Default. Recommended if using a derived Variable class
+// Default. Recommended if using a derived Variable class. You will need to add 1D vars manually.
 template <class UNIVERSE>
 VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const EAnalysisType type) {
+    m_is_named = false;
     m_analysis_type = type;  // Set to k2D, k1D, k2D_lite, k1D_lite
-                             // You will need to add variables, etc.
 }
 
-// Default but set the name too. Recommended if using a derived Variable class
+// Default but set the name too. Recommended if using a derived Variable class. You will need to add 1D vars manually.
 template <class UNIVERSE>
 VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const EAnalysisType type) {
     m_name = name;
+    m_is_named = true;
     m_analysis_type = type;  // Set to k2D, k1D, k2D_lite, k1D_lite
-                             // You will need to add variables, etc.
 }
 
 // Constructor with vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &d, const EAnalysisType type) {
-    m_vars_vec = d;
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &vars_vec, const EAnalysisType type) {
+    m_is_named = false;
+    m_vars_vec = vars_vec;
     m_analysis_type = type;
-    for (int i = 0; i < d.size(); i++) {
-        if (d[i]->HasRecoBinning()) m_has_reco_binning = true;
+    for (int i = 0; i < vars_vec.size(); i++) {
+        if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
     }
-
     Setup();
 }
 
 // Constructor with user designated name & vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::vector<VariableBase<UNIVERSE> *> &d, const EAnalysisType type) {
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::vector<VariableBase<UNIVERSE> *> &vars_vec, const EAnalysisType type) {
     m_name = name;
-    m_vars_vec = d;
+    m_is_named = true;
+    m_vars_vec = vars_vec;
     m_analysis_type = type;
-    for (int i = 0; i < d.size(); i++) {
-        if (d[i]->HasRecoBinning()) m_has_reco_binning = true;
+    for (int i = 0; i < vars_vec.size(); i++) {
+        if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
     }
-
-    Setup(name);
+    Setup();
 }
 
 //==============================================================================
@@ -63,6 +63,7 @@ VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::ve
 // Change the name
 template <class UNIVERSE>
 std::string VariableHyperDBase<UNIVERSE>::SetName(const std::string name) {
+    m_is_named = true;
     return m_name = name;
 }
 
@@ -72,7 +73,7 @@ void VariableHyperDBase<UNIVERSE>::SetAnalysisType(const EAnalysisType type) {
     m_analysis_type = type;
     std::cout << "VariableHyperDBase: WARNING you may be changing your analysis type to " << m_analysis_type << std::endl;
     // Reset everything given new analysis type.
-    Setup(GetName());
+    Setup();
 }
 
 // Add another variable, useful if using default constructor and derived Variable class
@@ -86,9 +87,9 @@ void VariableHyperDBase<UNIVERSE>::AddVariable(VariableBase<UNIVERSE> &var) {
     std::cout << "PlotUtils::VariableHyperDBase: Added 1D Variable " << var.GetName() << std::endl;
 }
 
-// Setup variable. This is private and should only be used internally for now.
+// Setup variable. This is private and should only be used internally.
 template <class UNIVERSE>
-void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) {  // i_name defaults to "" and it will build a name for you instead
+void VariableHyperDBase<UNIVERSE>::Setup() {  
     m_dimension = m_vars_vec.size();
 
     std::string name;
@@ -105,11 +106,12 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) {  // i_name 
         if (m_has_reco_binning)
             vars_reco_bins.push_back(m_vars_vec[i]->GetRecoBinVec());
 
-        // Make the name and axis label. Won't use name if input name is defined.
+        // Make the name and axis label. Won't use name if name is set manually.
         name += m_vars_vec[i]->GetName();
         if (i < (m_dimension - 1))
             name += "_";
-        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1) {  // if doing 2D, set y axis label and don't add it to the linearized axis label
+        // If doing 2D, set y axis label and don't add it to the linearized axis label
+        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1) {
             m_y_axis_label = m_vars_vec[i]->GetAxisLabel();
             continue;
         }
@@ -118,11 +120,10 @@ void VariableHyperDBase<UNIVERSE>::Setup(const std::string i_name) {  // i_name 
             lin_axis_label += ", ";
     }
 
-    // If there's an input name, it will use that one, otherwise it'll use the one it just made
-    if (i_name.size() > 0)
-        m_name = i_name;
-    else
+    // If it wasn't manually named, it will make one for you automatically
+    if (!m_is_named)
         m_name = name;
+
     // Store axis label, list of input binnings
     m_lin_axis_label = lin_axis_label;
     m_vars_binnings = vars_bins;
@@ -166,6 +167,38 @@ std::string VariableHyperDBase<UNIVERSE>::GetName() const {
 template <class UNIVERSE>
 std::string VariableHyperDBase<UNIVERSE>::GetName(int axis) const {
     return m_vars_vec[axis]->GetName();
+}
+
+// Get the analysis type. Will also check that analysis types match and tell you if not.
+template <class UNIVERSE>
+EAnalysisType VariableHyperDBase<UNIVERSE>::GetAnalysisType() const {
+    EAnalysisType hyperdim_type = m_hyperdim->GetAnalysisType();
+    bool mismatch = false;
+
+    if (hyperdim_type != m_analysis_type) {
+        std::cout << "VariableHyperDBase::GetAnalysisType() WARNING: member HyperDimLinearizer analysis type does not match set type." << std::endl;
+        std::cout << "    Variable's type: " << m_analysis_type << ",  Hyperdim's type: " << hyperdim_type << std::endl;
+        mismatch = true;
+    }
+    if (m_has_reco_binning) {
+        EAnalysisType reco_hyperdim_type = m_reco_hyperdim->GetAnalysisType();
+        if (reco_hyperdim_type != m_analysis_type) {
+            std::cout << "VariableHyperDBase::GetAnalysisType() WARNING: member reco HyperDimLinearizer analysis type does not match set type." << std::endl;
+            std::cout << "    Variable's type: " << m_analysis_type << ",  RECO Hyperdim's type: " << reco_hyperdim_type << std::endl;
+            mismatch = true;
+        }
+        if (hyperdim_type != reco_hyperdim_type) {
+            std::cout << "VariableHyperDBase::GetAnalysisType() WARNING: member HyperDimLinearizer analysis type does not match RECO HyperDimLinearizer type." << std::endl;
+            std::cout << "    HyperDim's type: " << hyperdim_type << ",  RECO Hyperdim's type: " << reco_hyperdim_type << std::endl;
+            mismatch = true;
+        }
+    }
+
+    if (!mismatch) {
+        std::cout << "VariableHyperDBase::GetAnalysisType(): analysis types all match." << std::endl;
+    }
+
+    return m_analysis_type;
 }
 
 // Get axis label of linearized variable
