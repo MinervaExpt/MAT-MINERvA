@@ -101,11 +101,9 @@ void VariableHyperDBase<UNIVERSE>::Setup() {
     for (int i = 0; i < m_dimension; i++) {
         // Make vector of binnings, count number of bins
         vars_bins.push_back(m_vars_vec[i]->GetBinVec());
-
         // If recobinning is set (should happen at initialization or setup), do this for reco too
         if (m_has_reco_binning)
             vars_reco_bins.push_back(m_vars_vec[i]->GetRecoBinVec());
-
         // Make the name and axis label. Won't use name if name is set manually.
         name += m_vars_vec[i]->GetName();
         if (i < (m_dimension - 1))
@@ -119,36 +117,31 @@ void VariableHyperDBase<UNIVERSE>::Setup() {
         if (i < (m_dimension - 1))
             lin_axis_label += ", ";
     }
-
     // If it wasn't manually named, it will make one for you automatically
     if (!m_is_named)
         m_name = name;
-
     // Store axis label, list of input binnings
     m_lin_axis_label = lin_axis_label;
     m_vars_binnings = vars_bins;
-
     // Initialize a hyperdim with that binning
     m_hyperdim = new HyperDimLinearizer(vars_bins, m_analysis_type);
-
     // TODO: If doing lite types still want to include the under/overflow bins?
     int n_lin_bins = m_hyperdim->GetNLinBins();
     std::vector<double> lin_binning;
     for (int i = 0; i < n_lin_bins + 1; i++)
         lin_binning.push_back(i);
-
     m_lin_binning = lin_binning;
 
     // If you have reco binning, do that here too
     if (m_has_reco_binning) {
         m_vars_reco_binnings = vars_reco_bins;
+
         m_reco_hyperdim = new HyperDimLinearizer(vars_reco_bins, m_analysis_type);
         int n_lin_reco_bins = m_reco_hyperdim->GetNLinBins();
 
         std::vector<double> lin_reco_binning;
         for (int i = 0; i < n_lin_reco_bins + 1; i++) 
             lin_reco_binning.push_back(i);
-        
         m_lin_reco_binning = lin_reco_binning;
     }
 }
