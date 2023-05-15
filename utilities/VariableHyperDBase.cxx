@@ -18,41 +18,41 @@ using namespace PlotUtils;
 //==============================================================================
 // Default. Recommended if using a derived Variable class. You will need to add 1D vars manually.
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const EAnalysisType type) {
-    m_is_named = false;
-    m_analysis_type = type;  // Set to k2D, k1D, k2D_lite, k1D_lite
-}
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const EAnalysisType type)
+    : m_is_named(false),
+      m_analysis_type(type) {}
 
 // Default but set the name too. Recommended if using a derived Variable class. You will need to add 1D vars manually.
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const EAnalysisType type) {
-    m_name = name;
-    m_is_named = true;
-    m_analysis_type = type;  // Set to k2D, k1D, k2D_lite, k1D_lite
-}
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, 
+                                                 const EAnalysisType type) 
+    : m_name(name),
+      m_is_named(true),
+      m_analysis_type(type) {}
 
 // Constructor with vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &vars_vec, const EAnalysisType type) {
-    m_is_named = false;
-    m_vars_vec = vars_vec;
-    m_analysis_type = type;
-    for (int i = 0; i < vars_vec.size(); i++) {
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<UNIVERSE> *> &vars_vec, 
+                                                 const EAnalysisType type)
+    : m_is_named(false),
+      m_vars_vec(vars_vec),
+      m_analysis_type(type) {
+    for (int i = 0; i < vars_vec.size(); i++)
         if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
-    }
     Setup();
 }
 
 // Constructor with user designated name & vector of input variables, will likely have issues if using derived Variable class
 template <class UNIVERSE>
-VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name, const std::vector<VariableBase<UNIVERSE> *> &vars_vec, const EAnalysisType type) {
-    m_name = name;
-    m_is_named = true;
-    m_vars_vec = vars_vec;
-    m_analysis_type = type;
-    for (int i = 0; i < vars_vec.size(); i++) {
+VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name,
+                                                 const std::vector<VariableBase<UNIVERSE> *> &vars_vec,
+                                                 const EAnalysisType type)
+    : m_name(name),
+      m_is_named(true),
+      m_vars_vec(vars_vec),
+      m_analysis_type(type) {
+    for (int i = 0; i < vars_vec.size(); i++)
         if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
-    }
     Setup();
 }
 
@@ -187,9 +187,9 @@ EAnalysisType VariableHyperDBase<UNIVERSE>::GetAnalysisType() const {
         }
     }
 
-    if (!mismatch) {
-        std::cout << "VariableHyperDBase::GetAnalysisType(): analysis types all match." << std::endl;
-    }
+    // if (!mismatch) {
+    //     std::cout << "VariableHyperDBase::GetAnalysisType(): analysis types all match." << std::endl;
+    // }
 
     return m_analysis_type;
 }
