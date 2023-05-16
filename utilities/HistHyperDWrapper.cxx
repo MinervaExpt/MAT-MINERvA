@@ -95,26 +95,38 @@ template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* hist_name, const char* title,
                                         int nBinsX, double xmin, double xmax,
                                         int nBinsY, double ymin, double ymax,
-                                        std::vector<T*>& univs)
-    : analysisType(k2D),
-      hist2D(new Hist2DWrapper<T>(hist_name, title, nBinsX, xmin, xmax, nBinsY, ymin, ymax, univs)),
-      hist(nullptr) {}
+                                        std::vector<T*>& univs,
+                                        EAnalysisType type)
+    : analysisType(type) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
+        HistHyperDWrapper(hist_name, title, nBinsX, xmin, xmax, univs);
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
+        hist2D = new Hist2DWrapper<T>(hist_name, title, nBinsX, xmin, xmax, nBinsY, ymin, ymax, univs);
+        hist = nullptr;
+    }
+}
 
 // Constructor from map< string, vector<universe> >
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* hist_name, const char* title,
                                         int nBinsX, double xmin, double xmax,
                                         int nBinsY, double ymin, double ymax,
-                                        std::map<std::string, std::vector<T*> >& bands)
-    : analysisType(k2D),
-      hist2D(new Hist2DWrapper<T>(hist_name, title, nBinsX, xmin, xmax, nBinsY, ymin, ymax, bands)),
-      hist(nullptr) {}
+                                        std::map<std::string, std::vector<T*> >& bands,
+                                        EAnalysisType type)
+    : analysisType(type) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
+        HistHyperDWrapper(hist_name, title, nBinsX, xmin, xmax, bands);
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
+        hist2D = new Hist2DWrapper<T>(hist_name, title, nBinsX, xmin, xmax, nBinsY, ymin, ymax, bands);
+        hist = nullptr;
+    }
+}
 
 // Constructor from template MnvH2D and vector of universes
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(MnvH2D* h2d,
                                         std::vector<T*>& univs,
-                                        bool clear_error_bands) 
+                                        bool clear_error_bands)
     : analysisType(k2D),
       hist2D(new Hist2DWrapper<T>(h2d, univs, clear_error_bands)),
       hist(nullptr) {}
@@ -132,25 +144,34 @@ HistHyperDWrapper<T>::HistHyperDWrapper(MnvH2D* h2d,
 // Constructor from a vector of universes and variable bin widths
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
-                                        const std::vector<double> xBins, 
+                                        const std::vector<double> xBins,
                                         const std::vector<double> yBins,
-                                        std::vector<T*>& univs)
-    : HistHyperDWrapper(
-          new MnvH2D(name, title, xBins.size() - 1, xBins.data(),
-                     yBins.size() - 1, yBins.data()),
-          univs) {}
+                                        std::vector<T*>& univs,
+                                        EAnalysisType type)
+    : analysisType(type) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
+        HistHyperDWrapper(new MnvH1D(name, title, xBins.size() - 1, xBins.data()), univs);
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
+        HistHyperDWrapper(new MnvH2D(name, title, xBins.size() - 1, xBins.data(), yBins.size() - 1, yBins.data()), univs);
+    }
+}
 
 // Constructor from a map of universes and variable bin widths
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
                                         const std::vector<double> xBins,
                                         const std::vector<double> yBins,
-                                        std::map<std::string, std::vector<T*> >& bands)
-    : HistHyperDWrapper(
-          new MnvH2D(name, title, xBins.size() - 1, xBins.data(),
-                     yBins.size() - 1, yBins.data()),
-          bands) {}
-#endif //__GCCXML__
+                                        std::map<std::string, std::vector<T*> >& bands,
+                                        EAnalysisType type)
+    : analysisType(type) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
+        HistHyperDWrapper(new MnvH1D(name, title, xBins.size() - 1, xBins.data()), bands);
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
+        HistHyperDWrapper(new MnvH2D(name, title, xBins.size() - 1, xBins.data(), yBins.size() - 1, yBins.data()), bands);
+    }
+}
+
+#endif  //__GCCXML__
 
 // ============================================================================
 // Methods
@@ -166,7 +187,7 @@ void HistHyperDWrapper<T>::SyncCVHistos() {
 // TODO: add check to see if 1D or 2D?
 template <typename T>
 void HistHyperDWrapper<T>::FillUniverse(const T& univ,
-                                        const double value, 
+                                        const double value,
                                         const double weight) {
     hist->FillUniverse(univ, value, weight);
 }
@@ -184,9 +205,9 @@ void HistHyperDWrapper<T>::FillUniverse(const T& univ,
                                         const double valueX,
                                         const double valueY,
                                         const double weight) {
-    if (analysisType == k1D) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
         hist->FillUniverse(univ, valueX, weight);
-    } else {  // if (analysisType == k2D)
+    } else if (analysisType == k2D || analysisType == k2D_lite) {  
         hist2D->FillUniverse(univ, valueX, valueY, weight);
     }
 }
@@ -196,9 +217,9 @@ void HistHyperDWrapper<T>::FillUniverse(const T* univ,
                                         const double valueX,
                                         const double valueY,
                                         const double weight) {
-    if (analysisType == k1D) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
         hist->FillUniverse(*univ, valueX, weight);
-    } else {  // if (analysisType == k2D)
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
         hist2D->FillUniverse(*univ, valueX, valueY, weight);
     }
 }
@@ -214,11 +235,22 @@ TH2D* HistHyperDWrapper<T>::univHist2D(const T* univ) const {
 }
 
 template <typename T>
+void HistHyperDWrapper<T>::Write(TFile& file) {
+    if (analysisType == k1D || analysisType == k1D_lite) {
+        hist->SetDirectory(&file);
+        hist->Write();
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
+        hist2D->SetDirectory(&file);
+        hist2D->Write();
+    }
+}
+
+template <typename T>
 void HistHyperDWrapper<T>::AddUniverses(const std::string name, const T* univ,
                                         const int nhists, const int histno) {
-    if (analysisType == k1D) { // 1D already has this method, 2D doesn't
+    if (analysisType == k1D || analysisType == k1D_lite) {  // 1D already has this method, 2D doesn't
         hist->AddUniverses(name, univ, nhists, histno);
-    } else { // if (analysisType == k2D)
+    } else if (analysisType == k2D || analysisType == k2D_lite) {
         assert(histno < nhists);
         if (name == "cv") {
             if (nhists != 1) {
@@ -228,7 +260,7 @@ void HistHyperDWrapper<T>::AddUniverses(const std::string name, const T* univ,
                 std::exit(2);
             }
 
-            hist2D->univToHistMap[univ] = hist2D->hist; // TODO: this look right?
+            hist2D->univToHistMap[univ] = hist2D->hist;  // TODO: this look right?
             return;
         }
         std::cout << "try to add a " << univ->ShortName() << " as " << name

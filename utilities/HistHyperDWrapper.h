@@ -109,13 +109,15 @@ struct HistHyperDWrapper {
     HistHyperDWrapper(const char* hist_name, const char* title,
                       int nBinsX, double xmin, double xmax,
                       int nBinsY, double ymin, double ymax,
-                      std::vector<T*>& univs);
+                      std::vector<T*>& univs, 
+                      EAnalysisType type = k2D);
 
     //! 2D Constructor from a map of errors/universes
     HistHyperDWrapper(const char* hist_name, const char* title,
                       int nBins, double xmin, double xmax,
                       int nBinsY, double ymin, double ymax,
-                      std::map<std::string, std::vector<T*> >& bands);
+                      std::map<std::string, std::vector<T*> >& bands,
+                      EAnalysisType type = k2D);
 
     //! 2D Constructor from a pre-existing MnvH2D and a vector of universes
     HistHyperDWrapper(MnvH2D* h2d, std::vector<T*>& univs, bool clear_error_bands = false);
@@ -127,23 +129,17 @@ struct HistHyperDWrapper {
     //! 2D Constructor from a vector of universes and variable bin widths
     HistHyperDWrapper(const char* name, const char* title,
                       const std::vector<double> xBins, const std::vector<double> yBins,
-                      std::vector<T*>& univs);
+                      std::vector<T*>& univs,
+                      EAnalysisType type = k2D);
 
     //! 2D Constructor from a map of universes and variable bin widths
     HistHyperDWrapper(const char* name, const char* title,
                       const std::vector<double> xBins, const std::vector<double> yBins,
-                      std::map<std::string, std::vector<T*> >& bands);
+                      std::map<std::string, std::vector<T*> >& bands,
+                      EAnalysisType type = k2D);
+
 #endif // __GCCXML__
 
-    //! 2D Constructor from a histogram to add universes later, uniform bins. HMS
-    HistHyperDWrapper(const char* hist_name, const char* title,
-                      int nBinsX, double xmin, double xmax,
-                      int nBinsY, double ymin, double ymax);
-
-    //! 2D Constructor from a histogram to add universes later, variable bins. HMS
-    HistHyperDWrapper(const char* hist_name, const char* title,
-                      int nBins, std::vector<double> xBins,
-                      int nBinsY, std::vector<double> yBins);
 
     // Data members
 
@@ -162,6 +158,8 @@ struct HistHyperDWrapper {
 
     //! Synchronize the MnvH2D's CV with each of its error band's CVs.
     void SyncCVHistos();
+
+    void Write(TFile& file);
 
     //! Access universe TH21 given a universe object
     TH1D* univHist(const T* univ) const;
