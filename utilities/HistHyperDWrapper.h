@@ -52,8 +52,8 @@
 
 // #include "PlotUtils/MnvH1D.h"
 // #include "PlotUtils/MnvH2D.h"
-#include "PlotUtils/HistWrapper.h"
 #include "PlotUtils/Hist2DWrapper.h"
+#include "PlotUtils/HistWrapper.h"
 #include "PlotUtils/HyperDimLinearizer.h"
 
 namespace PlotUtils {
@@ -62,16 +62,18 @@ struct HistHyperDWrapper {
     // Default Constructor
     HistHyperDWrapper();
 
-// 1D constructors 
+    // 1D constructors
     //! 1D Constructor from a vector of universes
     HistHyperDWrapper(const char* hist_name, const char* title,
                       int nBins, double xmin, double xmax,
-                      std::vector<T*>& univs);
+                      std::vector<T*>& univs,
+                      EAnalysisType type = k1D);
 
     //! 1D Constructor from a map of errors/universes, uniform bins
     HistHyperDWrapper(const char* hist_name, const char* title,
                       int nBins, double xmin, double xmax,
-                      std::map<std::string, std::vector<T*> >& bands);
+                      std::map<std::string, std::vector<T*> >& bands,
+                      EAnalysisType type = k1D);
 
     //! 1D Constructor from a pre-existing MnvH1D and a vector of universes
     HistHyperDWrapper(MnvH1D* h1d, std::vector<T*>& univs,
@@ -86,30 +88,34 @@ struct HistHyperDWrapper {
     //! 1D Constructor from a vector of universes and variable bin widths
     HistHyperDWrapper(const char* name, const char* title,
                       const std::vector<double> bins,
-                      std::vector<T*>& univs);
+                      std::vector<T*>& univs,
+                      EAnalysisType type = k1D);
 
     //! 1D Constructor from a map of universes and variable bin widths
     HistHyperDWrapper(const char* name, const char* title,
                       const std::vector<double> bins,
-                      std::map<std::string, std::vector<T*> >& bands);
+                      std::map<std::string, std::vector<T*> >& bands,
+                      EAnalysisType type = k1D);
 
 #endif  //__GCCXML__
 
     //! 1D Constructor from a histogram to add universes later, uniform bins. HMS
     HistHyperDWrapper(const char* hist_name, const char* title,
-                      int nBins, double xmin, double xmax);
+                      int nBins, double xmin, double xmax,
+                      EAnalysisType type = k1D);
 
     //! 1D Constructor from a histogram to add universes later, variable bins. HMS
     HistHyperDWrapper(const char* hist_name, const char* title,
-                      int nBins, std::vector<double> bins);
+                      int nBins, std::vector<double> bins,
+                      EAnalysisType type = k1D);
 
-// 2D Constructors
+    // 2D Constructors
 
     //! 2D Constructor from a vector of universes
     HistHyperDWrapper(const char* hist_name, const char* title,
                       int nBinsX, double xmin, double xmax,
                       int nBinsY, double ymin, double ymax,
-                      std::vector<T*>& univs, 
+                      std::vector<T*>& univs,
                       EAnalysisType type = k2D);
 
     //! 2D Constructor from a map of errors/universes
@@ -138,8 +144,7 @@ struct HistHyperDWrapper {
                       std::map<std::string, std::vector<T*> >& bands,
                       EAnalysisType type = k2D);
 
-#endif // __GCCXML__
-
+#endif  // __GCCXML__
 
     // Data members
 
@@ -152,8 +157,8 @@ struct HistHyperDWrapper {
     // std::map<const T*, TH1D*> univToHistMap;        /*!< The map between univs and TH2 */
     // std::map<const T*, TH2D*> univToHist2DMap;        /*!< The map between univs and TH2 */
 
-    std::map<std::string, int> nhistsAssignedSoFar;   /*!< Counter for nunivs in each band.*/
-    
+    std::map<std::string, int> nhistsAssignedSoFar; /*!< Counter for nunivs in each band.*/
+
     EAnalysisType analysisType;
 
     //! Synchronize the MnvH2D's CV with each of its error band's CVs.

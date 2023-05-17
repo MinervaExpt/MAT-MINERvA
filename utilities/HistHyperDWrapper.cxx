@@ -20,8 +20,9 @@ HistHyperDWrapper<T>::HistHyperDWrapper()
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* hist_name, const char* title,
                                         int nBins, double xmin, double xmax,
-                                        std::vector<T*>& univs)
-    : analysisType(k1D),
+                                        std::vector<T*>& univs,
+                                        EAnalysisType type)
+    : analysisType(type),
       hist(new HistWrapper<T>(hist_name, title, nBins, xmin, xmax, univs)),
       hist2D(nullptr) {}
 
@@ -29,8 +30,9 @@ HistHyperDWrapper<T>::HistHyperDWrapper(const char* hist_name, const char* title
 template <typename T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* hist_name, const char* title,
                                         int nBins, double xmin, double xmax,
-                                        std::map<std::string, std::vector<T*> >& bands)
-    : analysisType(k1D),
+                                        std::map<std::string, std::vector<T*> >& bands,
+                                        EAnalysisType type)
+    : analysisType(type),
       hist(new HistWrapper<T>(hist_name, title, nBins, xmin, xmax, bands)),
       hist2D(nullptr) {}
 
@@ -56,32 +58,36 @@ HistHyperDWrapper<T>::HistHyperDWrapper(MnvH1D* h1d,
 template <class T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
                                         const std::vector<double> bins,
-                                        std::map<std::string, std::vector<T*> >& bands)
-    : HistHyperDWrapper(
-          new MnvH1D(name, title, bins.size() - 1, bins.data()),
-          bands) {}
+                                        std::map<std::string, std::vector<T*> >& bands,
+                                        EAnalysisType type)
+    : HistHyperDWrapper(new MnvH1D(name, title, bins.size() - 1, bins.data()), bands) {
+    analysisType = type;
+}
 
 // Construct from a vector of universes and variable-sized bins.
 template <class T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
                                         const std::vector<double> bins,
-                                        std::vector<T*>& univs)
-    : HistHyperDWrapper(
-          new MnvH1D(name, title, bins.size() - 1, bins.data()),
-          univs) {}
+                                        std::vector<T*>& univs,
+                                        EAnalysisType type)
+    : HistHyperDWrapper(new MnvH1D(name, title, bins.size() - 1, bins.data()), univs) {
+    analysisType = type;
+}
 #endif  //__GCCXML__
 
 template <class T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
-                                        int nBins, double xmin, double xmax)
-    : analysisType(k1D),
+                                        int nBins, double xmin, double xmax,
+                                        EAnalysisType type)
+    : analysisType(type),
       hist(new HistWrapper<T>(name, title, nBins, xmin, xmax)),
       hist2D(nullptr) {}
 
 template <class T>
 HistHyperDWrapper<T>::HistHyperDWrapper(const char* name, const char* title,
-                                        int nBins, std::vector<double> bins)
-    : analysisType(k1D),
+                                        int nBins, std::vector<double> bins,
+                                        EAnalysisType type)
+    : analysisType(type),
       hist(new HistWrapper<T>(name, title, nBins, bins)),
       hist2D(nullptr) {}
 
