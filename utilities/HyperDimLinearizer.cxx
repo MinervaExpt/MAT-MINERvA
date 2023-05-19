@@ -192,6 +192,40 @@ std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, b
     return expanded_results;
 }
 
+std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool IncludeSys = false) {
+    std::vector<TH2D *> expanded_result;
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) // This is only for 1D, so send it back if it's 2D
+        return expanded_result;
+    TH1D result_hist;
+    if (!IncludeSys)
+        result_hist = result->GetCVHistoWithStatError();
+    else
+        result_hist = result->GetCVHistoWithError();
+
+    const int n_x_bins = m_invec[0].size() - 1;
+    const int n_y_bins = m_invec[1].size() - 1;
+
+    const int n_xy_cells = m_n_global_x_bins / m_cell_size[2];
+    int tmp_start == 1;
+    for (int i = 0; i < n_xy_cells; i++) {
+        TH2D *tmp_xy_cell = new TH2D(Form("XY_Cell_%d", i), Form("XY_Cell_%d", i), n_x_bins, &m_invec[0][0], n_y_bins, &m_invec[1][0]);
+        for (int lin_bin = tmp_start; lin_bin < tmp_start + m_cell_size[2]; lin_bin++) {
+            std::vector<int> ps_coords = GetValues(lin_bin);
+            double tmp_val = result_hist.GetBinContent(lin_bin);
+            double tmp_err = result_hist.GetBinError(lin_bin);
+            tmp_xy_cell->SetBinContent(ps_coords[0], ps_coords[1], tmp_val);
+            tmp_xy_cell->SetBinError(ps_coords[0], ps_coords[1], tmp_err);
+        }
+        expanded_result.push_back((TH2D *)tmp_xy_cell->Clone());
+        tmp_start += m_cell_size[2];
+    }
+
+    // for (int lin_bin = 1; lin_bin < m_n_global_x_bins + 1; lin_bin++) {
+    //     std::vector<int> ps_coords = GetValues(lin_bin);
+    // }
+    return expanded_result;
+}
+
 // TODO: Make sure this works for type 2,3
 std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHistos" << std::endl;

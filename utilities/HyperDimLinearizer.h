@@ -20,7 +20,8 @@ class HyperDimLinearizer {
     std::vector<int> GetValues(int x_linbin, int y_bin = 0);  // Given linearized x (and y if doing 2D), get coords in phase space. y_bin defaults to 0 to maintain behaviour with Dan's stuff.
 
     std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH2D* result, bool IncludeSys);                  // This is for type==0
-    std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);  // This is for type==0
+    std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH1D* result, bool IncludeSys);                  // This is for type==1
+    std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);  // This is for type==1
 
     TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                  // This is for type==1, 2D result only!!
     PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);  // This is for type==1, 2D result only!!
