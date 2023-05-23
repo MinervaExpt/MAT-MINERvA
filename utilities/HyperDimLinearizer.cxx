@@ -156,10 +156,14 @@ std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin) {  //  D
 // Get Histograms, Not used in MAT implementation
 // ==========================================================================
 
-// TODO: Make sure this all works for type 2,3
 std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     //  std::cout <<"Entering Get2DHistos"  << std::endl;
     std::vector<TH2D *> expanded_results;
+    if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
+        std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 2D histogram, but have analysis type set to a 1D type. Returning blank list." << std::endl;
+        return expanded_results;
+    }
+
     TH2D mybigmap;
     if (!IncludeSys)
         mybigmap = result->GetCVHistoWithStatError();
@@ -192,44 +196,14 @@ std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, b
     return expanded_results;
 }
 
-std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool IncludeSys = false) {
-    std::vector<TH2D *> expanded_result;
-    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) // This is only for 1D, so send it back if it's 2D
-        return expanded_result;
-    TH1D result_hist;
-    if (!IncludeSys)
-        result_hist = result->GetCVHistoWithStatError();
-    else
-        result_hist = result->GetCVHistoWithError();
-
-    const int n_x_bins = m_invec[0].size() - 1;
-    const int n_y_bins = m_invec[1].size() - 1;
-
-    const int n_xy_cells = m_n_global_x_bins / m_cell_size[2];
-    int tmp_start == 1;
-    for (int i = 0; i < n_xy_cells; i++) {
-        TH2D *tmp_xy_cell = new TH2D(Form("XY_Cell_%d", i), Form("XY_Cell_%d", i), n_x_bins, &m_invec[0][0], n_y_bins, &m_invec[1][0]);
-        for (int lin_bin = tmp_start; lin_bin < tmp_start + m_cell_size[2]; lin_bin++) {
-            std::vector<int> ps_coords = GetValues(lin_bin);
-            double tmp_val = result_hist.GetBinContent(lin_bin);
-            double tmp_err = result_hist.GetBinError(lin_bin);
-            tmp_xy_cell->SetBinContent(ps_coords[0], ps_coords[1], tmp_val);
-            tmp_xy_cell->SetBinError(ps_coords[0], ps_coords[1], tmp_err);
-        }
-        expanded_result.push_back((TH2D *)tmp_xy_cell->Clone());
-        tmp_start += m_cell_size[2];
-    }
-
-    // for (int lin_bin = 1; lin_bin < m_n_global_x_bins + 1; lin_bin++) {
-    //     std::vector<int> ps_coords = GetValues(lin_bin);
-    // }
-    return expanded_result;
-}
-
-// TODO: Make sure this works for type 2,3
 std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH2D *> expanded_results;
+    if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
+        std::cout << "HyperDimLinearizer::Get2DMnvHistos WARNING: you gave a 2D histogram, but have analysis type set to a 1D type. Returning blank list." << std::endl;
+        return expanded_results;
+    }
+
     std::vector<TH2D *> CV_vals = Get2DHistos(result, false);  // get CV
     std::cout << "I have " << CV_vals.size() << " CV histograms" << std::endl;
     for (uint i = 0; i < CV_vals.size(); i++)
@@ -284,6 +258,115 @@ std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::M
     return expanded_results;
 }
 
+std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool IncludeSys = false) {
+    std::vector<TH2D *> expanded_result;
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) { // This is only for 1D, so send it back if it's 2D type
+        std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
+        return expanded_result;
+    }
+
+    TH1D result_hist;
+    if (!IncludeSys)
+        result_hist = result->GetCVHistoWithStatError();
+    else
+        result_hist = result->GetCVHistoWithError();
+
+    const int n_x_bins = m_invec[0].size() - 1;
+    const int n_y_bins = m_invec[1].size() - 1;
+
+    int xy_cell_size;  // How big an x-y cell is
+    if (m_cell_size.size() > 2)
+        xy_cell_size = m_cell_size[2];  // If you have 3D or more linearized to 1D, x-y cell is the size of a z bin.
+    else
+        xy_cell_size = m_n_global_x_bins;  // If you only have 2D linearized to 1D, whole hist is one x-y cell
+
+    const int n_xy_cells = m_n_global_x_bins / xy_cell_size;  // How many x-y cells are in your linearized histogram.
+    int tmp_start = 1;                                       // Starting bin for each cell. Get's updated.
+    for (int i = 0; i < n_xy_cells; i++) {                    // Loop over cells, making a 2D hist for each one
+        TH2D *tmp_xy_cell = new TH2D(Form("XY_Cell_%d", i), Form("XY_Cell_%d", i), n_x_bins, &m_invec[0][0], n_y_bins, &m_invec[1][0]);
+        for (int lin_bin = tmp_start; lin_bin < tmp_start + xy_cell_size; lin_bin++) { // Loop
+            std::vector<int> ps_coords = GetValues(lin_bin);
+            double tmp_val = result_hist.GetBinContent(lin_bin);
+            double tmp_err = result_hist.GetBinError(lin_bin);
+            tmp_xy_cell->SetBinContent(ps_coords[0], ps_coords[1], tmp_val);
+            tmp_xy_cell->SetBinError(ps_coords[0], ps_coords[1], tmp_err);
+        }
+        expanded_result.push_back((TH2D *)tmp_xy_cell->Clone());
+        tmp_start += xy_cell_size;
+    }
+
+    // for (int lin_bin = 1; lin_bin < m_n_global_x_bins + 1; lin_bin++) {
+    //     std::vector<int> ps_coords = GetValues(lin_bin);
+    // }
+    return expanded_result;
+}
+
+// This is for 1D types
+std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+    std::cout << "Entering Get2DMnvHistos" << std::endl;
+    std::vector<PlotUtils::MnvH2D *> expanded_result;
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
+        std::cout << "HyperDimLinearizer::Get2DMnvHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
+        return expanded_result;
+    }
+    std::vector<TH2D *> CV_vals = Get2DHistos(result, false);  // get CV
+
+    std::cout << "I have " << CV_vals.size() << " CV histograms" << std::endl;
+
+    for (uint i = 0; i < CV_vals.size(); i++)
+        expanded_result.push_back(new PlotUtils::MnvH2D(*CV_vals[i]));
+
+    std::vector<std::string> vertnames = result->GetVertErrorBandNames();
+    std::vector<std::string> latnames = result->GetLatErrorBandNames();
+
+    // Do vert first
+    for (uint i = 0; i < vertnames.size(); i++) {
+        std::cout << "Working on " << vertnames[i] << std::endl;
+        std::vector<std::vector<TH2D *>> unihists;
+        PlotUtils::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH2D *> tmpbandset = Get2DHistos(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (int j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH2D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_result[j]->AddVertErrorBand(vertnames[i], tmpband);
+        }
+    }
+    // now lat
+    for (uint i = 0; i < latnames.size(); i++) {
+        std::cout << "Working on " << latnames[i] << std::endl;
+        std::vector<std::vector<TH2D *>> unihists;
+        PlotUtils::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH2D *> tmpbandset = Get2DHistos(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (uint j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH2D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_result[j]->AddLatErrorBand(latnames[i], tmpband);
+        }
+    }
+    return expanded_result;
+}
+
+
+// This is for type 1 only, and only for 2D results
 TH2D *HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     if (m_invec.size() != 2)
         std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
@@ -312,7 +395,7 @@ TH2D *HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys 
     return my2D;
 }
 
-// TODO: Make sure this works for type 2,3
+// This is for type 1 only, and only for 2D results
 PlotUtils::MnvH2D *HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHisto" << std::endl;
     if (m_invec.size() != 2)
