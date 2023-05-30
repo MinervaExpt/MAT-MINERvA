@@ -434,6 +434,103 @@ PlotUtils::MnvH2D *HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, 
     return expanded_result;
 }
 
+std::vector<TH1D *> HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+    std::vector<TH1D *> expanded_result;
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
+        std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
+        return expanded_result;
+    }
+
+    TH1D result_hist;
+    if (!IncludeSys)
+        result_hist = result->GetCVHistoWithStatError();
+    else
+        result_hist = result->GetCVHistoWithError();
+
+    const int n_x_bins = m_invec[0].size() - 1;
+    const int n_y_bins = m_invec[1].size() - 1;
+
+    const int x_cell_size = m_cell_size[1];
+    const int n_x_cells = m_n_global_x_bins / m_cell_size[1];  // How many x cells are in your linearized histogram.
+    int tmp_start = 1;                                         // Starting bin for each cell. Get's updated.
+    for (int i = 0; i < n_x_cells; i++) {                     // Loop over cells, making a 2D hist for each one
+        TH1D *tmp_x_cell = new TH1D(Form("X_Cell_%d", i), Form("X_Cell_%d", i), n_x_bins, &m_invec[0][0]);
+        for (int lin_bin = tmp_start; lin_bin < tmp_start + x_cell_size; lin_bin++) {  // Loop
+            std::vector<int> ps_coords = GetValues(lin_bin);
+            double tmp_val = result_hist.GetBinContent(lin_bin);
+            double tmp_err = result_hist.GetBinError(lin_bin);
+            tmp_x_cell->SetBinContent(ps_coords[0], tmp_val);
+            tmp_x_cell->SetBinError(ps_coords[0], tmp_err);
+        }
+        expanded_result.push_back((TH1D *)tmp_x_cell->Clone());
+        tmp_start += x_cell_size;
+    }
+    return expanded_result;
+}
+
+std::vector<PlotUtils::MnvH1D *> HyperDimLinearizer::Get1DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+    std::cout << "Entering Get1DMnvHistos" << std::endl;
+    std::vector<PlotUtils::MnvH1D *> expanded_result;
+    if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
+        std::cout << "HyperDimLinearizer::Get2DMnvHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
+        return expanded_result;
+    }
+    std::vector<TH1D *> CV_vals = Get1DHistos(result, false);  // get CV
+
+    std::cout << "I have " << CV_vals.size() << " CV histograms" << std::endl;
+
+    for (uint i = 0; i < CV_vals.size(); i++)
+        expanded_result.push_back(new PlotUtils::MnvH1D(*CV_vals[i]));
+
+    std::vector<std::string> vertnames = result->GetVertErrorBandNames();
+    std::vector<std::string> latnames = result->GetLatErrorBandNames();
+
+    // Do vert first
+    for (uint i = 0; i < vertnames.size(); i++) {
+        std::cout << "Working on " << vertnames[i] << std::endl;
+        std::vector<std::vector<TH1D *>> unihists;
+        PlotUtils::MnvVertErrorBand *band = result->GetVertErrorBand(vertnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH1D *> tmpbandset = Get1DHistos(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (int j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH1D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_result[j]->AddVertErrorBand(vertnames[i], tmpband);
+        }
+    }
+    // now lat
+    for (uint i = 0; i < latnames.size(); i++) {
+        std::cout << "Working on " << latnames[i] << std::endl;
+        std::vector<std::vector<TH1D *>> unihists;
+        PlotUtils::MnvLatErrorBand *band = result->GetLatErrorBand(latnames[i]);
+        int bandsize = band->GetNHists();
+        for (int uni = 0; uni < bandsize; uni++) {
+            std::vector<TH1D *> tmpbandset = Get1DHistos(new PlotUtils::MnvH1D(*band->GetHist(uni)));  // Get the universe hist and spit out the N 2D results.
+            unihists.push_back(tmpbandset);
+        }
+        // Have an N by uni matrix of TH2D. Now time to push back into the primary
+
+        std::cout << "I have created a set of flux hists. This is size of the vector " << unihists.size() << "\t" << unihists[0].size() << std::endl;
+
+        for (uint j = 0; j < unihists[0].size(); j++) {  // unihists[0].size() is the number of projections needed
+            std::vector<TH1D *> tmpband;
+            for (int uni = 0; uni < bandsize; uni++) {
+                tmpband.push_back(unihists[uni][j]);
+            }
+            expanded_result[j]->AddLatErrorBand(latnames[i], tmpband);
+        }
+    }
+    return expanded_result;
+}
+
 // ==========================================================================
 // Test
 // ==========================================================================

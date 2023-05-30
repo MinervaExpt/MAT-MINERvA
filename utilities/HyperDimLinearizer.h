@@ -28,6 +28,9 @@ class HyperDimLinearizer {
     TH2D* Get2DHisto(PlotUtils::MnvH1D* result, bool IncludeSys);                  // This is for type==1, 2D result only!!
     PlotUtils::MnvH2D* Get2DMnvHisto(PlotUtils::MnvH1D* result, bool IncludeSys);  // This is for type==1, 2D result only!!
 
+    std::vector<TH1D*> Get1DHistos(PlotUtils::MnvH1D* result, bool IncludeSys);
+    std::vector<PlotUtils::MnvH1D*> Get1DMnvHistos(PlotUtils::MnvH1D* result, bool IncludeSys);
+
     void TestFunctionality();  // a bunch of prints.
     EAnalysisType GetAnalysisType();
     std::vector<int> GetAxesSizes();
