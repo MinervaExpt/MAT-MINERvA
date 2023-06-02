@@ -155,6 +155,7 @@ bool MinervaUniverse::SetHornCurrent(std::string& playlist) {
         playlist.compare("minervame6c") == 0 ||
         playlist.compare("minervame6d") == 0 ||
         playlist.compare("minervame6e") == 0 ||
+        playlist.compare("minervame6f") == 0 ||
         playlist.compare("minervame6g") == 0 ||
         playlist.compare("minervame6h") == 0 ||
         playlist.compare("minervame6i") == 0 ||
