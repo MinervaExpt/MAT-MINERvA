@@ -434,6 +434,7 @@ PlotUtils::MnvH2D *HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, 
     return expanded_result;
 }
 
+// This is for type 1 & 3 only, any dimension result, projected to an axis (default x)
 std::vector<TH1D *> HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     std::vector<TH1D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
@@ -472,7 +473,7 @@ std::vector<PlotUtils::MnvH1D *> HyperDimLinearizer::Get1DMnvHistos(PlotUtils::M
     std::cout << "Entering Get1DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH1D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
-        std::cout << "HyperDimLinearizer::Get2DMnvHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
+        std::cout << "HyperDimLinearizer::Get1DMnvHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
         return expanded_result;
     }
     std::vector<TH1D *> CV_vals = Get1DHistos(result, false);  // get CV
