@@ -11,7 +11,7 @@ template <class T>
 Michel<T>::Michel(const T& univ, int ci) {
   energy = univ.GetVecElem("FittedMichel_michel_energy", ci);
   time = univ.GetVecElem("FittedMichel_michel_time", ci) / pow(10, 3);
-  is_fitted = univ.GetVecElem("FittedMichel_michel_fitPass", ci);
+  is_fitted = univ.GetVecElemInt("FittedMichel_michel_fitPass", ci);
   up_location.push_back(univ.GetVecElem("FittedMichel_michel_x1", ci));
   up_location.push_back(univ.GetVecElem("FittedMichel_michel_u1", ci));
   up_location.push_back(univ.GetVecElem("FittedMichel_michel_v1", ci));
@@ -31,7 +31,6 @@ Michel<T>::Michel(const T& univ, int ci) {
   m_z2 = univ.GetVecElem("FittedMichel_michel_z2", ci);
   m_v2 = univ.GetVecElem("FittedMichel_michel_v2", ci);
   nclusters = univ.GetInt("cluster_view_sz");
-  // nclusters = univ.GetInt("FittedMichel_cluster_view_sz");
   overlay_fraction = univ.GetVecElem("FittedMichel_michel_datafraction", ci);
 
   if (univ.IsTruth()) {
@@ -41,7 +40,7 @@ Michel<T>::Michel(const T& univ, int ci) {
         "truth_FittedMichel_reco_micheltrajectory_initialy", ci);
     true_initialz = univ.GetVecElem(
         "truth_FittedMichel_reco_micheltrajectory_initialz", ci);
-    is_overlay = univ.GetVecElem("FittedMichel_michel_isoverlay", ci);
+    is_overlay = univ.GetVecElemInt("FittedMichel_michel_isoverlay", ci);
     true_e =
         univ.GetVecElem("truth_FittedMichel_reco_micheltrajectory_energy", ci);
     true_pdg =
@@ -140,6 +139,7 @@ Michel<T>::Michel(const T& univ, int ci) {
 
 // This function will get the angle between Michel endpoint that was matched and
 // the vertex
+// NONCONST -- SETS AND READS PROPERTIES OF this
 template <class T>
 void Michel<T>::GetPionAngle(const T& univ) {
   double vtx_x = univ.GetVertex().X();  // mm
@@ -156,26 +156,17 @@ void Michel<T>::GetPionAngle(const T& univ) {
   else
     endpoint.SetXYZ(9999., 9999., 9999.);
 
-  // double time = this->vtx_michel_timediff;
-  // TLorentzVector pipath = (range, time);
-  // double tpi = univ.GetTpiFromRange(this->Best3Ddist);
-  // double Epi = tpi + 139.57;
-  // double ppi = sqrt(tpi*2*139.57); //MeV
-  // pipath.SetE(Epi);
-
-  // pipath.RotateX(MinervaUnits::numi_beam_angle_rad);
   TVector3 range = endpoint - vtx;
   double angle = univ.thetaWRTBeam(range.x(), range.y(), range.z());
+  this->best_angle = angle;  // in Radians   //*TMath::RadToDeg(); // in Degrees
+
   double xyp =
       -1.0 * sin(MinervaUnits::numi_beam_angle_rad + 0.00000001) * range.z() +
       cos(MinervaUnits::numi_beam_angle_rad + 0.00000001) * range.y();
   double phiangle = std::atan2(xyp, range.x());
   double phi = phiangle;  // range.Phi();//univ.phiWRTBeam(range.x(), range.y(),
                           // range.z());
-
-  this->best_angle = angle;  // in Radians   //*TMath::RadToDeg(); // in Degrees
-
-  this->best_phi = phi;  // in Radians
+  this->best_phi = phi;   // in Radians
 
   double tpi = univ.GetTpiFromRange(this->Best3Ddist);
   double Epi = tpi + 139.57;
@@ -202,8 +193,6 @@ void Michel<T>::GetBestMatch() {
   int upclusmatch = 0;
   int downclusmatch = 0;
 
-  // if (this->up_to_vertex_dist3D != NULL && )
-
   // This is setting the values for which endpoint is a better match for each
   // type. TODO: Revise this function. There has to be a better way to compare
   // distances than what I wrote.
@@ -212,6 +201,7 @@ void Michel<T>::GetBestMatch() {
       this->up_to_vertex_dist3D, this->down_to_vertex_dist3D,
       this->up_clus_michel_dist3D, this->down_clus_michel_dist3D};
   std::sort(distances.begin(), distances.end());
+
   // This bit of code will try to find the best 3D distance end point
   if (distances[0] == this->up_to_vertex_dist3D) {
     upvtxmatch = 1;
@@ -227,7 +217,6 @@ void Michel<T>::GetBestMatch() {
     this->best_VZ = this->down_to_vertex_VZ;
     this->Best3Ddist = this->down_to_vertex_dist3D;
     downvtxmatch = 1;
-
   } else if (distances[0] == this->up_clus_michel_dist3D) {
     this->BestMatch = 3;
     this->best_XZ = this->up_to_clus_XZ;
@@ -235,7 +224,6 @@ void Michel<T>::GetBestMatch() {
     this->best_VZ = this->up_to_clus_UZ;
     this->Best3Ddist = this->up_clus_michvtx_dist3D;
     upclusmatch = 1;
-
   } else if (distances[0] == this->down_clus_michel_dist3D) {
     this->BestMatch = 4;
     this->Best3Ddist = this->down_clus_michvtx_dist3D;
@@ -243,7 +231,6 @@ void Michel<T>::GetBestMatch() {
     this->best_UZ = this->down_to_clus_UZ;
     this->best_VZ = this->down_to_clus_VZ;
     downclusmatch = 1;
-
   } else {
     this->BestMatch = 0;
     this->Best3Ddist = 9999.;
@@ -252,93 +239,18 @@ void Michel<T>::GetBestMatch() {
     this->best_VZ = 9999.;
   }
 
+  // Second best
   if (distances[1] == this->up_to_vertex_dist3D)
-    this->SecondBestMatch == 1;
+    this->SecondBestMatch = 1;
   else if (distances[1] == this->down_to_vertex_dist3D)
-    this->SecondBestMatch == 2;
+    this->SecondBestMatch = 2;
   else if (distances[1] == this->up_clus_michel_dist3D)
-    this->SecondBestMatch == 3;
+    this->SecondBestMatch = 3;
   else if (distances[1] == this->down_clus_michel_dist3D)
-    this->SecondBestMatch == 4;
+    this->SecondBestMatch = 4;
   else {
-    this->SecondBestMatch == 0;
+    this->SecondBestMatch = 0;
   }
-
-  /*
-    if (upvtxmatch == 1 && (upclusmatch == 1 || downclusmatch == 1 )){
-      if (this->up_to_vertex_dist3D < this->up_clus_michel_dist3D) {
-      this->best_XZ = this->up_to_vertex_XZ;
-      this->best_UZ = this->up_to_vertex_UZ;
-      this->best_VZ = this->up_to_vertex_VZ;
-      this->BestMatch = 1;
-      this->Best3Ddist = this->up_to_vertex_dist3D;
-      }
-      else if (this->up_to_vertex_dist3D >= this->up_clus_michel_dist3D)
-      {
-      this->BestMatch = 3;
-      this->best_XZ = this->up_to_clus_XZ;
-      this->best_UZ = this->up_to_clus_VZ;
-      this->best_VZ = this->up_to_clus_UZ;
-      this->Best3Ddist = this->up_clus_michvtx_dist3D;
-      }
-      else if (this->up_to_vertex_dist3D < this->down_clus_michel_dist3D) {
-      this->BestMatch = 1;
-      this->Best3Ddist = this->up_to_vertex_dist3D;
-      this->best_XZ = this->up_to_vertex_XZ;
-      this->best_UZ = this->up_to_vertex_UZ;
-      this->best_VZ = this->up_to_vertex_VZ;
-      }
-      else if (this->up_to_vertex_dist3D >= this->down_clus_michel_dist3D)
-      {
-      this->BestMatch = 4;
-      this->Best3Ddist = this->down_clus_michvtx_dist3D;
-      this->best_XZ = this->down_to_clus_XZ;
-      this->best_UZ = this->down_to_clus_UZ;
-      this->best_VZ = this->down_to_clus_VZ;
-      }
-    }
-    else if (downvtxmatch == 1 && (upclusmatch == 1 || downclusmatch == 1 )) {
-      if (this->down_to_vertex_dist3D < this->up_clus_michel_dist3D) {
-        this->BestMatch = 2;
-        this->best_XZ = this->down_to_vertex_XZ;
-        this->best_UZ = this->down_to_vertex_UZ;
-        this->best_VZ = this->down_to_vertex_VZ;
-        this->Best3Ddist = this->down_to_vertex_dist3D;
-      }
-      else if (this->down_to_vertex_dist3D >= this->up_clus_michel_dist3D)
-      {
-        this->BestMatch = 3;
-        this->Best3Ddist = this->up_clus_michvtx_dist3D;
-        this->best_XZ = this->up_to_clus_XZ;
-        this->best_UZ = this->up_to_clus_UZ;
-        this->best_VZ = this->up_to_clus_VZ;
-      }
-      else if (this->down_to_vertex_dist3D < this->down_clus_michel_dist3D)
-      {
-        this->BestMatch = 2;
-        this->best_XZ = this->down_to_vertex_XZ;
-        this->best_UZ = this->down_to_vertex_UZ;
-        this->best_VZ = this->down_to_vertex_VZ;
-        this->Best3Ddist = this->down_to_vertex_dist3D;
-      }
-      else if (this->down_to_vertex_dist3D >= this->down_clus_michel_dist3D)
-      {
-        this->BestMatch = 4;
-        this->Best3Ddist = this->up_clus_michvtx_dist3D;
-        this->best_XZ = this->down_to_clus_XZ;
-        this->best_UZ = this->down_to_clus_UZ;
-        this->best_VZ = this->down_to_clus_VZ;
-      }
-    }
-  */
-
-  // else{
-  // this->BestMatch = 0;
-  // this->Best3Ddist = 9999.;
-  // this->best_XZ = 9999.;
-  // this->best_UZ = 9999.;
-  // this->best_VZ = 9999.;
-  // }
 
   int matchtype = this->BestMatch;
   // Identifying the best reco endpoint based on the Best MAtch type.
@@ -427,7 +339,7 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
   // This is where the function for Cluster Matching goes
 
   // Inititalizing vertex variables needed for cluster matching
-  int nclusters = univ.GetInt("cluster_view_sz");    // this->nclusters;
+  int nclusters = univ.GetInt("cluster_view_sz");
   double vtx_x = univ.GetVertex().X();               // mm
   double vtx_y = univ.GetVertex().Y();               // mm
   double vtx_z = univ.GetVertex().Z();               // mm
@@ -472,15 +384,6 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
   int v2_idx = -1;
   const double minZ = 5980, maxZ = 8422;
   for (int i = 0; i < nclusters; i++) {
-    // Cluster current_cluster = Cluster(univ, i);
-    // double energy = current_cluster.energy;
-    // double time = current_cluster.time;
-    // double pos = current_cluster.pos;
-    // double zpos = current_cluster.zpos;
-    // int view = current_cluster.view;
-    // double timediff = micheltime - time;
-    // int ismuon = current_cluster.ismuon;
-
     int subdet = univ.GetVecElem("cluster_subdet", i);
     if (subdet != 2 and subdet != 3) continue;
     int ismuon = univ.GetVecElem("cluster_isMuontrack",
@@ -591,15 +494,6 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
   std::vector<double> clusv1;
   std::vector<double> clusv2;
   for (int i = 0; i < nclusters; i++) {
-    // Cluster current_cluster = Cluster(univ, i);
-    // double energy = current_cluster.energy;
-    // double time = current_cluster.time;
-    // double pos = current_cluster.pos;
-    // double zpos = current_cluster.zpos;
-    // int view = current_cluster.view;
-    // double timediff = micheltime - time;
-    // double ismuon = current_cluster.ismuon;
-
     // Only look at clusters found to be closest to michel in previous cluster
     // loop
     std::vector<int>::iterator it =
