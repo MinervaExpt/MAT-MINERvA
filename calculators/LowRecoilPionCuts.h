@@ -76,98 +76,19 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
             std::to_string(maxDistance) + "mm"),
         m_maxDistance(maxDistance) {}
 
-  /*
-    // I think this is a duplicate of the below, action function.
-    // This function is not made to work, I just have it here to compare it
-    // line-by-line to the other.
-    //
-    // TODO finish this comparison and delete this function.
-    //
-    // This function will get an integer for the best match type of the Michel.
-    // It compares distance between MIchel and whatever it's best match is to find
-    // the Best type of Michel for a single Michel.
-    template <class T>
-    void Michel<T>::GetBestMatch() {
-      int upvtxmatch = 0;
-      int downvtxmatch = 0;
-      int upclusmatch = 0;
-      int downclusmatch = 0;
-
-      // This is setting the values for which endpoint is a better match for each
-      // type. TODO: Revise this function. There has to be a better way to compare
-      // distances than what I wrote.
-
-      std::vector<double> distances{
-          this->up_to_vertex_dist3D, this->down_to_vertex_dist3D,
-          this->up_clus_michel_dist3D, this->down_clus_michel_dist3D};
-      std::sort(distances.begin(), distances.end());
-
-      // This bit of code will try to find the best 3D distance end point
-      if (distances[0] == this->up_to_vertex_dist3D) {
-        upvtxmatch = 1;
-        this->best_XZ = this->up_to_vertex_XZ;
-        this->best_UZ = this->up_to_vertex_UZ;
-        this->best_VZ = this->up_to_vertex_VZ;
-        this->BestMatch = 1;
-        this->Best3Ddist = this->up_to_vertex_dist3D;
-      } else if (distances[0] == this->down_to_vertex_dist3D) {
-        this->BestMatch = 2;
-        this->best_XZ = this->down_to_vertex_XZ;
-        this->best_UZ = this->down_to_vertex_UZ;
-        this->best_VZ = this->down_to_vertex_VZ;
-        this->Best3Ddist = this->down_to_vertex_dist3D;
-        downvtxmatch = 1;
-      } else if (distances[0] == this->up_clus_michel_dist3D) {
-        this->BestMatch = 3;
-        this->best_XZ = this->up_to_clus_XZ;
-        this->best_UZ = this->up_to_clus_VZ;
-        this->best_VZ = this->up_to_clus_UZ;
-        this->Best3Ddist = this->up_clus_michvtx_dist3D;
-        upclusmatch = 1;
-      } else if (distances[0] == this->down_clus_michel_dist3D) {
-        this->BestMatch = 4;
-        this->Best3Ddist = this->down_clus_michvtx_dist3D;
-        this->best_XZ = this->down_to_clus_XZ;
-        this->best_UZ = this->down_to_clus_UZ;
-        this->best_VZ = this->down_to_clus_VZ;
-        downclusmatch = 1;
-      } else {
-        this->BestMatch = 0;
-        this->Best3Ddist = 9999.;
-        this->best_XZ = 9999.;
-        this->best_UZ = 9999.;
-        this->best_VZ = 9999.;
-      }
-
-      // Second best
-      if (distances[1] == this->up_to_vertex_dist3D)
-        this->SecondBestMatch = 1;
-      else if (distances[1] == this->down_to_vertex_dist3D)
-        this->SecondBestMatch = 2;
-      else if (distances[1] == this->up_clus_michel_dist3D)
-        this->SecondBestMatch = 3;
-      else if (distances[1] == this->down_clus_michel_dist3D)
-        this->SecondBestMatch = 4;
-      else {
-        this->SecondBestMatch = 0;
-      }
-
-      int matchtype = this->BestMatch;
-      // Identifying the best reco endpoint based on the Best MAtch type.
-      if (matchtype == 1 || matchtype == 3)
-        this->recoEndpoint = 1;
-      else if (matchtype == 2 || matchtype == 4)
-        this->recoEndpoint = 2;
-    }
-  */
-
+  
+  // This function will get an integer for the best match type of the Michel.
+  // It compares distance between Michel and whatever it's best match is to find
+  // the Best type of Michel for a single Michel.
+  //
+  // Also update our MichelEvent evt.
   static bool BestMichelDistance2DCut(const UNIVERSE& univ, EVENT& evt,
                                       const double max_dist = kMAX2DDIST) {
-    // std::cout << "Implementing Michel Cut with 2D distance of " <<
-    // max_dist << " mm" << std::endl;
+    if (evt.m_allmichels.size() == 0)
+     return false;
+
+    // Update our MichelEvent evt AND fill a vector of passing michels
     std::vector<Michel> nmichelspass;
-    int nmichels = evt.m_allmichels.size();
-    if (nmichels == 0) return bool(false);
     for (unsigned int i = 0; i < evt.m_allmichels.size(); i++) {
       int upvtxmatch = 0;
       int downvtxmatch = 0;
@@ -188,6 +109,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       std::sort(upvtx.begin(), upvtx.end());
       std::sort(downvtx.begin(), downvtx.end());
 
+      // TODO this can all just be a big OR.
       if (upvtxXZ < max_dist && (upvtxUZ < max_dist || upvtxVZ < max_dist))
         evt.m_allmichels[i].passable_matchtype.at(0) = 1;
       else if (upvtxUZ < max_dist && (upvtxXZ < max_dist || upvtxVZ < max_dist))
@@ -197,6 +119,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       else
         evt.m_allmichels[i].passable_matchtype.at(0) = -1;
 
+      // TODO this can all just be a big OR.
       if (downvtxXZ < max_dist &&
           (downvtxUZ < max_dist || downvtxVZ < max_dist))
         evt.m_allmichels[i].passable_matchtype.at(1) = 2;
@@ -222,6 +145,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       std::sort(upclus.begin(), upclus.end());
       std::sort(downclus.begin(), downclus.end());
 
+      // TODO this can all just be a big OR.
       if (upclusXZ < max_dist && (upclusUZ < max_dist || upclusVZ < max_dist))
         evt.m_allmichels[i].passable_matchtype.at(2) = 3;
       else if (upclusUZ < max_dist &&
@@ -233,6 +157,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       else
         evt.m_allmichels[i].passable_matchtype.at(2) = -1;
 
+      // TODO this can all just be a big OR.
       if (downclusXZ < max_dist &&
           (downclusUZ < max_dist || downclusVZ < max_dist))
         evt.m_allmichels[i].passable_matchtype.at(3) = 4;
@@ -245,14 +170,19 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       else
         evt.m_allmichels[i].passable_matchtype.at(3) = -1;
 
+      // If we don't have acceptable up and down vtx and cluster distances for
+      // this Michel, it fails.
+      // TODO condense? all? loop?
       if (evt.m_allmichels[i].passable_matchtype.at(1) == -1 &&
           evt.m_allmichels[i].passable_matchtype.at(2) == -1 &&
           evt.m_allmichels[i].passable_matchtype.at(3) == -1 &&
           evt.m_allmichels[i].passable_matchtype.at(0) == -1)
         continue;
 
+      // Record 3D distance
       std::vector<double> distances3D;
 
+      // TODO This could be condensed? For loop? case-switch?
       if (evt.m_allmichels[i].passable_matchtype[0] == 1)
         distances3D.push_back(
             evt.m_allmichels[i]
@@ -271,15 +201,21 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
                                                            // michel to cluster
       if (distances3D.empty()) distances3D = {9999., 9999., 9999., 9999.};
 
+      // Sort these 3D distance in ascending order.
       std::sort(distances3D.begin(), distances3D.end());
 
+      // must have at least one good 3D distance between michel and cluster and
+      // michel and vertex. Else this michel fails.
       if (distances3D[0] == 9999.)
         continue;
-      else if (distances3D[0] == evt.m_allmichels[i].up_to_vertex_dist3D) {
+
+      // Set some MichelEvent info about this best match.
+      // There's a continue here, but I think it's just an assert/sanity check.
+      // TODO: condense? case-switch?
+      if (distances3D[0] == evt.m_allmichels[i].up_to_vertex_dist3D) {
         evt.m_allmichels[i].best_XZ = evt.m_allmichels[i].up_to_vertex_XZ;
         evt.m_allmichels[i].best_UZ = evt.m_allmichels[i].up_to_vertex_UZ;
         evt.m_allmichels[i].best_VZ = evt.m_allmichels[i].up_to_vertex_VZ;
-
         evt.m_allmichels[i].BestMatch = 1;
         evt.m_allmichels[i].Best3Ddist =
             evt.m_allmichels[i].up_to_vertex_dist3D;
@@ -295,7 +231,6 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
             evt.m_allmichels[i].down_to_vertex_dist3D;
         // std::cout << "This  Michel is DOWNVTX and has true endpoint " <<
         // evt.m_allmichels[i].trueEndpoint << std::endl;
-
       } else if (distances3D[0] == evt.m_allmichels[i].up_clus_michel_dist3D) {
         evt.m_allmichels[i].BestMatch = 3;
         evt.m_allmichels[i].best_XZ = evt.m_allmichels[i].up_to_clus_XZ;
@@ -305,7 +240,6 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
             evt.m_allmichels[i].up_clus_michvtx_dist3D;
         // std::cout << "This  Michel is UPCLUS and has true endpoint " <<
         // evt.m_allmichels[i].trueEndpoint << std::endl;
-
       } else if (distances3D[0] ==
                  evt.m_allmichels[i].down_clus_michel_dist3D) {
         evt.m_allmichels[i].BestMatch = 4;
@@ -314,7 +248,6 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
         evt.m_allmichels[i].best_XZ = evt.m_allmichels[i].down_to_clus_XZ;
         evt.m_allmichels[i].best_UZ = evt.m_allmichels[i].down_to_clus_UZ;
         evt.m_allmichels[i].best_VZ = evt.m_allmichels[i].down_to_clus_VZ;
-
       } else {
         evt.m_allmichels[i].BestMatch = 0;
         evt.m_allmichels[i].Best3Ddist = 9999.;
@@ -325,6 +258,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
         continue;
       }
 
+      // Set some MichelEvent info about second best match (not used)
       if (distances3D[1] == evt.m_allmichels[i].up_to_vertex_dist3D)
         evt.m_allmichels[i].SecondBestMatch = 1;
       else if (distances3D[1] == evt.m_allmichels[i].down_to_vertex_dist3D)
@@ -337,36 +271,45 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
         evt.m_allmichels[i].SecondBestMatch = 0;
       }
 
+      // Set more best match info
       if (evt.m_allmichels[i].best_XZ < evt.m_allmichels[i].best_UZ and
-          evt.m_allmichels[i].best_XZ < evt.m_allmichels[i].best_VZ)
+          evt.m_allmichels[i].best_XZ < evt.m_allmichels[i].best_VZ) {
         evt.m_allmichels[i].bestview = 1;
-
+      }
       else if (evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_XZ and
-               evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_VZ)
+               evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_VZ) {
         evt.m_allmichels[i].bestview = 2;
+      }
 
       else if (evt.m_allmichels[i].best_VZ < evt.m_allmichels[i].best_UZ and
-               evt.m_allmichels[i].best_VZ < evt.m_allmichels[i].best_XZ)
+               evt.m_allmichels[i].best_VZ < evt.m_allmichels[i].best_XZ) {
         evt.m_allmichels[i].bestview = 3;
+      }
       int matchtype = evt.m_allmichels[i].BestMatch;
-      if (matchtype == 1 || matchtype == 3)
+      if (matchtype == 1 || matchtype == 3) {
         evt.m_allmichels[i].recoEndpoint = 1;
-      else if (matchtype == 2 || matchtype == 4)
+      }
+      else if (matchtype == 2 || matchtype == 4) {
         evt.m_allmichels[i].recoEndpoint = 2;
+      }
+
+      // Record this michel, which has passed the cuts
       nmichelspass.push_back(evt.m_allmichels[i]);
       evt.m_nmichelspass.push_back(evt.m_allmichels[i]);
     }
 
     evt.m_nmichels.clear();
-    if (!nmichelspass.empty()) {
+
+    // Do we have at least one passing michel?
+    if (nmichelspass.empty()){
+      return false;
+    }
+    else {
       evt.selection = 1;
-      evt.m_nmichels.clear();
       evt.m_nmichels =
           nmichelspass;  // replace vector of michels with the vector of michels
                          // that passed the above cut
       return true;
-    } else {
-      return false;
     }
   }
 
