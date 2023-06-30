@@ -20,7 +20,8 @@ class hasMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
   //
   // This is the function that first makes Michels and populates the
   // MichelEvent with the good ones.
-  static EVENT GetQualityMichels(const UNIVERSE& univ, const EVENT& _evt = EVENT()) {
+  static EVENT GetQualityMichels(const UNIVERSE& univ,
+                                 const EVENT& _evt = EVENT()) {
     EVENT evt = _evt;
     for (int i = 0; i < univ.GetNMichels(); ++i) {
       Michel current_michel(univ, i);
@@ -38,7 +39,7 @@ class hasMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
       else if (z1 > 9038. || z2 > 9038.)
         continue;
       evt.m_allmichels.push_back(current_michel);
-    } 
+    }
     evt.nclusters = univ.GetNClusters();
     evt.pT_reco = univ.GetMuonPT();
     evt.q3_reco = univ.Getq3_lowrecoil();
@@ -56,8 +57,7 @@ class hasMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
 
     // if this function has already been called, return
     // TODO: Should this be IsVertical? I suspect so.
-    if (univ.ShortName() != "cv" && !evt.m_allmichels.empty())
-      return true;
+    if (univ.ShortName() != "cv" && !evt.m_allmichels.empty()) return true;
 
     // Update our MichelEvent. In most cases, we'll be filling it for the first
     // time. Fills evt.m_allmichels, among other things.
@@ -76,7 +76,6 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
             std::to_string(maxDistance) + "mm"),
         m_maxDistance(maxDistance) {}
 
-  
   // This function will get an integer for the best match type of the Michel.
   // It compares distance between Michel and whatever it's best match is to find
   // the Best type of Michel for a single Michel.
@@ -84,8 +83,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
   // Also update our MichelEvent evt.
   static bool BestMichelDistance2DCut(const UNIVERSE& univ, EVENT& evt,
                                       const double max_dist = kMAX2DDIST) {
-    if (evt.m_allmichels.size() == 0)
-     return false;
+    if (evt.m_allmichels.size() == 0) return false;
 
     // Update our MichelEvent evt AND fill a vector of passing michels
     std::vector<Michel> nmichelspass;
@@ -206,8 +204,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
 
       // must have at least one good 3D distance between michel and cluster and
       // michel and vertex. Else this michel fails.
-      if (distances3D[0] == 9999.)
-        continue;
+      if (distances3D[0] == 9999.) continue;
 
       // Set some MichelEvent info about this best match.
       // There's a continue here, but I think it's just an assert/sanity check.
@@ -275,9 +272,8 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       if (evt.m_allmichels[i].best_XZ < evt.m_allmichels[i].best_UZ and
           evt.m_allmichels[i].best_XZ < evt.m_allmichels[i].best_VZ) {
         evt.m_allmichels[i].bestview = 1;
-      }
-      else if (evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_XZ and
-               evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_VZ) {
+      } else if (evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_XZ and
+                 evt.m_allmichels[i].best_UZ < evt.m_allmichels[i].best_VZ) {
         evt.m_allmichels[i].bestview = 2;
       }
 
@@ -288,8 +284,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       int matchtype = evt.m_allmichels[i].BestMatch;
       if (matchtype == 1 || matchtype == 3) {
         evt.m_allmichels[i].recoEndpoint = 1;
-      }
-      else if (matchtype == 2 || matchtype == 4) {
+      } else if (matchtype == 2 || matchtype == 4) {
         evt.m_allmichels[i].recoEndpoint = 2;
       }
 
@@ -301,10 +296,9 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
     evt.m_nmichels.clear();
 
     // Do we have at least one passing michel?
-    if (nmichelspass.empty()){
+    if (nmichelspass.empty()) {
       return false;
-    }
-    else {
+    } else {
       evt.selection = 1;
       evt.m_nmichels =
           nmichelspass;  // replace vector of michels with the vector of michels
