@@ -62,7 +62,6 @@ class Michel {
   // Access
   void DoesMichelMatchVtx(const T& univ);   // Gets info for Vtx Match
   void DoesMichelMatchClus(const T& univ);  // Gets info for ClusterMatch
-  void GetBestMatch();  // get type for best match out of all four saved matches
   void GetPionAngle(
       const T& univ);  // WRT beam; angle btwn best mich endpt and vtx
 

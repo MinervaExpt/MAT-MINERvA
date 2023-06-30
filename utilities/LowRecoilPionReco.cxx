@@ -137,8 +137,10 @@ Michel<T>::Michel(const T& univ, int ci) {
   // else (this->delete;)
 }
 
-// This function will get the angle between Michel endpoint that was matched and
-// the vertex
+// Currently, this is only called in the GetClosestMichelCut
+//
+// This function will get the angle between Michel endpoint that was matched
+// and the vertex
 // NONCONST -- SETS AND READS PROPERTIES OF this
 template <class T>
 void Michel<T>::GetPionAngle(const T& univ) {
@@ -181,83 +183,6 @@ void Michel<T>::GetPionAngle(const T& univ) {
   this->reco_ppix = px;
   this->reco_ppiy = py;
   this->reco_ppiz = pz;
-}
-
-// This function will get an integer for the best match type of the Michel.
-// It compares distance between MIchel and whatever it's best match is to find
-// the Best type of Michel for a single Michel.
-template <class T>
-void Michel<T>::GetBestMatch() {
-  int upvtxmatch = 0;
-  int downvtxmatch = 0;
-  int upclusmatch = 0;
-  int downclusmatch = 0;
-
-  // This is setting the values for which endpoint is a better match for each
-  // type. TODO: Revise this function. There has to be a better way to compare
-  // distances than what I wrote.
-
-  std::vector<double> distances{
-      this->up_to_vertex_dist3D, this->down_to_vertex_dist3D,
-      this->up_clus_michel_dist3D, this->down_clus_michel_dist3D};
-  std::sort(distances.begin(), distances.end());
-
-  // This bit of code will try to find the best 3D distance end point
-  if (distances[0] == this->up_to_vertex_dist3D) {
-    upvtxmatch = 1;
-    this->best_XZ = this->up_to_vertex_XZ;
-    this->best_UZ = this->up_to_vertex_UZ;
-    this->best_VZ = this->up_to_vertex_VZ;
-    this->BestMatch = 1;
-    this->Best3Ddist = this->up_to_vertex_dist3D;
-  } else if (distances[0] == this->down_to_vertex_dist3D) {
-    this->BestMatch = 2;
-    this->best_XZ = this->down_to_vertex_XZ;
-    this->best_UZ = this->down_to_vertex_UZ;
-    this->best_VZ = this->down_to_vertex_VZ;
-    this->Best3Ddist = this->down_to_vertex_dist3D;
-    downvtxmatch = 1;
-  } else if (distances[0] == this->up_clus_michel_dist3D) {
-    this->BestMatch = 3;
-    this->best_XZ = this->up_to_clus_XZ;
-    this->best_UZ = this->up_to_clus_VZ;
-    this->best_VZ = this->up_to_clus_UZ;
-    this->Best3Ddist = this->up_clus_michvtx_dist3D;
-    upclusmatch = 1;
-  } else if (distances[0] == this->down_clus_michel_dist3D) {
-    this->BestMatch = 4;
-    this->Best3Ddist = this->down_clus_michvtx_dist3D;
-    this->best_XZ = this->down_to_clus_XZ;
-    this->best_UZ = this->down_to_clus_UZ;
-    this->best_VZ = this->down_to_clus_VZ;
-    downclusmatch = 1;
-  } else {
-    this->BestMatch = 0;
-    this->Best3Ddist = 9999.;
-    this->best_XZ = 9999.;
-    this->best_UZ = 9999.;
-    this->best_VZ = 9999.;
-  }
-
-  // Second best
-  if (distances[1] == this->up_to_vertex_dist3D)
-    this->SecondBestMatch = 1;
-  else if (distances[1] == this->down_to_vertex_dist3D)
-    this->SecondBestMatch = 2;
-  else if (distances[1] == this->up_clus_michel_dist3D)
-    this->SecondBestMatch = 3;
-  else if (distances[1] == this->down_clus_michel_dist3D)
-    this->SecondBestMatch = 4;
-  else {
-    this->SecondBestMatch = 0;
-  }
-
-  int matchtype = this->BestMatch;
-  // Identifying the best reco endpoint based on the Best MAtch type.
-  if (matchtype == 1 || matchtype == 3)
-    this->recoEndpoint = 1;
-  else if (matchtype == 2 || matchtype == 4)
-    this->recoEndpoint = 2;
 }
 
 // NONCONST -- SETS AND READS PROPERTIES OF this
@@ -370,20 +295,24 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
 
   double micheltime = this->time;
 
-  int nonmuclus = 0.0;
+  int nonmuclus = 0.0; // not currently used
   std::vector<Cluster> endpoint1_clus;
   std::vector<Cluster> endpoint2_clus;
 
   // Get the closest distance for each view
 
-  int x1_idx = -1;  // want to save the index for each closest cluster
+  // want to save the index for each closest cluster
+  int x1_idx = -1;
   int u1_idx = -1;
   int v1_idx = -1;
   int x2_idx = -1;
   int u2_idx = -1;
   int v2_idx = -1;
   const double minZ = 5980, maxZ = 8422;
+
+  // First loop over Clusters
   for (int i = 0; i < nclusters; i++) {
+    // skip processing a cluster whenever possible
     int subdet = univ.GetVecElem("cluster_subdet", i);
     if (subdet != 2 and subdet != 3) continue;
     int ismuon = univ.GetVecElem("cluster_isMuontrack",
@@ -413,6 +342,7 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
 
     double zdiff1 = abs(zpos - michelz1);
     double zdiff2 = abs(zpos - michelz2);
+
     // Calculating 2D distance in X view
     if (view == 1) {
       // Endpoint 1 calculations
@@ -454,7 +384,6 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
         closestdistance2u = u2Ddistance2;
         u2_idx = i;
       }
-
     } else if (view == 3)  // Calculating 2D dsitance in V view
     {
       // Endpoint 1 Calculations
@@ -493,6 +422,7 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
 
   std::vector<double> clusv1;
   std::vector<double> clusv2;
+  // Second loop over Clusters
   for (int i = 0; i < nclusters; i++) {
     // Only look at clusters found to be closest to michel in previous cluster
     // loop
@@ -579,7 +509,6 @@ void Michel<T>::DoesMichelMatchClus(const T& univ) {
         clusv2.push_back(zpos);
       }
     }
-
   }  // End of loop over clusters
 
   // This is vector of positions for each endpoint cluster match
