@@ -430,6 +430,18 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
   };
 };
 
+// Construct the michel EVENT object with all passing Michels
+template <class UNIVERSE, class EVENT>
+EVENT GetPassingMichels(const UNIVERSE& univ) {
+  // Throw away all the return bools. We only want the evt, which is being
+  // updated by reference.
+  EVENT evt;
+  hasMichel<UNIVERSE, EVENT>::hasMichelCut(univ, evt);
+  BestMichelDistance2D<UNIVERSE, EVENT>::BestMichelDistance2DCut(univ, evt);
+  GetClosestMichel<UNIVERSE, EVENT>::GetClosestMichelCut(univ, evt);
+  return evt;
+}
+
 }  // namespace LowRecoilPion
 
 #endif  // LOWRECOILPIONCUTS_H
