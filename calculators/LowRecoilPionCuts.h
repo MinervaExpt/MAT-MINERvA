@@ -83,8 +83,7 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
   // It compares distance between Michel and whatever its best match is to find
   // the Best type of Michel for a single Michel.
   static EVENT Apply2DDistanceCut(const UNIVERSE& univ, const EVENT& evt,
-                                   const double max_dist = kMAX2DDIST) {
-
+                                  const double max_dist = kMAX2DDIST) {
     EVENT ret_evt = evt;
 
     // Update our MichelEvent ret_evt AND fill a vector of passing michels
@@ -198,8 +197,9 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
                 .up_clus_michel_dist3D);  // distnace between michel to cluster
       if (ret_evt.m_allmichels[i].passable_matchtype[3] == 4)
         distances3D.push_back(
-            ret_evt.m_allmichels[i].down_clus_michel_dist3D);  // distance between
-                                                           // michel to cluster
+            ret_evt.m_allmichels[i]
+                .down_clus_michel_dist3D);  // distance between
+                                            // michel to cluster
       if (distances3D.empty()) distances3D = {9999., 9999., 9999., 9999.};
 
       // Sort these 3D distance in ascending order.
@@ -214,25 +214,33 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       // There's a continue here, but I think it's just an assert/sanity check.
       // TODO: condense? case-switch?
       if (distances3D[0] == ret_evt.m_allmichels[i].up_to_vertex_dist3D) {
-        ret_evt.m_allmichels[i].best_XZ = ret_evt.m_allmichels[i].up_to_vertex_XZ;
-        ret_evt.m_allmichels[i].best_UZ = ret_evt.m_allmichels[i].up_to_vertex_UZ;
-        ret_evt.m_allmichels[i].best_VZ = ret_evt.m_allmichels[i].up_to_vertex_VZ;
+        ret_evt.m_allmichels[i].best_XZ =
+            ret_evt.m_allmichels[i].up_to_vertex_XZ;
+        ret_evt.m_allmichels[i].best_UZ =
+            ret_evt.m_allmichels[i].up_to_vertex_UZ;
+        ret_evt.m_allmichels[i].best_VZ =
+            ret_evt.m_allmichels[i].up_to_vertex_VZ;
         ret_evt.m_allmichels[i].BestMatch = 1;
         ret_evt.m_allmichels[i].Best3Ddist =
             ret_evt.m_allmichels[i].up_to_vertex_dist3D;
 
         // std::cout << "This  Michel is UPVTX and has true endpoint " <<
         // ret_evt.m_allmichels[i].trueEndpoint << std::endl;
-      } else if (distances3D[0] == ret_evt.m_allmichels[i].down_to_vertex_dist3D) {
+      } else if (distances3D[0] ==
+                 ret_evt.m_allmichels[i].down_to_vertex_dist3D) {
         ret_evt.m_allmichels[i].BestMatch = 2;
-        ret_evt.m_allmichels[i].best_XZ = ret_evt.m_allmichels[i].down_to_vertex_XZ;
-        ret_evt.m_allmichels[i].best_UZ = ret_evt.m_allmichels[i].down_to_vertex_UZ;
-        ret_evt.m_allmichels[i].best_VZ = ret_evt.m_allmichels[i].down_to_vertex_VZ;
+        ret_evt.m_allmichels[i].best_XZ =
+            ret_evt.m_allmichels[i].down_to_vertex_XZ;
+        ret_evt.m_allmichels[i].best_UZ =
+            ret_evt.m_allmichels[i].down_to_vertex_UZ;
+        ret_evt.m_allmichels[i].best_VZ =
+            ret_evt.m_allmichels[i].down_to_vertex_VZ;
         ret_evt.m_allmichels[i].Best3Ddist =
             ret_evt.m_allmichels[i].down_to_vertex_dist3D;
         // std::cout << "This  Michel is DOWNVTX and has true endpoint " <<
         // ret_evt.m_allmichels[i].trueEndpoint << std::endl;
-      } else if (distances3D[0] == ret_evt.m_allmichels[i].up_clus_michel_dist3D) {
+      } else if (distances3D[0] ==
+                 ret_evt.m_allmichels[i].up_clus_michel_dist3D) {
         ret_evt.m_allmichels[i].BestMatch = 3;
         ret_evt.m_allmichels[i].best_XZ = ret_evt.m_allmichels[i].up_to_clus_XZ;
         ret_evt.m_allmichels[i].best_UZ = ret_evt.m_allmichels[i].up_to_clus_VZ;
@@ -246,9 +254,12 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
         ret_evt.m_allmichels[i].BestMatch = 4;
         ret_evt.m_allmichels[i].Best3Ddist =
             ret_evt.m_allmichels[i].down_clus_michvtx_dist3D;
-        ret_evt.m_allmichels[i].best_XZ = ret_evt.m_allmichels[i].down_to_clus_XZ;
-        ret_evt.m_allmichels[i].best_UZ = ret_evt.m_allmichels[i].down_to_clus_UZ;
-        ret_evt.m_allmichels[i].best_VZ = ret_evt.m_allmichels[i].down_to_clus_VZ;
+        ret_evt.m_allmichels[i].best_XZ =
+            ret_evt.m_allmichels[i].down_to_clus_XZ;
+        ret_evt.m_allmichels[i].best_UZ =
+            ret_evt.m_allmichels[i].down_to_clus_UZ;
+        ret_evt.m_allmichels[i].best_VZ =
+            ret_evt.m_allmichels[i].down_to_clus_VZ;
       } else {
         ret_evt.m_allmichels[i].BestMatch = 0;
         ret_evt.m_allmichels[i].Best3Ddist = 9999.;
@@ -266,7 +277,8 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
         ret_evt.m_allmichels[i].SecondBestMatch = 2;
       else if (distances3D[1] == ret_evt.m_allmichels[i].up_clus_michel_dist3D)
         ret_evt.m_allmichels[i].SecondBestMatch = 3;
-      else if (distances3D[1] == ret_evt.m_allmichels[i].down_clus_michel_dist3D)
+      else if (distances3D[1] ==
+               ret_evt.m_allmichels[i].down_clus_michel_dist3D)
         ret_evt.m_allmichels[i].SecondBestMatch = 4;
       else {
         ret_evt.m_allmichels[i].SecondBestMatch = 0;
@@ -276,13 +288,17 @@ class BestMichelDistance2D : public PlotUtils::Cut<UNIVERSE, EVENT> {
       if (ret_evt.m_allmichels[i].best_XZ < ret_evt.m_allmichels[i].best_UZ and
           ret_evt.m_allmichels[i].best_XZ < ret_evt.m_allmichels[i].best_VZ) {
         ret_evt.m_allmichels[i].bestview = 1;
-      } else if (ret_evt.m_allmichels[i].best_UZ < ret_evt.m_allmichels[i].best_XZ and
-                 ret_evt.m_allmichels[i].best_UZ < ret_evt.m_allmichels[i].best_VZ) {
+      } else if (ret_evt.m_allmichels[i].best_UZ <
+                     ret_evt.m_allmichels[i].best_XZ and
+                 ret_evt.m_allmichels[i].best_UZ <
+                     ret_evt.m_allmichels[i].best_VZ) {
         ret_evt.m_allmichels[i].bestview = 2;
       }
 
-      else if (ret_evt.m_allmichels[i].best_VZ < ret_evt.m_allmichels[i].best_UZ and
-               ret_evt.m_allmichels[i].best_VZ < ret_evt.m_allmichels[i].best_XZ) {
+      else if (ret_evt.m_allmichels[i].best_VZ <
+                   ret_evt.m_allmichels[i].best_UZ and
+               ret_evt.m_allmichels[i].best_VZ <
+                   ret_evt.m_allmichels[i].best_XZ) {
         ret_evt.m_allmichels[i].bestview = 3;
       }
       int matchtype = ret_evt.m_allmichels[i].BestMatch;
@@ -342,7 +358,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
   //
   // Return closestMichel[0].Best3Ddist <= kMAX3DDIST (2600.)
   static EVENT Apply3DDistanceCut(const UNIVERSE& univ, const EVENT& evt,
-                             const double max_dist = kMAX3DDIST) {
+                                  const double max_dist = kMAX3DDIST) {
     EVENT ret_evt = evt;
     int nmichels = ret_evt.m_nmichels.size();
     int noverlay = 0.0;
@@ -352,7 +368,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
     for (int i = 0; i < nmichels; ++i) {
       double dist =
           ret_evt.m_nmichels[i].Best3Ddist;  // getting the minimum pion range
-                                         // (vertex to Michel/Clus distance)
+                                             // (vertex to Michel/Clus distance)
       allmichel3Ddist.push_back(dist);
     }  // Get all the distances for the michels that pass the 2D dist cut
 
@@ -361,7 +377,8 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
     for (int i = 0; i < nmichels; ++i) {
       double dist = ret_evt.m_nmichels[i].Best3Ddist;
       int order = i + 1;
-      if (dist == allmichel3Ddist[i]) ret_evt.m_nmichels[i].OrderOfMichel = order;
+      if (dist == allmichel3Ddist[i])
+        ret_evt.m_nmichels[i].OrderOfMichel = order;
     }
     for (int i = 0; i < nmichels; ++i) {
       ret_evt.m_nmichels[i].GetPionAngle(univ);
@@ -397,12 +414,11 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
         ret_evt.m_idx = -1;
       }
     }
- 
+
     ret_evt.m_nmichels.clear();
     ret_evt.m_nmichels = closestMichel;
 
-    if (ret_evt.m_nmichels.empty())
-      return ret_evt;
+    if (ret_evt.m_nmichels.empty()) return ret_evt;
 
     ret_evt.lowTpi = ret_evt.m_nmichels[0].pionKE;
     ret_evt.pT_reco = univ.GetMuonPT();
@@ -420,7 +436,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
   bool checkCut(const UNIVERSE& univ, EVENT& evt) const {
     if (evt.m_nmichels.size() == 0) return false;
 
-    evt = Apply3DDistanceCut(univ,evt,m_max_dist);
+    evt = Apply3DDistanceCut(univ, evt, m_max_dist);
 
     if (evt.m_nmichels.empty())
       return false;
