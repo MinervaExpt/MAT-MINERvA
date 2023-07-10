@@ -149,14 +149,22 @@ namespace PlotUtils{
 
     template <typename T>
     bool IsCCNucleonPion(const T& universe) {
-      bool is_ccpion = ( universe.GetInt("mc_current") == 1 )
+      int npion = 0.0;
+      int pdgsize = universe.GetInt("mc_nFSPart");
+      for (int i = 0; i< pdgsize; i++)
+      {
+        int pdg = universe.GetVecElem("mc_FSPartPDG", i);
+        if(universe.GetInt("mc_incoming") == 14 && pdg == 211) npion++;
+        if(universe.GetInt("mc_incoming") == -14 && pdg == -211) npion++;  
+      }
+      bool is_ccpion;
+      if (universe.GetInt("mc_w") < 1400. && npion == 1 ) {
+      is_ccpion = (universe.GetInt("mc_current") == 1)
                          &&
                        ( universe.GetInt("mc_intType") == 2 // Res (Delta+Higher)
                          ||
-                       ( universe.GetInt("mc_intType") == 3
-                         &&
-                         universe.GetInt("mc_w") < 2000. ) );
-                         
+                       ( universe.GetInt("mc_intType") == 3));
+      }              
       return is_ccpion;
     }
 
