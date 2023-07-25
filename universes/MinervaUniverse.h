@@ -15,6 +15,9 @@
 #include "weighters/weight_fsi.h"        // PlotUtils::weight_fsi
 #include "weighters/weightMK.h"          // PlotUtils::weight_mk
 
+#include <unordered_map>
+#include <vector>
+
 namespace PlotUtils {
 class MinervaUniverse : public PlotUtils::BaseUniverse {
  public:
