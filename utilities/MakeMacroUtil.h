@@ -34,7 +34,7 @@ std::string GetPlaylistFile(std::string plist, const bool is_mc,
   return playlist_file;
 }
 
-PlotUtils::MacroUtil MakeMacroUtil(const std::string& plist,
+PlotUtils::MacroUtil MakeMacroUtil(const std::string plist,
                                    const bool do_mc,
                                    const bool do_truth = false,
                                    const bool do_data = false,
