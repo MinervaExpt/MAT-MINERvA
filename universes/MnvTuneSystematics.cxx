@@ -157,13 +157,13 @@ namespace PlotUtils{
         if(universe.GetInt("mc_incoming") == 14 && pdg == 211) npion++;
         if(universe.GetInt("mc_incoming") == -14 && pdg == -211) npion++;  
       }
-      bool is_ccpion;
+      bool is_ccpion = false;
       if (universe.GetInt("mc_w") < 1400. && npion == 1 ) {
-      is_ccpion = (universe.GetInt("mc_current") == 1)
-                         &&
-                       ( universe.GetInt("mc_intType") == 2 // Res (Delta+Higher)
-                         ||
-                       ( universe.GetInt("mc_intType") == 3));
+        is_ccpion = (universe.GetInt("mc_current") == 1)
+                           &&
+                    ( universe.GetInt("mc_intType") == 2 // Res (Delta+Higher)
+                           ||
+                    ( universe.GetInt("mc_intType") == 3));
       }              
       return is_ccpion;
     }
