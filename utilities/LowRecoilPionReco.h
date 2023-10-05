@@ -230,6 +230,7 @@ template <class T>
 struct MichelEvent {
   int m_idx = -1;                // Index for Best Michel in nmichels
   double m_bestdist = 9999.;     // in mm
+  double m_bestthetaangle = 9999.;
   std::vector<double> m_best2D;  // 0: XZ, 1: UZ, 2:VZ
   double m_best_XZ = 9999.;
   double m_best_UZ = 9999.;

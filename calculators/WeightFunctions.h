@@ -118,4 +118,56 @@ virtual double GetZExpWeight() const {
   return zExpWeighter.getWeight(q2);
 }
 
+
+virtual double GetUntrackedPionWeight() const{
+
+
+        double weight2 = 1.0;
+
+
+	// The Following are weights for MnvTunev4 with LowQ3Pion tune bug fix to apply to only single pions Aug 10 2023
+	std::vector<double> tpiweights = {0.139855,0.15291,0.391857,0.632001,0.804802,0.858462,0.580174,0.928241,1.15861,0.989334,1.10499,1.18818,0.835503,0.950168,1.28937,1.44994,1.32275,0.994931,1.14384,1.14747,1.08596,1.12892,1.08526,0.427295,0.248945,0.555842,0.460325,0.459072,0.70149,0.988857,1.18221,1.01983,1.27742};
+ 	std::vector<double> tpilowbins = {1., 10., 15., 20., 25., 30., 36., 42., 48., 54.,60., 66., 72., 78.,  84., 90., 100., 110., 125., 140., 155., 175., 200., 225., 250., 275., 300., 325., 350., 400., 500., 700., 1000.};
+
+        int nPions = 0;
+        double tpi = 999999.;
+        int pdgsize = GetInt("mc_nFSPart");
+        for (int i = 0; i< pdgsize; i++)
+        {
+          	int pdg = GetVecElem("mc_FSPartPDG", i);
+          	if (pdg != 211) continue;
+                nPions++;
+                double energy = GetVecElem("mc_FSPartE", i);
+	        double momentumx = GetVecElem("mc_FSPartPx", i);
+	        double momentumy = GetVecElem("mc_FSPartPy", i);
+	        double momentumz = GetVecElem("mc_FSPartPz", i);
+                double pionmomentum = TMath::Sqrt(pow(momentumx, 2) + pow(momentumy,2)+pow(momentumz,2));
+	        double pionmass = TMath::Sqrt(pow(energy, 2) - pow(pionmomentum, 2));  
+	        double KE = energy - pionmass;
+	    	if (tpi > KE) tpi = KE;
+        }
+        
+        if ( nPions == 0) return 1.0;
+        else if(GetInt("mc_intType") == 4) return 1.0;
+	else {
+		
+        	for (int i = 0; i< (int)tpilowbins.size(); i++){
+                	if (i < (int)tpilowbins.size() and tpi >= tpilowbins[i] and tpi < tpilowbins[i+1]){
+		   		weight2 = tpiweights[i];
+ 		   		break;
+			}
+			else if (tpi >= 1000.){
+	           		 weight2 = 1.0; //abs(tpiweights[29]);
+       		  		 break; 
+               		}
+        	}
+        //if (angle > 0.10) weight2 = 0.90*weight2; //Correcting for Forward going Pions
+		
+		//std::cout << "tpi re weight: " << weight2 << std::endl;
+		return weight2;
+      }
+  };
+
+
+
 #endif  // WEIGHTFUNCTIONS
