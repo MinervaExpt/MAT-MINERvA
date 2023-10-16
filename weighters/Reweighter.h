@@ -20,7 +20,7 @@ namespace PlotUtils
 {
   namespace detail
   {
-    struct empty;
+    struct empty {};
   }
 
   template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
