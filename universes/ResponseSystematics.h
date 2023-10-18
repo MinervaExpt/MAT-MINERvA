@@ -21,6 +21,9 @@ namespace PlotUtils
     public:
       ResponseUniverse(typename T::config_t chw, double nsigma, std::string response_name, bool use_new_part_resp = false);
       ResponseUniverse(typename T::config_t chw, double nsigma, std::string name_tag, std::string response_name, bool use_new_part_resp = false);
+      ResponseUniverse(typename T::config_t chw, double nsigma, bool ID, bool OD, std::string name_tag, std::string response_name, bool use_new_part_resp = false,
+                       bool nucl = false, bool tracker = false, bool ecal = false, bool hcal = false, bool p4=true);
+
 
       double GetRecoilShift() const;
       virtual double GetCalRecoilEnergy() const; /* override */
@@ -32,7 +35,18 @@ namespace PlotUtils
 
       const std::string m_name;
       const std::string m_branch_name;
+      //double m_perParticle;
 
+      const std::string m_nametag;
+      bool m_ID;
+      bool m_OD;
+      bool m_nucl;
+      bool m_tracker;
+      bool m_ecal;
+      bool m_hcal;
+      bool m_p4 = false;
+      
+    
       //For the new particle response systematics
       double m_frac_unc; //Wish this could be a const, but oh well
       const bool m_use_new_part_resp;

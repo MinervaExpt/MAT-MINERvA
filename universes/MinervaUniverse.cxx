@@ -5,6 +5,16 @@
 
 #include <algorithm>
 
+//c++ includes
+#include <string>
+#include <cstdlib> //std::getenv()
+#include <regex>
+#include <fstream>
+#include <stack>
+#include <cassert>
+#include <sstream>
+#include <algorithm>
+
 using namespace PlotUtils;
 
 namespace {
