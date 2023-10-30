@@ -44,19 +44,23 @@ namespace reco
   template <class UNIVERSE, class EVENT = PlotUtils::detail::empty>
   class HasMINOSMatch: public PlotUtils::Cut<UNIVERSE, EVENT>
   {
-    public:
-      // Constructor
-      HasMINOSMatch(): PlotUtils::Cut<UNIVERSE, EVENT>("Has MINOS Match") {}
-
-    private:
-      // THE cut function
-      bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
-      {
-        // Call a CVUniverse member function to make the cut
-        return univ.IsMinosMatchMuon();
-      }
+  public:
+  // Constructor
+  HasMINOSMatch(): PlotUtils::Cut<UNIVERSE, EVENT>("Has MINOS Match") {}
+  static bool checkHasMINOSMatchCut(const UNIVERSE& univ)
+  {
+    return univ.IsMinosMatchMuon();
+  }
+  private:
+  // THE cut function
+  bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
+  {
+    // Call a CVUniverse member function to make the cut
+    return checkHasMINOSMatchCut(univ);       
+    // return univ.IsMinosMatchMuon();
+  }
   };
-
+  
   //============================================================================
   //Example 2: Many cuts require variables to be above, below, or at some value.
   //To simply help avoid typos and reduce a little typing, use Minimum,
@@ -112,11 +116,13 @@ namespace reco
   {
     public:
       IsNeutrino(): PlotUtils::Cut<UNIVERSE, EVENT>("Muon Charge Sign") {}
-
+    //    static bool checkIsNeutrino();
+    //    bool checkIsNeutrino();
     private:
       bool checkCut(const UNIVERSE& univ, EVENT& /*evt*/) const override
       {
-        return univ.GetMuonQP() < 0; 
+       	//return checkIsNeutrino(univ);
+	 return univ.GetMuonQP() < 0; 
       }
   };
 
