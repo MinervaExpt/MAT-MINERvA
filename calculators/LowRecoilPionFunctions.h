@@ -50,8 +50,13 @@ virtual double NewEavail() const {
 
 // MeV
 virtual double GetTpiFromRange(double range) const {
-  double tpiest = 0.2142 * range + 2.864 * sqrt(range);
-  return tpiest;  // Tpi in MeV
+  // Summer 2023 - overpredicts Tpi at higher energies
+  // double tpiest = 0.2142 * range + 2.864 * sqrt(range);
+
+  // Dec 2023
+  double tpiest = 0.128706 * range + 3.42486 * sqrt(range);
+
+  return tpiest;
 }
 
 int GetFittedMichelsOnly() const {
