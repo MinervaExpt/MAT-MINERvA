@@ -15,20 +15,19 @@ using std::sqrt;
 
 namespace {
 
-    class decreasingKE : public std::binary_function <
-        PlotUtils::intranuke_particle,
-        PlotUtils::intranuke_particle,
-        bool
-        > {
-    public:
-        bool operator()(const PlotUtils::intranuke_particle& lhs,
-                        const PlotUtils::intranuke_particle& rhs)
-            {
-                return lhs.__ke > rhs.__ke;
-            }
-    };
+class decreasingKE {
+    typedef PlotUtils::intranuke_particle first_argument_type;
+    typedef PlotUtils::intranuke_particle second_argument_type;
+    typedef bool result_type;
 
-}
+   public:
+    bool operator()(const PlotUtils::intranuke_particle& lhs,
+                    const PlotUtils::intranuke_particle& rhs) {
+        return lhs.__ke > rhs.__ke;
+    }
+};
+
+}  // namespace
 
 PlotUtils::fate_code::fate_code() :
     fLastEntry(-1),
