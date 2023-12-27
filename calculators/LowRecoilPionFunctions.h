@@ -72,7 +72,8 @@ virtual double NewEavail() const {
 
 // MeV
 virtual double GetTpiFromRange(double range) const {
-  double tpiest = 0.2142 * range + 2.864 * sqrt(range);
+//  double tpiest = 0.2142 * range + 2.864 * sqrt(range);
+  double tpiest = 0.128706 * range + 3.42486 * sqrt(range);
   return tpiest;  // Tpi in MeV
 }
 

@@ -390,7 +390,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
     // univ.PrintTrueArachneLink();
     evt.lowTpi = lowtpiinevent;
     evt.pT_reco = univ.GetMuonPT();
-    evt.q3_reco = univ.Getq3();
+    evt.q3_reco = univ.Getq3_lowrecoil();
     evt.eavail_reco = univ.NewEavail();
     evt.m_nmichels.clear();
     evt.m_nmichels = closestMichel;
