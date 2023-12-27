@@ -19,27 +19,6 @@ virtual double NewRecoilE() const {
   return newrecoil;
 }
 
-// GeV^2
-virtual double GetQ2Reco() const {
-  const double M_mu = 105.6583 / 1000.;  // Converting to GeV
-  double enu = GetEmu() / 1000. + (NewRecoilE()) / 1000.;
-  double pmucos = (GetPmu() / 1000.) * cos(GetThetamu());
-  double q2reco = 2. * enu * (GetEmu() / 1000. - pmucos) - (M_mu * M_mu);
-  return q2reco;
-}
-
-// GeV
-virtual double Getq3_lowrecoil() const {
-  double eavail = NewRecoilE() / 1000.;
-  double q2 = GetQ2Reco();
-  double q3mec = sqrt(eavail * eavail + q2);
-  return q3mec;  // Using Hang's q3 definition TODO: check to see if using
-                 // Hang's definition is ok. //q3mec;
-}
-
-// GeV/c
-double GetMuonPT() const { return GetPmu() / 1000. * sin(GetThetamu()); }
-
 // MeV
 virtual std::vector<double> GetTrackerECALMuFuzz() const {
   double trk_mufuzz = 0.0;
@@ -55,7 +34,6 @@ virtual std::vector<double> GetTrackerECALMuFuzz() const {
     else if (planeID > 1700003840 and planeID < 1709703168)
       ecal_mufuzz += fuzze;
   }
-
   return {trk_mufuzz, ecal_mufuzz};
 }
 
@@ -72,9 +50,13 @@ virtual double NewEavail() const {
 
 // MeV
 virtual double GetTpiFromRange(double range) const {
-//  double tpiest = 0.2142 * range + 2.864 * sqrt(range);
+  // Summer 2023 - overpredicts Tpi at higher energies
+  // double tpiest = 0.2142 * range + 2.864 * sqrt(range);
+
+  // Dec 2023
   double tpiest = 0.128706 * range + 3.42486 * sqrt(range);
-  return tpiest;  // Tpi in MeV
+
+  return tpiest;
 }
 
 int GetFittedMichelsOnly() const {
