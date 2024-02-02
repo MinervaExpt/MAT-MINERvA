@@ -40,8 +40,8 @@ namespace PlotUtils {
   template <class T>
   std::vector<T*> GetTpiMichelRangeEstimatorSystematicsMap(typename T::config_t chain) {
     std::map< std::string, std::vector<T*> > ret;
-    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,-1.)
-    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,1.)
+    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,-1.));
+    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,1.));
     return ret;
   }
 
@@ -78,7 +78,7 @@ PlotUtils::TpiFromMichelRangeFitUniverse<T>::TpiFromMichelRangeFitUniverse(
 
 // mm --> MeV
 template<typename T>
-double GetTpiFromRange(double range) const {
+double PlotUtils::TpiFromMichelRangeFitUniverse<T>::GetTpiFromRange(double range) const {
   double p0 = NSFDefaults::tpi_from_michel_range_fit_p0_cv + 
       T::m_nsigma * NSFDefaults::tpi_from_michel_range_fit_p0_err;
 
