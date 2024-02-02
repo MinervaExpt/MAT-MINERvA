@@ -20,6 +20,19 @@ namespace PlotUtils{
     private:
       double m_fracUncertainty;
     };
+
+  template<class T>
+  class TpiFromMichelRangeFitUniverse : public T
+    {
+    public:
+      TpiFromMichelRangeFitUniverse(typename T::config_t chw, double nsigma);
+      
+      virtual double GetTpiFromRange(double range) const /*override*/;
+      
+      virtual std::string ShortName() const /*override*/;
+      virtual std::string LatexName() const /*override*/;
+      virtual bool IsVerticalOnly()  const  { return false; } /*override*/
+    };
   
 }
 
