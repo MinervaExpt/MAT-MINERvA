@@ -38,7 +38,7 @@ namespace PlotUtils {
   }
 
   template <class T>
-  std::vector<T*> GetTpiMichelRangeEstimatorSystematicsMap(typename T::config_t chain) {
+  std::map< std::string, std::vector<T*> > GetTpiMichelRangeEstimatorSystematicsMap(typename T::config_t chain) {
     std::map< std::string, std::vector<T*> > ret;
     ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,-1.));
     ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,1.));
