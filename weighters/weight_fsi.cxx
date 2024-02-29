@@ -14,18 +14,17 @@
 using std::sqrt;
 
 namespace {
+    class decreasingKE {
+        typedef PlotUtils::intranuke_particle first_argument_type;
+        typedef PlotUtils::intranuke_particle second_argument_type;
+        typedef bool result_type;
 
-class decreasingKE {
-    typedef PlotUtils::intranuke_particle first_argument_type;
-    typedef PlotUtils::intranuke_particle second_argument_type;
-    typedef bool result_type;
-
-   public:
-    bool operator()(const PlotUtils::intranuke_particle& lhs,
-                    const PlotUtils::intranuke_particle& rhs) {
-        return lhs.__ke > rhs.__ke;
-    }
-};
+       public:
+        bool operator()(const PlotUtils::intranuke_particle& lhs,
+                        const PlotUtils::intranuke_particle& rhs) {
+            return lhs.__ke > rhs.__ke;
+        }
+    };
 
 }  // namespace
 
