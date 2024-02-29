@@ -10,7 +10,8 @@ namespace PlotUtils {
 // ==========================================================================
 // CTOR
 // ==========================================================================
-HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, int type) {
+PlotUtils::HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, int type)
+    : m_invec(input) {
     if (type == 0) {
         m_analysis_type = k2D;
     } else if (type == 1) {
@@ -20,17 +21,62 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, i
     } else if (type == 3) {
         m_analysis_type = k1D_lite;
     }
-
-    // Jank to make things build right for now. TODO: Make less jank
-    HyperDimLinearizer(input, m_analysis_type);
-}
-
-HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, EAnalysisType type) {
-    m_invec = input;
+    // m_invec = input;
     int n_dim = input.size();
-    m_analysis_type = type;
+    // m_analysis_type = type;
+    std::string n_lindim;
+    if (m_analysis_type == k1D || m_analysis_type == k1D_lite) {
+        n_lindim = "1D";
+    } else {
+        n_lindim = "2D";
+    }
+    std::cout << "Contructing class with " << n_dim << " dimensions of type " << m_analysis_type << " linearized to " << n_lindim << std::endl;
+    if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite)
+        std::cout << " Selected lightweight type. Under/overflow bins will not be counted." << std::endl;
 
-    std::cout << "Contructing class with " << n_dim << " dimensions of type " << type << std::endl;
+    m_cell_size = {1};      // vector to put sizes of each cell for each bin in each axis. Start with x-axis which is always 1 bin.
+    m_n_global_x_bins = 1;  // How  many bins you have on your linearized axis
+
+    for (unsigned int i = 0; i < input.size(); i++) {
+        // Figure out size of each axis in phase space depending on analysis type
+        int tmp_el_size;
+        if (m_analysis_type == k2D || m_analysis_type == k1D) {  // Counting under/overflow for each axis number of bins = (vector size - 1 + 2)
+            tmp_el_size = input[i].size() + 1;
+        } else {  // For lite types don't coun't under/overflow, number of bins = (vector size - 1)
+            tmp_el_size = input[i].size() - 1;
+        }
+        std::cout << "Bin number " << i << "\t" << tmp_el_size << std::endl;
+        m_el_size.push_back(tmp_el_size);
+
+        if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {
+            if (i == 1)
+                continue;  // Skip all these steps for y-axis if doing 2D
+            if (i == 0)
+                m_cell_size.push_back(0);  // this takes care of y-axis for 2D
+        }
+        m_n_global_x_bins *= tmp_el_size;  // Count the number of bins in linearized space and size of cells for each axis
+
+        if (i < input.size() - 1)                                 // skip last axis since we start with 1 for x already.
+            m_cell_size.push_back(tmp_el_size * m_cell_size[i]);  // cell size for axis i is c_i = n_(i-1)*c_(i-1)
+    }                                                             // close loop over input
+}  // close constructor
+//    // Jank to make things build right for now. TODO: Make less jank
+//    HyperDimLinearizer(input, m_analysis_type);
+// }
+
+PlotUtils::HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, EAnalysisType type)
+    : m_invec(input),
+      m_analysis_type(type) {
+    // m_invec = input;
+    int n_dim = input.size();
+    // m_analysis_type = type;
+    std::string n_lindim;
+    if (type == k1D || type == k1D_lite) {
+        n_lindim = "1D";
+    } else {
+        n_lindim = "2D";
+    }
+    std::cout << "Contructing class with " << n_dim << " dimensions of type " << type << " linearized to " << n_lindim << std::endl;
     if (type == k2D_lite || type == k1D_lite)
         std::cout << " Selected lightweight type. Under/overflow bins will not be counted." << std::endl;
 
@@ -42,7 +88,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
         int tmp_el_size;
         if (type == k2D || type == k1D) {  // Counting under/overflow for each axis number of bins = (vector size - 1 + 2)
             tmp_el_size = input[i].size() + 1;
-        } else {                           // For lite types don't coun't under/overflow, number of bins = (vector size - 1)
+        } else {  // For lite types don't coun't under/overflow, number of bins = (vector size - 1)
             tmp_el_size = input[i].size() - 1;
         }
         std::cout << "Bin number " << i << "\t" << tmp_el_size << std::endl;
@@ -50,7 +96,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
 
         if (type == k2D || type == k2D_lite) {
             if (i == 1)
-                continue;                  // Skip all these steps for y-axis if doing 2D
+                continue;  // Skip all these steps for y-axis if doing 2D
             if (i == 0)
                 m_cell_size.push_back(0);  // this takes care of y-axis for 2D
         }
@@ -58,9 +104,8 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
 
         if (i < input.size() - 1)                                 // skip last axis since we start with 1 for x already.
             m_cell_size.push_back(tmp_el_size * m_cell_size[i]);  // cell size for axis i is c_i = n_(i-1)*c_(i-1)
-    }   // close loop over input
-}   // close constructor
-
+    }                                                             // close loop over input
+}  // close constructor
 
 // ==========================================================================
 // Getter values between spaces
@@ -70,7 +115,7 @@ HyperDimLinearizer::HyperDimLinearizer(std::vector<std::vector<double>> input, E
 //     Return ranges from [0, ((# lin bins) - 1)] inclusively
 //     For lite types, additional under/overflow bins placed at high end of range from [(# lin bins), ((# lin bins) + (3^n_dim) - 1)] inclusively
 //     For 2D types, y axis is binned normally; with 0 being underflow, ((# y bins) + 1) being overflow. Return 0 for y value on 1D types.
-std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
+std::pair<int, int> PlotUtils::HyperDimLinearizer::GetBin(std::vector<double> values) {
     int global_x = 0;  // Returned linearized bin
     int y_bin = 0;
     
@@ -115,7 +160,7 @@ std::pair<int, int> HyperDimLinearizer::GetBin(std::vector<double> values) {
 }
 
 // Find out what bin a value is in for a given axis (indexed by 'el')
-int HyperDimLinearizer::Get1DBin(double value, int el) {
+int PlotUtils::HyperDimLinearizer::Get1DBin(double value, int el) {
     int b = 0;
     for (unsigned int i = 0; i < m_invec[el].size(); i++) {  // loop over bin boundaries
         if (value < m_invec[el][i]) {
@@ -127,14 +172,16 @@ int HyperDimLinearizer::Get1DBin(double value, int el) {
 }
 
 // Transform bin space coordinate to phase space coordinates (in units of bin index in phase space)
-std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin) {  //  Default ybin to 0 to maintain behaviour from Dan's version
+std::vector<int> PlotUtils::HyperDimLinearizer::GetValues(int x_linbin, int y_bin) {  //  Default ybin to 0 to maintain behaviour from Dan's version
     std::vector<int> ps_bin_coords;                                        // Phase space bin coordinates, returned here
 
-    if (x_linbin >= m_n_global_x_bins) {  // TODO: what should you do if under/overflow for lite types cases?
+    if (x_linbin > m_n_global_x_bins) {  // TODO: what should you do if under/overflow for lite types cases?
         std::cout << "HyperDimLinearizer::GetValues: WARNING: requested values out of range of linearized space. Result might not make sense." << std::endl;
+        std::cout << "                                        requested value: " << x_linbin << ", \t range of linearized space: " << m_n_global_x_bins << std::endl;
+        // TODO do lite types?
     }
 
-    int mod_bin = x_linbin;                                                       // Place holder
+    int mod_bin = x_linbin - 1;                                                   // Place holder, minus one because it won't count the x axis bins correctly otherwise.
     for (unsigned int i = 0; i < m_invec.size(); i++) {                           // Loop over coordinate axes
         if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1) {  // If doing 2D, put in y-bin and skip the other steps for y-axis.
             ps_bin_coords.push_back(y_bin);
@@ -152,11 +199,60 @@ std::vector<int> HyperDimLinearizer::GetValues(int x_linbin, int y_bin) {  //  D
     return ps_bin_coords;
 }
 
+double PlotUtils::HyperDimLinearizer::GetBinVolume(int x_linbin) {
+    double ps_bin_vol = 1.;
+    // Given the linearized bin number, get corresponding bin index in phase space coordinates
+    std::vector<int> ps_coords = GetValues(x_linbin);  // For 2D type, this puts 0 for y-axis.
+    for (int i = 0; i < ps_coords.size(); i++) {
+        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1)  // Skip y-axis if doing 2D type
+            continue;
+
+        int var_bin = ps_coords[i]; // Bin index for that axis
+        if (var_bin == 0 || var_bin == m_invec[i].size()) {  // Break if under/overflow
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING bin requested is under/overflow. Returning 1." << std::endl;
+            return 1.;
+        }
+        std::vector<double> var_binning = m_invec[i];  // Get the binning for that axis
+        double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
+        if (bin_width < 0)
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING, negative binwidth, will affect bin volume" << std::endl;
+        else if (bin_width == 0)
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING, 0 binwidth, will affect bin volume" << std::endl;
+        ps_bin_vol *= bin_width;
+    }
+    return ps_bin_vol;
+}
+
+double PlotUtils::HyperDimLinearizer::GetBinVolume(std::vector<int> ps_bin_coords, bool IncludeX = true) { // Get the volume of the bin in phase space from the phase space bin coordinates
+    double ps_bin_vol = 1.;
+    int start = 0;
+    if (!IncludeX)  // Skip x-axis if requested (user must scale by width)
+        start = 1;
+    for (int i = start; i < ps_bin_coords.size(); i++) {
+
+        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1)  // Skip y-axis if doing 2D type
+            continue;
+
+        int var_bin = ps_bin_coords[i];                      // Bin index for that axis
+        if (var_bin == 0 || var_bin == m_invec[i].size()) {  // Break if under/overflow
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING bin requested" << var_bin << "is under/overflow. Returning 1." << m_invec[i].size() << std::endl;
+            return 1.;
+        }
+        std::vector<double> var_binning = m_invec[i];  // Get the binning for that axis
+        double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
+        if (bin_width < 0)
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING, negative binwidth, will affect bin volume" << std::endl;
+        else if (bin_width == 0)
+            std::cout << "HyperDimLinearizer::GetBinVolume: WARNING, 0 binwidth, will affect bin volume" << std::endl;
+        ps_bin_vol *= bin_width;
+    }
+    return ps_bin_vol;
+}
 // ==========================================================================
 // Get Histograms, Not used in MAT implementation
 // ==========================================================================
 
-std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
+std::vector<TH2D *> PlotUtils::HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     //  std::cout <<"Entering Get2DHistos"  << std::endl;
     std::vector<TH2D *> expanded_results;
     if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
@@ -196,7 +292,7 @@ std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, b
     return expanded_results;
 }
 
-std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
+std::vector<PlotUtils::MnvH2D *> PlotUtils::HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH2D *> expanded_results;
     if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
@@ -258,7 +354,7 @@ std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::M
     return expanded_results;
 }
 
-std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool IncludeSys = false) {
+std::vector<TH2D *> PlotUtils::HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool IncludeSys = false) {
     std::vector<TH2D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) { // This is only for 1D, so send it back if it's 2D type
         std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
@@ -302,7 +398,7 @@ std::vector<TH2D *> HyperDimLinearizer::Get2DHistos(MnvH1D *result, bool Include
 }
 
 // This is for 1D types
-std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+std::vector<PlotUtils::MnvH2D *> PlotUtils::HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH2D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
@@ -365,9 +461,8 @@ std::vector<PlotUtils::MnvH2D *> HyperDimLinearizer::Get2DMnvHistos(PlotUtils::M
     return expanded_result;
 }
 
-
 // This is for type 1 only, and only for 2D results
-TH2D *HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+TH2D *PlotUtils::HyperDimLinearizer::Get2DHisto(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     if (m_invec.size() != 2)
         std::cout << "THIS ONLY WORKS FOR 2D RESULTS.\nIf you are a mapped 3D or more you need to use something different which might not exist." << std::endl;
     std::string myname = Form("Unmapped_%s", result->GetTitle());
@@ -435,7 +530,7 @@ PlotUtils::MnvH2D *HyperDimLinearizer::Get2DMnvHisto(PlotUtils::MnvH1D *result, 
 }
 
 // This is for type 1 & 3 only, any dimension result, projected to an axis (default x)
-std::vector<TH1D *> HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+std::vector<TH1D *> PlotUtils::HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     std::vector<TH1D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
         std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 1D histogram, but have analysis type set to a 2D type. Returning blank list." << std::endl;
@@ -469,7 +564,7 @@ std::vector<TH1D *> HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D *result, b
     return expanded_result;
 }
 
-std::vector<PlotUtils::MnvH1D *> HyperDimLinearizer::Get1DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
+std::vector<PlotUtils::MnvH1D *> PlotUtils::HyperDimLinearizer::Get1DMnvHistos(PlotUtils::MnvH1D *result, bool IncludeSys = false) {
     std::cout << "Entering Get1DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH1D *> expanded_result;
     if (m_analysis_type == k2D || m_analysis_type == k2D_lite) {  // This is only for 1D, so send it back if it's 2D type
@@ -536,7 +631,7 @@ std::vector<PlotUtils::MnvH1D *> HyperDimLinearizer::Get1DMnvHistos(PlotUtils::M
 // Test
 // ==========================================================================
 
-void HyperDimLinearizer::TestFunctionality() {
+void PlotUtils::HyperDimLinearizer::TestFunctionality() {
     std::cout << "Initializing funcationality test" << std::endl;
 
     // how many bins
@@ -561,19 +656,19 @@ void HyperDimLinearizer::TestFunctionality() {
 }
 
 // These get you some values to check it worked as expected
-EAnalysisType HyperDimLinearizer::GetAnalysisType() {
+PlotUtils::EAnalysisType PlotUtils::HyperDimLinearizer::GetAnalysisType() {
     return m_analysis_type;
 }
 
-std::vector<int> HyperDimLinearizer::GetAxesSizes() {
+std::vector<int> PlotUtils::HyperDimLinearizer::GetAxesSizes() {
     return m_el_size;
 }
 
-std::vector<int> HyperDimLinearizer::GetCellSizes() {
+std::vector<int> PlotUtils::HyperDimLinearizer::GetCellSizes() {
     return m_cell_size;
 }
 
-int HyperDimLinearizer::GetNLinBins() {
+int PlotUtils::HyperDimLinearizer::GetNLinBins() {
     if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {  // If doing lightweight, you'll also have under/overflow out at the end.
         // std::cout << "Lite analysis type, returning (# of global bins) + (# of under/overflow bins)" << std::endl;
         int flow_bins = 1;
@@ -592,9 +687,9 @@ int HyperDimLinearizer::GetNLinBins() {
 // Helpers
 // ==========================================================================
 
-bool HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1) {
+bool PlotUtils::HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1) {
     if (m_analysis_type != 1) {
-        std::cout << "WARNING: HyperDimLinearizer::IsUnderflow is only configured for type 1 analyses" << std::endl;
+        std::cout << "WARNING: PlotUtils::HyperDimLinearizer::IsUnderflow is only configured for type 1 analyses" << std::endl;
         return false;
     }
     if (m_analysis_type == k2D_lite || m_analysis_type == k1D_lite) {
@@ -620,7 +715,7 @@ bool HyperDimLinearizer::IsUnderflow(int lin_bin, int axis = -1) {
     return false;
 }
 
-bool HyperDimLinearizer::IsOverflow(int lin_bin, int axis = -1) {
+bool PlotUtils::HyperDimLinearizer::IsOverflow(int lin_bin, int axis = -1) {
     if (m_analysis_type != 1) {
         std::cout << "WARNING: HyperDimLinearizer::IsOverflow is only configured for type 1 analyses" << std::endl;
         return false;
