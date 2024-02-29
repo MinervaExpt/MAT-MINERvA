@@ -18,6 +18,8 @@ class HyperDimLinearizer {
 
     std::pair<int, int> GetBin(std::vector<double> values);   // Template get bin for 2,3,4D cases
     std::vector<int> GetValues(int x_linbin, int y_bin = 0);  // Given linearized x (and y if doing 2D), get coords in phase space. y_bin defaults to 0 to maintain behaviour with Dan's stuff.
+    double GetBinVolume(int x_linbin);                        // Get the volume of the bin from input linearized bin. If doing 2D type, this skips the y-axis.
+    double GetBinVolume(std::vector<int> ps_bin_coords, bool IncludeX);      // Get the volume of the bin from input phase space bin coordinates. This always includes the y-axis.
 
     std::vector<TH2D*> Get2DHistos(PlotUtils::MnvH2D* result, bool IncludeSys);                  // This is for type==0
     std::vector<PlotUtils::MnvH2D*> Get2DMnvHistos(PlotUtils::MnvH2D* result, bool IncludeSys);  // This is for type==1

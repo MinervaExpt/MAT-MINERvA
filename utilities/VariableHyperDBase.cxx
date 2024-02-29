@@ -273,27 +273,27 @@ PlotUtils::HyperDimLinearizer *VariableHyperDBase<UNIVERSE>::GetHyperDimLineariz
 // TODO: Maybe this belongs to hyperdim?
 template <class UNIVERSE>
 double VariableHyperDBase<UNIVERSE>::GetBinVolume(int lin_bin) const {
-    double ps_bin_vol = 1.;
-    // Given the linearized bin number, get corresponding bin index in phase space coordinates
-    std::vector<int> ps_coords = m_hyperdim->GetValues(lin_bin);  // For 2D type, this puts 0 for y-axis.
-    for (int i = 0; i < ps_coords.size(); i++) {
-        if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1)  // Skip y-axis if doing 2D type
-            continue;
-
-        int var_bin = ps_coords[i];
-        if (var_bin == 0 || var_bin == (m_vars_vec[i]->GetNBins() + 1)) {  // Break if under/overflow
-            std::cout << "VariableHyperDBase::GetBinVolume: WARNING bin requested is under/overflow. Returning 1." << std::endl;
-            return 1.;
-        }
-        std::vector<double> var_binning = m_vars_vec[i]->GetBinVec();  // Get the binning for that axis
-        double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
-        if (bin_width < 0)
-            std::cout << "VariableHyperDBase::GetBinVolume: WARNING, negative binwidth, will affect bin volume" << std::endl;
-        else if (bin_width == 0)
-            std::cout << "VariableHyperDBase::GetBinVolume: WARNING, 0 binwidth, will affect bin volume" << std::endl;
-        ps_bin_vol *= bin_width;
-    }
-    return ps_bin_vol;
+    return m_hyperdim->GetBinVolume(lin_bin);
+//     double ps_bin_vol = 1.;
+//     // Given the linearized bin number, get corresponding bin index in phase space coordinates
+//     std::vector<int> ps_coords = m_hyperdim->GetValues(lin_bin);  // For 2D type, this puts 0 for y-axis.
+//     for (int i = 0; i < ps_coords.size(); i++) {
+//         if ((m_analysis_type == k2D || m_analysis_type == k2D_lite) && i == 1)  // Skip y-axis if doing 2D type
+//             continue;
+//         int var_bin = ps_coords[i];
+//         if (var_bin == 0 || var_bin == (m_vars_vec[i]->GetNBins() + 1)) {  // Break if under/overflow
+//             std::cout << "VariableHyperDBase::GetBinVolume: WARNING bin requested is under/overflow. Returning 1." << std::endl;
+//             return 1.;
+//         }
+//         std::vector<double> var_binning = m_vars_vec[i]->GetBinVec();  // Get the binning for that axis
+//         double bin_width = var_binning[var_bin] - var_binning[var_bin - 1];
+//         if (bin_width < 0)
+//             std::cout << "VariableHyperDBase::GetBinVolume: WARNING, negative binwidth, will affect bin volume" << std::endl;
+//         else if (bin_width == 0)
+//             std::cout << "VariableHyperDBase::GetBinVolume: WARNING, 0 binwidth, will affect bin volume" << std::endl;
+//         ps_bin_vol *= bin_width;
+//     }
+//     return ps_bin_vol;
 }
 
 template <class UNIVERSE>
