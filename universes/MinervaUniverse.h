@@ -60,7 +60,9 @@ public:
   //
   static bool UseNuEConstraint();
   static bool SetNuEConstraint(bool use_constraint);
-
+  static bool RPAMaterials(bool rpa_mat); 
+  static bool GetRPAMaterials();
+ 
   //
   static int GetNFluxUniverses();
   static bool SetNFluxUniverses(int n_flux_universes);
@@ -114,6 +116,7 @@ public:
   static bool m_use_nonResPi_reweight;
   static bool m_use_zExpansionFa_reweight;
 
+  static bool m_use_rpa_for_materials; //Oscar
 };
 }  // namespace PlotUtils
 #endif  // MINERVAUNIVERSE

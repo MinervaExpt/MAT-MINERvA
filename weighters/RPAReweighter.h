@@ -29,7 +29,10 @@ namespace PlotUtils
         //variation 0 is the CV
         return PlotUtils::GetRPAWeight(univ, univ.Getq0True() / 1000 /* GeV */,
                                  univ.Getq3True() / 1000 /* GeV */, 0,
-                                 univ.IsProcessingNX());
+                                 univ.IsProcessingNX(),
+				 univ.GetTargetZTrue(),
+                                 univ.GetAnalysisNuPDG(),
+				 univ.GetRPAMaterials());
       }
 
       std::string GetName() const override { return "RPA"; }
