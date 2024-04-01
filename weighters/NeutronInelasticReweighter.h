@@ -110,7 +110,7 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       //Load fKinENormalization from a file.  Do this first because it can fail.
       const std::string kinEFileName = "MoNA_FS_normalizations.root", 
                         kinENormHistName = "Tracker_Signal_FSParticleKE_Truth_Neutron";
-      auto oldPwd = gDirectory;
+      TDirectory* oldPwd = gDirectory;
       try
       {
         std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
