@@ -88,7 +88,7 @@ namespace PlotUtils{
   // RPA
   //=================================================================================
     template<typename T>
-    double GetRPAWeight(const T& universe, double q0, double q3, int variation, bool useNX) {
+    double GetRPAWeight(const T& universe, double q0, double q3, int variation, bool useNX, int targetZTrue, int nuMode ,bool rpaMat) {
       double ret = 1.0;
       //variations
       //0 : CV value
@@ -102,11 +102,11 @@ namespace PlotUtils{
 
       if(universe.GetInt("mc_intType")!=1) return 1.0;
       if(universe.GetInt("mc_targetZ")<6) return 1.0;
-      if(variation==0) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeight(q0,q3);
-      else if(variation==1) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,1);
-      else if(variation==2) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightHighQ2(q0,q3,-1);
-      else if(variation==3) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,1);
-      else if(variation==4) ret=PlotUtils::weightRPA_cv_and_var(useNX).getWeightLowQ2(q0,q3,-1);
+      if(variation==0) ret=PlotUtils::weightRPA_cv_and_var(useNX,targetZTrue,nuMode,rpaMat).getWeight(q0,q3);
+      else if(variation==1) ret=PlotUtils::weightRPA_cv_and_var(useNX,targetZTrue,nuMode,rpaMat).getWeightHighQ2(q0,q3,1);
+      else if(variation==2) ret=PlotUtils::weightRPA_cv_and_var(useNX,targetZTrue,nuMode,rpaMat).getWeightHighQ2(q0,q3,-1);
+      else if(variation==3) ret=PlotUtils::weightRPA_cv_and_var(useNX,targetZTrue,nuMode,rpaMat).getWeightLowQ2(q0,q3,1);
+      else if(variation==4) ret=PlotUtils::weightRPA_cv_and_var(useNX,targetZTrue,nuMode,rpaMat).getWeightLowQ2(q0,q3,-1);
       else 
         throw std::runtime_error("RPAUniverse::GetRPAWeight: invalid variation");
 
@@ -236,12 +236,12 @@ namespace PlotUtils{
 
   template<typename T>
   double RPAUniverse<T>::GetRPAWeight( ) const {
-    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX());
+    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX(), T::GetTargetZTrue(), T::GetAnalysisNuPDG() , T::GetRPAMaterials());
   }
 
   template <typename T>
   double RPAUniverse<T>::GetWeightRatioToCV() const {
-    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX()) / PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0, T::IsProcessingNX()); //Variation 0 is the CV
+    return PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, m_variation, T::IsProcessingNX(), T::GetTargetZTrue(), T::GetAnalysisNuPDG(), T::GetRPAMaterials()) / PlotUtils::GetRPAWeight(*this, T::Getq0True()/1000, T::Getq3True()/1000, 0, T::IsProcessingNX(), T::GetTargetZTrue(), T::GetAnalysisNuPDG(), T::GetRPAMaterials()); //Variation 0 is the CV
   }
 
   template<typename T>
