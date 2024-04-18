@@ -4,7 +4,9 @@ cmake_minimum_required(VERSION 3.2) #Requiring version 3.2
 
 include(ExternalProject)
 
-set(MY_GIT_TAG "main" CACHE STRING "Check out the same git tag for all projects")
+set(MY_GIT_TAG_MAT "main" CACHE STRING "Check out the same git tag for MAT projects")
+set(MY_GIT_TAG_MAT_MNV "feature/nvaughan-hyperdim" CACHE STRING "Check out the same git tag for MAT-MINERvA projects")
+set(MY_GIT_TAG_UNF_UTIL "main" CACHE STRING "Check out the same git tag for UnfoldUtils projects")
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
 set(FLUX_FILE_DIR "/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
@@ -25,7 +27,7 @@ set(DISABLE_GIT_DOWNLOAD)
 set(DISABLE_CVS_DOWNLOAD)
 
 if(NOT CMAKE_NOT_FIRST_RUN)
-  if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
+  if(EXISTS ${SOURCE_CODE_DIR}/MAT OR EXISTS ${SOURCE_CODE_DIR}/MAT-MINERvA OR EXISTS ${SOURCE_CODE_DIR}/UnfoldUtils)
     message("One or more source code directories already exist.  I'm not going to download anything so I don't overwrite your hard work.")
     set(DISABLE_GIT_DOWNLOAD DOWNLOAD_COMMAND "")
   endif()
@@ -38,15 +40,16 @@ endif()
 ExternalProject_Add(MAT
                     "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT.git
-                    GIT_TAG ${MY_GIT_TAG}
+                    GIT_TAG ${MY_GIT_TAG_MAT}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
 
 ExternalProject_Add(MAT-MINERvA
+                    "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT-MINERvA.git
-                    GIT_TAG ${MY_GIT_TAG}
+                    GIT_TAG ${MY_GIT_TAG_MAT_MNV}
                     DOWNLOAD_COMMAND "" #Let git updates work, but not downloads.  Otherwise, you'd overwrite your MAT-MINERvA area every time you tried to install it.  In reality, I think the install just stops and fails.
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -57,7 +60,7 @@ ExternalProject_Add(MAT-MINERvA
 ExternalProject_Add(UnfoldUtils
                     "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
-                    GIT_TAG ${MY_GIT_TAG}
+                    GIT_TAG ${MY_GIT_TAG_UNF_UTIL}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
