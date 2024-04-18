@@ -22,7 +22,10 @@ virtual double GetRPAWeight() const {
   const int variation = 0;  // CV
   return PlotUtils::GetRPAWeight(*this, Getq0True() / 1000 /* GeV */,
                                  Getq3True() / 1000 /* GeV */, variation,
-                                 IsProcessingNX());
+                                 IsProcessingNX(),
+                                 GetTargetZTrue(),
+				 GetAnalysisNuPDG(),
+                                 GetRPAMaterials());
 }
 
 virtual double GetLowRecoil2p2hWeight() const {

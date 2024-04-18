@@ -27,11 +27,27 @@ void weightRPA::read(const TString  f)
   }
 }
 
-void weightRPA::Setq0OffsetValenciaGENIE(bool useNX)
+void weightRPA::Setq0OffsetValenciaGENIE(bool useNX, int targetZTrue, int nuMode, bool rpaMat)
 {
   //DGR - conclusion from discussion between Rik, Clarence Wret, and Dan is this offset needs to be 27 and not 10 for the NX era (GENIE version 2.12.X).
   //DGR update. Eroica based analysis still wants 10 so I will keep it commented out
-  q0offsetValenciaGENIE = useNX ? 27 : 10;
+  if(!rpaMat) {q0offsetValenciaGENIE = useNX ? 27 : 10;}
+
+  if (rpaMat){
+
+    q0offsetValenciaGENIE = useNX ? 27 : 10; //Default value      
+    if(nuMode == 14){
+       if(targetZTrue == 82) q0offsetValenciaGENIE = useNX ? 35 : 34;
+       if(targetZTrue == 26) q0offsetValenciaGENIE = useNX ? 39 : 35; 
+       if(targetZTrue == 6) q0offsetValenciaGENIE = useNX ? 27 : 12; 
+     }
+    if(nuMode == -14){
+       if(targetZTrue == 82) q0offsetValenciaGENIE = useNX ? 33 : 10;
+       if(targetZTrue == 26) q0offsetValenciaGENIE = useNX ? 40 : 10; 
+       if(targetZTrue == 6)  q0offsetValenciaGENIE = useNX ? 30 : 10; 
+    }
+  }
+
 }
 
 double weightRPA::getWeightInternal(const double mc_q0, const double mc_q3,  double *weights){
@@ -346,10 +362,48 @@ double weightRPA::getWeightHighQ2(const double mc_q0, const double mc_q3, int si
   return getWeightInternal(mc_q0,mc_q3,weightRPA::HIGHQ2,sign);
 }
 
-PlotUtils::weightRPA& PlotUtils::weightRPA_cv_and_var(bool useNX) {
+PlotUtils::weightRPA& PlotUtils::weightRPA_cv_and_var(bool useNX, int targetZtrue, int nuMode, bool rpaMat ) {
+ 
   char *mparalocation = std::getenv("MPARAMFILESROOT");
   std::string directory_data = std::string(mparalocation)+"/data/Reweight/";
-  static PlotUtils::weightRPA* _weightRPA_cv_and_var = 
-    new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu12C-20GeV-20170202.root",useNX);
-  return *_weightRPA_cv_and_var;
+  //static PlotUtils::weightRPA* _weightRPA_cv_and_var;
+  
+ if(!rpaMat){
+   static PlotUtils::weightRPA*  _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu12C-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+   return *_weightRPA_cv_and_var;
+  }
+ if(rpaMat) {
+   if(targetZtrue==82 ){
+
+      if(nuMode ==-14){ 
+         static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-anu208Pb-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat); 
+         return *_weightRPA_cv_and_var;
+      }
+      else { 
+         static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu208Pb-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var;
+      }
+   }else if(targetZtrue==26){
+
+      if(nuMode ==-14){ 
+         static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-anu56Fe-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat); 
+         return *_weightRPA_cv_and_var;
+      } 
+      else {
+         static PlotUtils::weightRPA*  _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu56Fe-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var; 
+      }
+   }else {
+
+      if (nuMode ==-14){ 
+         static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-anu12C-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var;
+      }
+      else {
+         static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu12C-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var;
+      }
+   }
+ }
+
 }

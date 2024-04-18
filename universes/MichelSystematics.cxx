@@ -28,6 +28,23 @@ namespace PlotUtils {
     return ret;
   }
 
+
+  template <class T>
+  std::vector<T*> GetTpiMichelRangeEstimatorSystematics(typename T::config_t chain) {
+    std::vector<T*> ret;
+    ret.push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain, -1.));
+    ret.push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain, 1.));
+    return ret;
+  }
+
+  template <class T>
+  std::map< std::string, std::vector<T*> > GetTpiMichelRangeEstimatorSystematicsMap(typename T::config_t chain) {
+    std::map< std::string, std::vector<T*> > ret;
+    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,-1.));
+    ret["TpiMichelRangeEstimator"].push_back(new PlotUtils::TpiFromMichelRangeFitUniverse<T>(chain,1.));
+    return ret;
+  }
+
 }
 
 //!  Michel Tag Efficiency
@@ -51,5 +68,30 @@ std::string PlotUtils::MichelEfficiencyUniverse<T>::ShortName() const { return "
 
 template<typename T>
 std::string PlotUtils::MichelEfficiencyUniverse<T>::LatexName() const { return "Michel Tag Efficiency"; }
+
+//==============================================================================
+
+// CTOR
+template<typename T>
+PlotUtils::TpiFromMichelRangeFitUniverse<T>::TpiFromMichelRangeFitUniverse(
+    typename T::config_t chw, double nsigma) : T(chw, nsigma) {}
+
+// mm --> MeV
+template<typename T>
+double PlotUtils::TpiFromMichelRangeFitUniverse<T>::GetTpiFromRange(double range) const {
+  double p0 = NSFDefaults::tpi_from_michel_range_fit_p0_cv + 
+      T::m_nsigma * NSFDefaults::tpi_from_michel_range_fit_p0_err;
+
+  double p1 = NSFDefaults::tpi_from_michel_range_fit_p1_cv + 
+      T::m_nsigma * NSFDefaults::tpi_from_michel_range_fit_p1_err;
+
+  return p0 * range + p1 * sqrt(range);
+}
+
+template<typename T>
+std::string PlotUtils::TpiFromMichelRangeFitUniverse<T>::ShortName() const { return "TpiFromMichelRangeFit"; }
+
+template<typename T>
+std::string PlotUtils::TpiFromMichelRangeFitUniverse<T>::LatexName() const { return "T_{#pi} From Michel Range Fit"; }
 
 #endif // MichelSystematics_CXX
