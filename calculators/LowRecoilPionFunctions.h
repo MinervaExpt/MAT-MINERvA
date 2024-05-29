@@ -48,10 +48,10 @@ virtual double NewEavail() const {
   return eavail * Eavailable_scale;
 }
 
-// MeV
+// mm --> MeV
 virtual double GetTpiFromRange(double range) const {
-  double tpiest = 0.2142 * range + 2.864 * sqrt(range);
-  return tpiest;  // Tpi in MeV
+  return NSFDefaults::tpi_from_michel_range_fit_p0_cv * range + 
+      NSFDefaults::tpi_from_michel_range_fit_p1_cv * sqrt(range);
 }
 
 int GetFittedMichelsOnly() const {

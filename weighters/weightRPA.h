@@ -46,10 +46,10 @@ namespace PlotUtils{
   class weightRPA {
   public:
     //Constructor: Read in params from a filename
-    weightRPA(const TString  f, bool useNX=true)
+    weightRPA(const TString  f, bool useNX=true, int targetZTrue = 12, int helicity = 1, bool rpaMat =false )
     {
       read(f); //Read in params from file
-      Setq0OffsetValenciaGENIE(useNX); //Set variable that differs for NX,Eroica
+      Setq0OffsetValenciaGENIE(useNX, targetZTrue, helicity, rpaMat); //Set variable that differs for NX,Eroica
     }   
  
     TString  filename;
@@ -85,7 +85,7 @@ namespace PlotUtils{
     double getWeightQ2(const double mc_Q2, const bool relORnonrel=true);
     //Initializer
     void read(const TString  f);
-    void Setq0OffsetValenciaGENIE(bool useNX );
+    void Setq0OffsetValenciaGENIE(bool useNX, int targetZTrue, int helicity, bool rpaMat );
     
     // q0 and q3 in GeV, type = 1 for low Q2, 2 for high Q2, 0 for central
     //double getWeightInternal(const double mc_q0, const double mc_q3,int type, int sign);
@@ -100,7 +100,7 @@ namespace PlotUtils{
   };
 
   // Static instance of RPA weighter
-  PlotUtils::weightRPA& weightRPA_cv_and_var(bool useNX=true);
+  PlotUtils::weightRPA& weightRPA_cv_and_var(bool useNX=true, int targetZTrue = 12 , int helicity = 6 , bool rpaMat = false);
 
 }
 
