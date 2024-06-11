@@ -25,7 +25,7 @@ cmake ../../MAT-MINERvA/bootstrap -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_
 
 make install #-j 4
 ```
-If you're on a personal unix machine, check out @bamesserly's [guide](https://github.com/bamesserly/mat-minimal-ana/blob/master/mac_install_guide.md).
+If you're on a personal unix machine, check out @bamesserly's [guide](https://github.com/bamesserly/mat-minimal-ana/blob/master/mat_minerva_personal_machine_install_guide.md).
 
 ## How to Use MAT-MINERvA
 MAT-MINERvA is compiled and installed using CMake 3 or later.  Once it has been installed, **`source opt/bin/setup.sh` to tell the operating system to use it**.
