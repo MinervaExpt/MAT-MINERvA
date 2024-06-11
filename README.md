@@ -2,6 +2,7 @@
 MINERvA-specific plugins to the MAT like FluxReweighter, MuonFunctions, and our CCInclusiveCuts.  Extends the [MAT](https://github.com/MinervaExpt/MAT)'s systematic uncertainty infrastructure with standard implementations of systematics across all MINERvA analyses.  Requires MAT, and best used with UnfoldUtils and MATFluxAndReweightFiles.
 
 ## Installation (Installs MAT and UnfoldUtils too)
+On a MINERvA gpvm:
 ```
 #If you're on a MINERvA GPVM hosted by Fermilab, you need to set up newer versions of ROOT and CMake first
 source /cvmfs/minerva.opensciencegrid.org/minerva/hep_hpc_products/setups
@@ -24,6 +25,7 @@ cmake ../../MAT-MINERvA/bootstrap -DCMAKE_INSTALL_PREFIX=`pwd`/.. -DCMAKE_BUILD_
 
 make install #-j 4
 ```
+If you're on a personal unix machine, check out @bamesserly's [guide](https://github.com/bamesserly/mat-minimal-ana/blob/master/mac_install_guide.md).
 
 ## How to Use MAT-MINERvA
 MAT-MINERvA is compiled and installed using CMake 3 or later.  Once it has been installed, **`source opt/bin/setup.sh` to tell the operating system to use it**.
