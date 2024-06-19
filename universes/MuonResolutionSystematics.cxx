@@ -42,6 +42,8 @@ namespace PlotUtils {
 
   template <class T>
   std::map< std::string, std::vector<T*> > GetMuonAngleResolutionSystematicsMap(typename T::config_t chain,  double fracUncertainty=NSFDefaults::muon_angle_frac_res) {
+    
+    std::cout << "Muon Angle Resolution Systematics created with fractional uncertainty " << fracUncertainty << std::endl;
     std::map< std::string, std::vector<T*> > ret;
     
     ret["MuonAngleXResolution"].push_back(new PlotUtils::MuonAngleXResolutionUniverse<T>(chain, -1., fracUncertainty));
