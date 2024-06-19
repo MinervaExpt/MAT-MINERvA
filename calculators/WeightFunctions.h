@@ -81,6 +81,14 @@ virtual double GetTargetMassWeight() const {
   return 1.0;  
 }
 
+virtual double GetMLVertexWeight() const {
+	return 1.0;  
+}
+
+virtual double GetGenericWeight() const {
+	return 1.0;  
+}
+
 virtual double GetFSIWeight(int iWeight) const {
   static PlotUtils::weight_fsi weight_FSI;
   weight_FSI.UseTrackingThreshold();
