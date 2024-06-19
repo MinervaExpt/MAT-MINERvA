@@ -64,6 +64,16 @@ ExternalProject_Add(UnfoldUtils
                     UPDATE_DISCONNECTED true
                     DEPENDS MAT MAT-MINERvA)
 
+ExternalProject_Add(GENIEXSecExtract
+                    "${DISABLE_GIT_DOWNLOAD}"
+                    GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/GENIEXSecExtract.git
+                    GIT_TAG ${MY_GIT_TAG}
+                    SOURCE_DIR "${SOURCE_CODE_DIR}/GENIEXSecExtract"
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+                    STEP_TARGETS update
+                    UPDATE_DISCONNECTED true
+                    DEPENDS MAT MAT-MINERvA)
+
 #MParamFiles doesn't need to be built or installed.  It's a bunch of text and .root files that programs need to be able to find.
 #Nothing depends on MParamFiles to build, but it does need to be installed before much of libPlotUtils can be used.
 if(DOWNLOAD_FLUX_FILES)
