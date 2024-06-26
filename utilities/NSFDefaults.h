@@ -35,16 +35,16 @@ namespace NSFDefaults {
 
 //! Tpi estimator from michel range, fit parameters (Mehreen Dec 2023)
   // tpi = p1 * range + p1 * sqrt(range); // mm --> MeV
-//  static const double tpi_from_michel_range_fit_p0_cv = 0.128706;
-//  static const double tpi_from_michel_range_fit_p1_cv = 3.42486;
-//  static const double tpi_from_michel_range_fit_p0_err = 3.28304e-3;
-//  static const double tpi_from_michel_range_fit_p1_err = 7.96999e-2;
-//! Tpi estimator from michel range, fit parameters (Mehreen summer 2023)
-  // tpi = p1 * range + p1 * sqrt(range); // mm --> MeV
-  static const double tpi_from_michel_range_fit_p0_cv = 0.2142;
-  static const double tpi_from_michel_range_fit_p1_cv = 2.864;
+  static const double tpi_from_michel_range_fit_p0_cv = 0.128706;
+  static const double tpi_from_michel_range_fit_p1_cv = 3.42486;
   static const double tpi_from_michel_range_fit_p0_err = 3.28304e-3;
   static const double tpi_from_michel_range_fit_p1_err = 7.96999e-2;
+//! Tpi estimator from michel range, fit parameters (Mehreen summer 2023)
+  // tpi = p1 * range + p1 * sqrt(range); // mm --> MeV
+//  static const double tpi_from_michel_range_fit_p0_cv = 0.2142;
+//  static const double tpi_from_michel_range_fit_p1_cv = 2.864;
+//  static const double tpi_from_michel_range_fit_p0_err = 3.28304e-3;
+//  static const double tpi_from_michel_range_fit_p1_err = 7.96999e-2;
 
 //! material assay
   static const double MaterialAssayUncertainty = 17.; // MeV

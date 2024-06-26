@@ -128,7 +128,7 @@ namespace PlotUtils
         double ptmu = univ.GetPlepTrue() * sin(univ.GetThetalepTrue());
 
         if (univ.GetTrueNPionsinEvent() == 0) return 1.0;
-        else if (Eavail > 1200 && ptmu > 1800) return 1.0;
+        else if (Eavail > 1200 || ptmu > 1800) return 1.0;
         else if(univ.GetInt("mc_intType") == 4) return 1.0;
 	else {
 		

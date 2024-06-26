@@ -172,7 +172,7 @@ virtual double GetUntrackedPionWeight() const{
         double ptmu = GetPlepTrue() * sin(GetThetalepTrue());
         
         if ( nPions == 0) return 1.0;
-        else if (Eavail > 1200 && ptmu > 1800) return 1.0;
+        else if (Eavail > 1200 || ptmu > 1800) return 1.0;
         else if(GetInt("mc_intType") == 4) return 1.0;
 	else {
 		
