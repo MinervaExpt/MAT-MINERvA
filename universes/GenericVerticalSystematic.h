@@ -12,7 +12,7 @@ namespace PlotUtils
   class GenericVerticalUniverse: public BASE_UNIVERSE
   {
     public:
-    GenericVerticalUniverse(typename BASE_UNIVERSE::config_t& config, std::unique_ptr<PlotUtils::Reweighter<BASE_UNIVERSE, EVENT>>&& weighter, double scale = 1.0): BASE_UNIVERSE(config), fReweight(std::move(weighter)), fScaleAboutCV(scale)
+      GenericVerticalUniverse(typename BASE_UNIVERSE::config_t& config, std::unique_ptr<PlotUtils::Reweighter<BASE_UNIVERSE, EVENT>>&& weighter, double scale = 1.0, std::string name = ""): BASE_UNIVERSE(config), fReweight(std::move(weighter)), fScaleAboutCV(scale), fNameExt(name)
       {
       }
 
@@ -27,11 +27,12 @@ namespace PlotUtils
 	else return (2.0+fScaleAboutCV*fReweight->GetWeight(*this,empty));//This is to be used as a reflection about the CV of the "upshift universe" for the case of a positive factor. - David L. July 29, 2022
       }
 
-      std::string ShortName() const override { return fReweight->GetName(); }
+      std::string ShortName() const override { return ( (fNameExt != "") ? fReweight->GetName()+"_"+fNameExt : fReweight->GetName() ); }
       bool IsVerticalOnly() const override { return true; } //By definition
 
     private:
       std::unique_ptr<PlotUtils::Reweighter<BASE_UNIVERSE, EVENT>> fReweight;
       double fScaleAboutCV;
+      std::string fNameExt;
   };
 }
