@@ -276,7 +276,7 @@ bool TargetUtils::InTrackerZ( double vtx_z ) const
 }
 
 //! In nuclear target region?
-bool TargetUtils::InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double apothem/* = 850. */ )
+bool TargetUtils::InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double apothem/* = 850. */ ) const
 {
   if( !InNukeRegionZ( vtx_z ) ) return false;
 
@@ -285,7 +285,7 @@ bool TargetUtils::InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double
 
   return true;
 }
-bool TargetUtils::InNukeRegionZ( double vtx_z )
+bool TargetUtils::InNukeRegionZ( double vtx_z ) const
 {
   //Is it in the nuclear target region volume?
   if( vtx_z < PlotUtils::TargetProp::NukeRegion::Face ) return false;
