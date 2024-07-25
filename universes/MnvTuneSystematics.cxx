@@ -288,6 +288,36 @@ namespace PlotUtils{
   template<typename T>
   std::string LowQ2PionUniverse<T>::LatexName() const { return "LowQ2Pi"; }
 
+//=================================================================================
+// UntrackedUniverses
+//=================================================================================
+  // Constructor
+  template<typename T>
+  UntrackedPionUniverse<T>::UntrackedPionUniverse(typename T::config_t chw, double nsigma)
+    : T(chw, nsigma)
+  {}
+
+  // Reduce the size of the weight by factor of 2.
+  // 0.9 --> 0.95
+  // 1.2 --> 1.1
+  // In the future, study effect of weights even closer to nominal.
+  template<typename T>
+  double UntrackedPionUniverse<T>::GetUntrackedPiWeight(std::string channel) const { 
+    return 1. + (T::GetUntrackedPionWeight() - 1.) * 0.5;
+  }
+
+  //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
+  /*template <typename T>
+  double UntrackedPionUniverse<T>::GetWeightRatioToCV() {
+  }*/
+
+  template<typename T>
+  std::string UntrackedPionUniverse<T>::ShortName() const { return "UntrackedPi"; }
+
+
+  template<typename T>
+  std::string UntrackedPionUniverse<T>::LatexName() const { return "UntrackedPi"; }
+
 
 
 

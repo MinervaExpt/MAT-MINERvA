@@ -70,6 +70,24 @@ namespace PlotUtils{
         virtual bool IsVerticalOnly() const   { return true; }/*override*/;
     };
 
+
+  //=================================================================================
+  // Untracked Pion
+  //=================================================================================
+    template <typename T>
+    class UntrackedPionUniverse : public T
+    {
+      public:
+        UntrackedPionUniverse(typename T::config_t chw, double nsigma);
+
+        virtual double GetUntrackedPiWeight(std::string channel) const /*override*/;
+        //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm ready for Reweighters and Universes that are pre-configured with channel as a member variable.
+
+        virtual std::string ShortName() const /*override*/;
+        virtual std::string LatexName() const /*override*/;
+        virtual bool IsVerticalOnly() const   { return true; }/*override*/;
+    };
+
   //=================================================================================
   // MnvHadronReweighter (TODO PLAYLIST-DEPENDENT, FIX WITH FLUX WEIGHTS)
   //=================================================================================
