@@ -185,7 +185,26 @@ namespace PlotUtils{
       return ret;
     }
 }
+:q
+  //=================================================================================
+  // UntrackedUniverses
+  //=================================================================================
+    template <typename T>
+    std::vector<T*> GetUntrackedPionSystematics(typename T::config_t chain ) {
+      std::vector<T*> ret;
+      ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
+      ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
+      return ret;
+    }
 
+    template <typename T>
+    std::map< std::string, std::vector<T*> > GetUntrackedPionSystematicsMap(typename T::config_t chain ) {
+      std::map< std::string, std::vector<T*> > ret;
+      ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
+      ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
+      return ret;
+    }
+}
 
 // Class Definitions
 //=================================================================================
