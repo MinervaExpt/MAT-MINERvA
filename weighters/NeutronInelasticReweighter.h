@@ -14,12 +14,14 @@
 #include "TSpline.h"
 #include "TF1.h"
 #include "TFile.h"
+#include "TDirectory.h"
 
 //c++ includes
 #include <vector>
 #include <map>
 #include <memory>
 #include <numeric>
+#include <set>
 
 namespace
 {
@@ -111,7 +113,7 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
       //Load fKinENormalization from a file.  Do this first because it can fail.
       const std::string kinEFileName = "MoNA_FS_normalizations.root", 
                         kinENormHistName = "Tracker_Signal_FSParticleKE_Truth_Neutron";
-      auto oldPwd = gDirectory;
+      TDirectory *oldPwd = gDirectory;
       try
       {
         std::unique_ptr<TFile> kinEFile(TFile::Open(kinEFileName.c_str()));
@@ -189,7 +191,7 @@ class NeutronInelasticReweighter: public PlotUtils::Reweighter<UNIVERSE, EVENT>
         fMin = std::max(findFirstNonZeroPointX(*oldRatioGraph), findFirstNonZeroPointX(newRatioGraph));
         fMax = std::min(findLastNonZeroPointX(*oldRatioGraph), findLastNonZeroPointX(newRatioGraph));
       }
-
+      
       double evalOldSpline(double* x, double* /*p*/) const { return fOldSigmaRatioSpline.Eval(x[0]); }
       double evalNewSpline(double* x, double* /*p*/) const { return fNewSigmaRatioSpline.Eval(x[0]); }
 
@@ -346,9 +348,9 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	////std::cout << "Last Last Position" << std::endl;
  	////std::cout << "X: " << xPerPoint[endPoint - 3] << ", Y: " << yPerPoint[endPoint - 3] << ", Z: " << zPerPoint[endPoint - 3] << std::endl;
 	////std::cout << "Last IntCode: " << intCodePerPoint[endPoint - 2] << std::endl;
-      ////}
+	////}
       /*      */
-
+      
       //Inelastic interactions end any TG4Trajectory.  Figure out whether this
       //trajectory ended with an inelastic interaction.  If so, is it one of
       //the channels I'm reweighting?
@@ -372,6 +374,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	    ////std::cout << "Weight Factor: " << getInteractingWeight(*foundChannel, density, Ti, Tf) << std::endl;
 	    ////std::cout << "Weight if doing my method: " << getInelasticRatioWeight(*foundChannel, Ti, Tf) << std::endl;
 	    weight *= getInteractingWeight(*foundChannel, density, Ti, Tf);
+	    ////weight *= std::min(3.5,getInteractingWeight(*foundChannel, density, Ti, Tf));//Cap on individual weights of 3.5
 	  }
 	  else weight *= getInelasticRatioWeight(*foundChannel, Ti, Tf);
 	}
@@ -385,6 +388,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	  ////std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	  ////std::cout << "Weight if doing my method: " << getOtherInelasticRatioWeight(Ti, Tf) << std::endl;
 	  weight *= getConstantChannelWeight(density, Ti, Tf); //getOtherInelasticWeight(density, Ti, Tf); //getConstantChannelWeight(density, Ti, Tf);
+	  ////weight *= std::min(3.5,getConstantChannelWeight(density, Ti, Tf)); //getOtherInelasticWeight(density, Ti, Tf); //getConstantChannelWeight(density, Ti, Tf); //Cap on individual weights of 3.5
 	}
 	else weight *= getOtherInelasticRatioWeight(Ti, Tf);
       }
@@ -392,11 +396,13 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	////std::cout << "Elastic weight" << std::endl;
 	////std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	weight *= getConstantChannelWeight(density, Ti, Tf); //Trajectory ends with an elastic interaction
+	////weight *= std::min(3.5,getConstantChannelWeight(density, Ti, Tf)); //Trajectory ends with an elastic interaction //Cap on individual weights of 3.5
       }
       else if(!doInelRatOnly){
 	////std::cout << "Non-interacting weight" << std::endl;
 	////std::cout << "Weight Factor: " << getNoInteractionWeight(density, Ti, Tf) << std::endl;
 	weight *= getNoInteractionWeight(density, Ti, Tf); //If this trajectory ended by some process other than an inelastic interaction
+	////weight *= std::min(3.5,getNoInteractionWeight(density, Ti, Tf)); //If this trajectory ended by some process other than an inelastic interaction //Cap on individual weights of 3.5
       }
 
       if(isinf(weight)) std::cout << "weight = " << weight << " is now inf at Ti = " << Ti << ", Tf = " << Tf << ", and intCode = " << intCode << ".  getNoInteractionWeight returns " << getNoInteractionWeight(density, Ti, Tf) << "\n";
@@ -435,7 +441,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
   assert(!isinf(weight));
   assert(!isnan(weight));
-  return weight;
+  return std::min(weight,10.0);//Cap on total weight being < 10.
 }
 
 template <class UNIVERSE, class EVENT>
@@ -451,8 +457,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getInteractingWeight(const C
   //const double denom = 1. - exp(-1. * density * scintDensityToNucleons * (evalSigmaRatio(fTotalInelastic.fOldSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax) + totalElastic));
   const double denom = 1. - exp(-1. * density * scintDensityToNucleons * (totalInelOld + totalElastic));
   ////std::cout << "Denominator: " << denom << std::endl;
-  if(denom <= 0) return 0;
-  //if(denom <= 0) return 1;
+  //if(denom <= 0) return 0;
+  if(denom <= 0) return 1;
   const double totalInelNew = evalSigmaRatio(fTotalInelastic.fNewSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax);
   //const double num = 1. - exp(-1. * density * scintDensityToNucleons * (evalSigmaRatio(fTotalInelastic.fNewSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax) + totalElastic));
   const double num = 1. - exp(-1. * density * scintDensityToNucleons * (totalInelNew + totalElastic));
@@ -535,7 +541,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::getOtherInelasticWeight(cons
                oldTotalInelastic = evalSigmaRatio(fTotalInelastic.fOldSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax),
                newTotalInelastic = evalSigmaRatio(fTotalInelastic.fNewSigmaRatioSpline, Ti, Tf, fTotalInelastic.fMin, fTotalInelastic.fMax);
   const double denom = 1. - exp(-1. * density * scintDensityToNucleons * (oldTotalInelastic + totalElastic));
-  if(denom <= 0) return 0;
+  //if(denom <= 0) return 0;
+  if(denom <= 0) return 1;
   const double num = 1. - exp(-1. * density * scintDensityToNucleons * (newTotalInelastic + totalElastic));
 
   double a = newTotalInelastic - newKnownInelastic;
