@@ -15,11 +15,8 @@ using std::sqrt;
 
 namespace {
 
-    class decreasingKE : public std::binary_function <
-        PlotUtils::intranuke_particle,
-        PlotUtils::intranuke_particle,
-        bool
-        > {
+    class decreasingKE
+    {
     public:
         bool operator()(const PlotUtils::intranuke_particle& lhs,
                         const PlotUtils::intranuke_particle& rhs)

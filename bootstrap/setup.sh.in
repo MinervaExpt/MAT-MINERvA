@@ -11,6 +11,7 @@ source ${INSTALL_DIR}/bin/setup_UnfoldUtils.sh
 #WARNING: This is very specific to the tutorial.  Don't copy this blindly!
 export PATH=${OLD_PATH}:${INSTALL_DIR}/bin
 export LD_LIBRARY_PATH=${OLD_LIBS}:${INSTALL_DIR}/lib
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PLOTUTILSROOT
 
 
 #Set up MParamFiles for my laptop

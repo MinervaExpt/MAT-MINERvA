@@ -33,6 +33,13 @@ namespace NSFDefaults {
 //! Michel tag efficiency (applied to weight) (docdb 27916)
   static const double MichelTagEfficiency_Err = 0.025; // Fractional
 
+//! Tpi estimator from michel range, fit parameters (Mehreen Dec 2023)
+  // tpi = p1 * range + p1 * sqrt(range); // mm --> MeV
+  static const double tpi_from_michel_range_fit_p0_cv = 0.128706;
+  static const double tpi_from_michel_range_fit_p1_cv = 3.42486;
+  static const double tpi_from_michel_range_fit_p0_err = 3.28304e-3;
+  static const double tpi_from_michel_range_fit_p1_err = 7.96999e-2;
+
 //! material assay
   static const double MaterialAssayUncertainty = 17.; // MeV
   static const double MaterialAssayUncertaintyNoNuke = 11.; // MeV

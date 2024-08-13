@@ -29,6 +29,7 @@ bool _is_readout_volume_set = false;
 bool _is_mhrw_neutronCV_set = false;
 bool _is_mhrw_elastics_set  = false;
 bool _is_mhrw_filename_set  = false; 
+bool _is_rpa_for_materials_set = false; //Oscar
 }  // namespace
 
 // Initialize variables
@@ -42,6 +43,8 @@ int MinervaUniverse::m_n_flux_universes = 200;
 bool MinervaUniverse::m_use_nonResPi_reweight = false;
 bool MinervaUniverse::m_use_D2_pion_genie_tune = false;
 bool MinervaUniverse::m_use_zExpansionFa_reweight = false;
+
+bool MinervaUniverse::m_use_rpa_for_materials = false; //Oscar
 
 double MinervaUniverse::m_muon_momentum_cv_offset = 0.0;
 bool MinervaUniverse::_is_muon_momentum_cv_offset_set = false;
@@ -204,6 +207,35 @@ bool MinervaUniverse::SetAnalysisNuPDG(int nu_pdg) {
   return true;
 }
 
+
+
+//Oscar
+bool MinervaUniverse::RPAMaterials(bool rpa_mat) {
+  if (_is_rpa_for_materials_set) {
+    std::cout << "WARNING: YOU ATTEMPT SETTING THE RPA MATERIALS WEIGHT A SECOND TIME. "
+                 "THIS IS NOT ALLOWED FOR CONSISTENCY."
+              << std::endl;
+    return false;
+  } else {
+    m_use_rpa_for_materials = rpa_mat;
+    _is_rpa_for_materials_set = true;
+  }
+  return true;
+}
+
+//Oscar
+bool MinervaUniverse::GetRPAMaterials(){
+   if (!_is_rpa_for_materials_set) {
+    std::cout << "WARNING: YOU ARE USING DEFAULT CVU RPA WEIGHT ONLY FOR CARBON (14). "
+              << "PLEASE SET THE VARIABLE BY CVU::RPAMaterials(bool rpa_mat) by typing:"
+              << "PlotUtils::MinervaUniverse::RPAMaterials(bool rpa_mat)"
+              << "BEFORE USING UNIVERSES." << std::endl;
+  }
+  return m_use_rpa_for_materials;
+}
+
+
+
 bool MinervaUniverse::UseDeuteriumGeniePiTune() {
   if (!_is_D2_pion_genie_tune_set) {
     std::cout << "WARNING: YOU ARE USING DEFAULT DEUTERIUM GENIE PION TUNE (false). "
@@ -275,7 +307,6 @@ bool MinervaUniverse::SetZExpansionFaReweight(bool use_reweight) {
   return true;
 }
 
-//
 bool MinervaUniverse::UseNuEConstraint() {
   if (!_is_nue_constraint_set) {
     std::cout << "WARNING: YOU ARE USING DEFAULT CVU NUE CONSTRAINT (false). "
