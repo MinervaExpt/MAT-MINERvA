@@ -80,7 +80,7 @@ namespace PlotUtils{
       public:
         UntrackedPionUniverse(typename T::config_t chw, double nsigma);
 
-        virtual double GetUntrackedPiWeight(std::string channel) const /*override*/;
+        virtual double GetUntrackedPionWeight() const /*override*/;
         //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm ready for Reweighters and Universes that are pre-configured with channel as a member variable.
 
         virtual std::string ShortName() const /*override*/;

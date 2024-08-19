@@ -184,8 +184,6 @@ namespace PlotUtils{
       ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1));
       return ret;
     }
-}
-:q
   //=================================================================================
   // UntrackedUniverses
   //=================================================================================
@@ -321,8 +319,8 @@ namespace PlotUtils{
   // 1.2 --> 1.1
   // In the future, study effect of weights even closer to nominal.
   template<typename T>
-  double UntrackedPionUniverse<T>::GetUntrackedPiWeight(std::string channel) const { 
-    return 1. + (T::GetUntrackedPionWeight() - 1.) * 0.5;
+  double UntrackedPionUniverse<T>::GetUntrackedPionWeight() const {
+      return 1. + (T::GetUntrackedPionWeight() - 1.) * 0.5;
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
