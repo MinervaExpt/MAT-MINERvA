@@ -6,7 +6,7 @@ include(ExternalProject)
 
 set(MY_GIT_TAG_MAT "main" CACHE STRING "Check out the same git tag for MAT projects")
 set(MY_GIT_TAG_MAT_MNV "feature/nvaughan-hyperdim" CACHE STRING "Check out the same git tag for MAT-MINERvA projects")
-set(MY_GIT_TAG_UNF_UTIL "main" CACHE STRING "Check out the same git tag for UnfoldUtils projects")
+set(MY_GIT_TAG_UNF_UTIL "feature/aolivier_alma9" CACHE STRING "Check out the same git tag for UnfoldUtils projects")
 set(GIT_CHECKOUT_PREFIX "https://github.com/" CACHE STRING "Select HTTPS or SSH checkout for external projects") #git@github.com: to use ssh checkout
 set(FLUX_FILE_DIR "/cvmfs/minerva.opensciencegrid.org/minerva/CentralizedFluxAndReweightFiles" CACHE STRING "Look for centralized flux files here")
 set(SOURCE_CODE_DIR ${CMAKE_SOURCE_DIR}/../..)
