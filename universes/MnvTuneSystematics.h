@@ -88,6 +88,31 @@ namespace PlotUtils{
         virtual bool IsVerticalOnly() const   { return true; }/*override*/;
     };
 
+
+  //=================================================================================
+  // Combined low-q2 / untracked pion universe (to replace the two above).
+  //=================================================================================
+    template <typename T>
+    class ChargedPionTuneUniverse : public T
+    {
+      public:
+        ChargedPionTuneUniverse(typename T::config_t chw, double nsigma);
+
+        virtual double GetUntrackedPionWeight() const /*override*/;
+        //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm
+        //ready for Reweighters and Universes that are pre-configured with
+        //channel as a member variable.
+
+        // Read in weight file
+        virtual TH2D* read(const std::string f);
+        virtual double get_weight(double q2, double tpi) const;
+
+        virtual std::string ShortName() const /*override*/;
+        virtual std::string LatexName() const /*override*/;
+        virtual bool IsVerticalOnly() const   { return true; }/*override*/;
+        TH2* __h2d_tpi_q2;
+    };
+
   //=================================================================================
   // MnvHadronReweighter (TODO PLAYLIST-DEPENDENT, FIX WITH FLUX WEIGHTS)
   //=================================================================================

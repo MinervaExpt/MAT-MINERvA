@@ -123,76 +123,79 @@ virtual double GetZExpWeight() const {
 
 
 virtual double GetUntrackedPionWeight() const{
+  double weight2 = 1.0;
 
 
-        double weight2 = 1.0;
+  // The Following are weights for MnvTunev4 with LowQ3Pion tune bug fix to apply to only single pions Aug 10 2023
+  //std::vector<double> tpiweights = {0.139855,0.15291,0.391857,0.632001,0.804802,0.858462,0.580174,0.928241,1.15861,0.989334,1.10499,1.18818,0.835503,0.950168,1.28937,1.44994,1.32275,0.994931,1.14384,1.14747,1.08596,1.12892,1.08526,0.427295,0.248945,0.555842,0.460325,0.459072,0.70149,0.988857,1.18221,1.01983,1.27742};
+  //std::vector<double> tpilowbins = {1., 10., 15., 20., 25., 30., 36., 42., 48., 54.,60., 66., 72., 78.,  84., 90., 100., 110., 125., 140., 155., 175., 200., 225., 250., 275., 300., 325., 350., 400., 500., 700., 1000.};
+  //These weights where obtained with the whole data set using the P4 tuplas
+  std::vector<double> tpiweights = {0.267183,0.218322,0.372796,0.58721,0.767524,0.880305,0.669767,0.817111,1.09273,0.995627,0.916708,1.24354,1.21146,1.12187,1.25325,1.19151,1.03823,1.23792,1.19056,1.22908,0.988201,1.03294,0.901374,0.757748,0.755932,0.638574,0.493987,0.391947,0.323265,0.452765,0.594541,0.768459,0.658024,0.873622};
+  std::vector<double> tpilowbins = {0.0, 10.0 ,15.0, 20.0, 25.0, 30.0,36.0,42.0,48.0,54.0,60.0,66.0,72.0,78.0,84.0,90.0,96.0,102.0,110.0,125.0,140.0,155.0,175.0,200.0,225.0,250.0,275.0,300.0,325.0, 350.0,400.0,500.0,700.0, 1000.0};
 
+  int nPions = 0;
+  double tpi = 999999.;
+  int pdgsize = GetInt("mc_nFSPart");
+  for (int i = 0; i< pdgsize; i++)
+  {
+    int pdg = GetVecElem("mc_FSPartPDG", i);
+    if (pdg != 211) continue;
+    nPions++;
+    double energy = GetVecElem("mc_FSPartE", i);
+    double momentumx = GetVecElem("mc_FSPartPx", i);
+    double momentumy = GetVecElem("mc_FSPartPy", i);
+    double momentumz = GetVecElem("mc_FSPartPz", i);
+    double pionmomentum = TMath::Sqrt(pow(momentumx, 2) + pow(momentumy,2)+pow(momentumz,2));
+    double pionmass = TMath::Sqrt(pow(energy, 2) - pow(pionmomentum, 2));  
+    double KE = energy - pionmass;
+    if (tpi > KE) tpi = KE;
+  }
+  double Eavail = 0.0;
+  for (int i = 0; i< pdgsize; i++)
+  {
+    int pdg = GetVecElem("mc_FSPartPDG", i);
+    double energy = GetVecElem("mc_FSPartE", i); // hopefully this is in MeV
+    if (abs(pdg) > 1e9) continue; //ignore nuclear fragments
+    else if (abs(pdg) == 11 || abs(pdg) == 13) continue; //ignore leptons   
+    else if (abs(pdg) == 211) Eavail+= energy - 139.5701; // subtracting pion mass to get Kinetic energy
+    else if (pdg == 2212) Eavail += energy - 938.27201; // proton
+    else if (pdg == 2112) continue; //Skip neutrons
+    else if (pdg == 111) Eavail += energy; // pi0
+    else if (pdg == 22) Eavail += energy; // photons
+    else if (pdg >= 2000) Eavail += energy - 938.27201;
+    else if (pdg <= -2000) Eavail += energy + 938.27201;
+    else Eavail += energy;
+  }
 
-	// The Following are weights for MnvTunev4 with LowQ3Pion tune bug fix to apply to only single pions Aug 10 2023
-	//std::vector<double> tpiweights = {0.139855,0.15291,0.391857,0.632001,0.804802,0.858462,0.580174,0.928241,1.15861,0.989334,1.10499,1.18818,0.835503,0.950168,1.28937,1.44994,1.32275,0.994931,1.14384,1.14747,1.08596,1.12892,1.08526,0.427295,0.248945,0.555842,0.460325,0.459072,0.70149,0.988857,1.18221,1.01983,1.27742};
- 	//std::vector<double> tpilowbins = {1., 10., 15., 20., 25., 30., 36., 42., 48., 54.,60., 66., 72., 78.,  84., 90., 100., 110., 125., 140., 155., 175., 200., 225., 250., 275., 300., 325., 350., 400., 500., 700., 1000.};
-	//These weights where obtained with the whole data set using the P4 tuplas
-	std::vector<double> tpiweights = {0.267183,0.218322,0.372796,0.58721,0.767524,0.880305,0.669767,0.817111,1.09273,0.995627,0.916708,1.24354,1.21146,1.12187,1.25325,1.19151,1.03823,1.23792,1.19056,1.22908,0.988201,1.03294,0.901374,0.757748,0.755932,0.638574,0.493987,0.391947,0.323265,0.452765,0.594541,0.768459,0.658024,0.873622};
- 	std::vector<double> tpilowbins = {0.0, 10.0 ,15.0, 20.0, 25.0, 30.0,36.0,42.0,48.0,54.0,60.0,66.0,72.0,78.0,84.0,90.0,96.0,102.0,110.0,125.0,140.0,155.0,175.0,200.0,225.0,250.0,275.0,300.0,325.0, 350.0,400.0,500.0,700.0, 1000.0};
+  double ptmu = GetPlepTrue() * sin(GetThetalepTrue());
 
-        int nPions = 0;
-        double tpi = 999999.;
-        int pdgsize = GetInt("mc_nFSPart");
-        for (int i = 0; i< pdgsize; i++)
-        {
-          	int pdg = GetVecElem("mc_FSPartPDG", i);
-          	if (pdg != 211) continue;
-                nPions++;
-                double energy = GetVecElem("mc_FSPartE", i);
-	        double momentumx = GetVecElem("mc_FSPartPx", i);
-	        double momentumy = GetVecElem("mc_FSPartPy", i);
-	        double momentumz = GetVecElem("mc_FSPartPz", i);
-                double pionmomentum = TMath::Sqrt(pow(momentumx, 2) + pow(momentumy,2)+pow(momentumz,2));
-	        double pionmass = TMath::Sqrt(pow(energy, 2) - pow(pionmomentum, 2));  
-	        double KE = energy - pionmass;
-	    	if (tpi > KE) tpi = KE;
-        }
-        double Eavail = 0.0;
-        for (int i = 0; i< pdgsize; i++)
-        {
-           int pdg = GetVecElem("mc_FSPartPDG", i);
-           double energy = GetVecElem("mc_FSPartE", i); // hopefully this is in MeV
-           if (abs(pdg) > 1e9) continue; //ignore nuclear fragments
-           else if (abs(pdg) == 11 || abs(pdg) == 13) continue; //ignore leptons   
-           else if (abs(pdg) == 211) Eavail+= energy - 139.5701; // subtracting pion mass to get Kinetic energy
-           else if (pdg == 2212) Eavail += energy - 938.27201; // proton
-           else if (pdg == 2112) continue; //Skip neutrons
-           else if (pdg == 111) Eavail += energy; // pi0
-           else if (pdg == 22) Eavail += energy; // photons
-           else if (pdg >= 2000) Eavail += energy - 938.27201;
-           else if (pdg <= -2000) Eavail += energy + 938.27201;
-           else Eavail += energy;
-        }
-	
-        double ptmu = GetPlepTrue() * sin(GetThetalepTrue());
-        
-        if ( nPions == 0) return 1.0;
-        else if (Eavail > 1200 || ptmu > 1800) return 1.0;
-        else if(GetInt("mc_intType") == 4) return 1.0;
-	else {
-		
-        	for (int i = 0; i< (int)tpilowbins.size(); i++){
-                	if (i < (int)tpilowbins.size() and tpi >= tpilowbins[i] and tpi < tpilowbins[i+1]){
-		   		weight2 = tpiweights[i];
- 		   		break;
-			}
-			else if (tpi >= 1000.){
-	           		 weight2 = 1.0; //abs(tpiweights[29]);
-       		  		 break; 
-               		}
-        	}
-        //if (angle > 0.10) weight2 = 0.90*weight2; //Correcting for Forward going Pions
-		
-		//std::cout << "tpi re weight: " << weight2 << std::endl;
-		return weight2;
+  if ( nPions == 0) return 1.0;
+  else if (Eavail > 1200 || ptmu > 1800) return 1.0;
+  else if(GetInt("mc_intType") == 4) return 1.0;
+  else {
+    for (int i = 0; i< (int)tpilowbins.size(); i++){
+      if (i < (int)tpilowbins.size() and tpi >= tpilowbins[i] and tpi < tpilowbins[i+1]){
+        weight2 = tpiweights[i];
+        break;
       }
-  };
+      else if (tpi >= 1000.){
+        weight2 = 1.0; //abs(tpiweights[29]);
+        break; 
+      }
+    }
+    //if (angle > 0.10) weight2 = 0.90*weight2; //Correcting for Forward going Pions
 
+    //std::cout << "tpi re weight: " << weight2 << std::endl;
+    return weight2;
+  }
+};
+
+virtual double GetChargedPionTuneWeight() const {
+  // TODO consider putting in both lowq2 and tpi weights here
+  // As-is, you must call them in your CV separately, with no associated
+  // systematic except this one.
+  return 1;
+}
 
 
 #endif  // WEIGHTFUNCTIONS

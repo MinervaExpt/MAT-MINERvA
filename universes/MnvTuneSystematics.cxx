@@ -320,7 +320,7 @@ namespace PlotUtils{
   // In the future, study effect of weights even closer to nominal.
   template<typename T>
   double UntrackedPionUniverse<T>::GetUntrackedPionWeight() const {
-      return 1. + (T::GetUntrackedPionWeight() - 1.) * 0.5;
+      return 1. + (T::GetUntrackedPionWeight() - m_nsigma*1.) * 0.5;
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
@@ -334,6 +334,65 @@ namespace PlotUtils{
 
   template<typename T>
   std::string UntrackedPionUniverse<T>::LatexName() const { return "UntrackedPi"; }
+
+
+//=================================================================================
+// Combined low-q2 / untracked pion universe (to replace the two above).
+// Systematic on the low-q2 pi weight and simultaneously the untracked pion weight.
+//=================================================================================
+  // Constructor
+  template<typename T>
+  ChargedPionTuneUniverse<T>::ChargedPionTuneUniverse(typename T::config_t chw, double nsigma)
+    : T(chw, nsigma)
+  {}
+
+
+  TH2D* ChargedPionTuneUniverse<T>::read(const std::string f) {
+    weights_file = TFile::Open(f.c_str(), "READONLY");
+    assert(weights_file);
+
+    __h2d_tpi_q2 = static_cast<TH2D*>(weights_file->Get("ratio"));
+    return __h2d_tpi_q2;
+
+    //__epi_max = __h1d_energy_cv->GetXaxis()->GetXmax();
+    //__theta_max = __h1d_theta_cv->GetXaxis()->GetXmax();
+    // printf("q2_max epi_max theta_max %10.4f %10.4f %10.4f\n", __q2_max,
+    // __epi_max, __theta_max);
+  }
+
+
+  double ChargedPionTuneUniverse<T>::get_weight(double q2, double tpi) const {
+    return __h2d_tpi_q2->GetBinContent(__h2d_tpi_q2->FindBin(q2,tpi));
+  }
+
+  // For now, just consider a single universe
+  template<typename T>
+  double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight() const {
+    double q2 = T::GetQ2True();
+    double tpi = T::GetTpiTrue();
+    double cv_weight = T::GetChargedPionTuneWeight();
+    double weight = get_weight(q2, tpi);
+
+    // shift is (1) the ratio and (2) half the size of the ratio
+    // e.g. weight = 2.5 --> return 1.75
+    // weight = 0.3 --> return 0.65
+    if (m_nsigma > 0)
+      return  weight;
+    else
+      return 1 + (weight - 1.) * 0.5;
+  }
+
+  //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
+  /*template <typename T>
+  double ChargedPionTuneUniverse<T>::GetWeightRatioToCV() {
+  }*/
+
+  template<typename T>
+  std::string ChargedPionTuneUniverse<T>::ShortName() const { return "CCPi+ Tune"; }
+
+
+  template<typename T>
+  std::string ChargedPionTuneUniverse<T>::LatexName() const { return "CCPi+ Tune"; }
 
 
 
