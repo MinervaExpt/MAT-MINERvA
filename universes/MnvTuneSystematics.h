@@ -98,7 +98,8 @@ namespace PlotUtils{
       public:
         ChargedPionTuneUniverse(typename T::config_t chw, double nsigma);
 
-        virtual double GetUntrackedPionWeight() const /*override*/;
+        //virtual double GetUntrackedPionWeight() const /*override*/;
+        virtual double GetChargedPionTuneWeight() const /*override*/;
         //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm
         //ready for Reweighters and Universes that are pre-configured with
         //channel as a member variable.
@@ -110,7 +111,8 @@ namespace PlotUtils{
         virtual std::string ShortName() const /*override*/;
         virtual std::string LatexName() const /*override*/;
         virtual bool IsVerticalOnly() const   { return true; }/*override*/;
-        TH2* __h2d_tpi_q2;
+        TH2D* __h2d_tpi_q2;
+        TFile* weights_file;
     };
 
   //=================================================================================

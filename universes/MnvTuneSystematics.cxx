@@ -202,6 +202,24 @@ namespace PlotUtils{
       ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
       return ret;
     }
+  //=================================================================================
+  // UntrackedUniverses tpi weight and q2 systematics
+  //=================================================================================
+    template <typename T>
+    std::vector<T*> GetChargedPionTuneSystematics(typename T::config_t chain ) {
+      std::vector<T*> ret;
+      //ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
+      ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
+      return ret;
+    }
+
+    template <typename T>
+    std::map< std::string, std::vector<T*> > GetChargedPionTuneSystematicMap(typename T::config_t chain ) {
+      std::map< std::string, std::vector<T*> > ret;
+      //ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
+      ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
+      return ret;
+    }
 }
 
 // Class Definitions
@@ -320,7 +338,7 @@ namespace PlotUtils{
   // In the future, study effect of weights even closer to nominal.
   template<typename T>
   double UntrackedPionUniverse<T>::GetUntrackedPionWeight() const {
-      return 1. + (T::GetUntrackedPionWeight() - m_nsigma*1.) * 0.5;
+      return 1. + (T::GetUntrackedPionWeight() - T::m_nsigma*1.) * 0.5;
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
@@ -343,15 +361,21 @@ namespace PlotUtils{
   // Constructor
   template<typename T>
   ChargedPionTuneUniverse<T>::ChargedPionTuneUniverse(typename T::config_t chw, double nsigma)
-    : T(chw, nsigma)
-  {}
+    : T(chw, nsigma),
+      __h2d_tpi_q2(NULL)
+  { 
+    char* loc = std::getenv("TOPDIR");
+    std::string f = std::string(loc) +
+                  "/MAT-MINERvA/universes/RatioOutput_mixtpi_vs_q2.root";
+    read(f);
+  }
 
-
+  template<typename T>
   TH2D* ChargedPionTuneUniverse<T>::read(const std::string f) {
     weights_file = TFile::Open(f.c_str(), "READONLY");
     assert(weights_file);
 
-    __h2d_tpi_q2 = static_cast<TH2D*>(weights_file->Get("ratio"));
+    __h2d_tpi_q2 = static_cast<TH2D*>(weights_file->Get("Ratio_mixtpi_vs_q2"));
     return __h2d_tpi_q2;
 
     //__epi_max = __h1d_energy_cv->GetXaxis()->GetXmax();
@@ -360,26 +384,29 @@ namespace PlotUtils{
     // __epi_max, __theta_max);
   }
 
-
+  template<typename T>
   double ChargedPionTuneUniverse<T>::get_weight(double q2, double tpi) const {
-    return __h2d_tpi_q2->GetBinContent(__h2d_tpi_q2->FindBin(q2,tpi));
+    return __h2d_tpi_q2->GetBinContent(__h2d_tpi_q2->FindBin(tpi,q2));
   }
 
   // For now, just consider a single universe
   template<typename T>
   double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight() const {
+    int idx = (int)T::GetHighestEnergyTruePionIndex();
     double q2 = T::GetQ2True();
-    double tpi = T::GetTpiTrue();
-    double cv_weight = T::GetChargedPionTuneWeight();
+    double tpi = T::GetTpiTrue(idx);
+    double cv_weight = T::GetUntrackedPionWeight();
     double weight = get_weight(q2, tpi);
-
+  //  std::cout << "q2 = " << q2 << " tpi = " << tpi << " cv_weight =" <<
+  //	      cv_weight << " weight = " << weight << "\n"; 
     // shift is (1) the ratio and (2) half the size of the ratio
     // e.g. weight = 2.5 --> return 1.75
     // weight = 0.3 --> return 0.65
-    if (m_nsigma > 0)
+    
+    if (q2 < 2.0e6)
       return  weight;
     else
-      return 1 + (weight - 1.) * 0.5;
+      return 1.;
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
