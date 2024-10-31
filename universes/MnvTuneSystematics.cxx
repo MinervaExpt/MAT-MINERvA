@@ -402,11 +402,11 @@ namespace PlotUtils{
     // shift is (1) the ratio and (2) half the size of the ratio
     // e.g. weight = 2.5 --> return 1.75
     // weight = 0.3 --> return 0.65
-    
-    if (q2 < 2.0e6)
+    return weight;
+    /*if (q2 < 2.0e6)
       return  weight;
     else
-      return 1.;
+      return 1.;*/
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
