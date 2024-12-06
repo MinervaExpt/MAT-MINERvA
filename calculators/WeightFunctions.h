@@ -190,11 +190,12 @@ virtual double GetUntrackedPionWeight() const{
   }
 };
 
-virtual double GetChargedPionTuneWeight() const {
+virtual double GetChargedPionTuneWeight(double tpi_true, double q2_true) const {
   // TODO consider putting in both lowq2 and tpi weights here
   // As-is, you must call them in your CV separately, with no associated
   // systematic except this one.
-  return 1;
+  return PlotUtils::weight_CCOnePi().get_weight(tpi_true, q2_true);
+//  return 1;
 }
 
 

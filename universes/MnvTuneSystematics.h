@@ -99,7 +99,7 @@ namespace PlotUtils{
         ChargedPionTuneUniverse(typename T::config_t chw, double nsigma);
 
         //virtual double GetUntrackedPionWeight() const /*override*/;
-        virtual double GetChargedPionTuneWeight() const /*override*/;
+        virtual double GetChargedPionTuneWeight(double tpi, double q2) const /*override*/;
         //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm
         //ready for Reweighters and Universes that are pre-configured with
         //channel as a member variable.

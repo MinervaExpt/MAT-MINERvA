@@ -12,6 +12,7 @@
 #include "utilities/PlotUtilsPhysicalConstants.h"
 #include "TVector3.h"          // Needed by SystCalcs/TruthFunctions.h
 #include "weighters/weightCoherentPi.h"  // PlotUtils::weight_coherent
+#include "weighters/weightCCOnePi.h"  // PlotUtils::weight_CCOnePi
 #include "weighters/weight_fsi.h"        // PlotUtils::weight_fsi
 #include "weighters/weightMK.h"          // PlotUtils::weight_mk
 

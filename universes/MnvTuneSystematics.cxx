@@ -366,7 +366,7 @@ namespace PlotUtils{
   { 
     char* loc = std::getenv("TOPDIR");
     std::string f = std::string(loc) +
-                  "/MAT-MINERvA/universes/RatioOutput_mixtpi_vs_q2.root";
+                  "/MAT-MINERvA/universes/Ratio_Vij_mixtpi_vs_q2.root";
     read(f);
   }
 
@@ -391,10 +391,11 @@ namespace PlotUtils{
 
   // For now, just consider a single universe
   template<typename T>
-  double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight() const {
-    int idx = (int)T::GetHighestEnergyTruePionIndex();
-    double q2 = T::GetQ2True();
-    double tpi = T::GetTpiTrue(idx);
+  double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight(double tpi,
+		                           double q2) const {
+//    int idx = (int)T::GetHighestEnergyTruePionIndex();
+//    double q2 = T::GetQ2True();
+//    double tpi = T::GetTpiTrue(idx);
     double cv_weight = T::GetUntrackedPionWeight();
     double weight = get_weight(q2, tpi);
   //  std::cout << "q2 = " << q2 << " tpi = " << tpi << " cv_weight =" <<
