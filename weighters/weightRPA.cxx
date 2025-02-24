@@ -40,11 +40,13 @@ void weightRPA::Setq0OffsetValenciaGENIE(bool useNX, int targetZTrue, int nuMode
        if(targetZTrue == 82) q0offsetValenciaGENIE = useNX ? 35 : 34;
        if(targetZTrue == 26) q0offsetValenciaGENIE = useNX ? 39 : 35; 
        if(targetZTrue == 6) q0offsetValenciaGENIE = useNX ? 27 : 12; 
-     }
+       if(targetZTrue == 8) q0offsetValenciaGENIE = useNX ? 25 : 5;
+    }
     if(nuMode == -14){
        if(targetZTrue == 82) q0offsetValenciaGENIE = useNX ? 33 : 10;
        if(targetZTrue == 26) q0offsetValenciaGENIE = useNX ? 40 : 10; 
-       if(targetZTrue == 6)  q0offsetValenciaGENIE = useNX ? 30 : 10; 
+       if(targetZTrue == 6)  q0offsetValenciaGENIE = useNX ? 30 : 10;
+       if(targetZTrue == 8)  q0offsetValenciaGENIE = useNX ? 29 : 10; 
     }
   }
 
@@ -393,6 +395,17 @@ PlotUtils::weightRPA& PlotUtils::weightRPA_cv_and_var(bool useNX, int targetZtru
          static PlotUtils::weightRPA*  _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu56Fe-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
          return *_weightRPA_cv_and_var; 
       }
+   }else if(targetZtrue==8){
+
+      if(nuMode ==-14){    
+	 static PlotUtils::weightRPA* _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-anu16O-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var;
+      }
+      else {
+         static PlotUtils::weightRPA*  _weightRPA_cv_and_var = new PlotUtils::weightRPA(directory_data+"/outNievesRPAratio-nu16O-20GeV-20170202.root",useNX,targetZtrue,nuMode,rpaMat);
+         return *_weightRPA_cv_and_var;
+      }	
+   
    }else {
 
       if (nuMode ==-14){ 
