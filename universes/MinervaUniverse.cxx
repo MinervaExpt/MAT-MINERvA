@@ -227,7 +227,8 @@ bool MinervaUniverse::RPAMaterials(bool rpa_mat) {
 bool MinervaUniverse::GetRPAMaterials(){
    if (!_is_rpa_for_materials_set) {
     std::cout << "WARNING: YOU ARE USING DEFAULT CVU RPA WEIGHT ONLY FOR CARBON (14). "
-              << "PLEASE SET THE VARIABLE BY CVU::RPAMaterials(bool rpa_mat) "
+              << "PLEASE SET THE VARIABLE BY CVU::RPAMaterials(bool rpa_mat) by typing:"
+              << "PlotUtils::MinervaUniverse::RPAMaterials(bool rpa_mat)"
               << "BEFORE USING UNIVERSES." << std::endl;
   }
   return m_use_rpa_for_materials;
