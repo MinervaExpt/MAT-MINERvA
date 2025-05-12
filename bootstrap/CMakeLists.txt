@@ -55,13 +55,13 @@ ExternalProject_Add(MAT-MINERvA
                     DEPENDS MAT)
 
 ExternalProject_Add(UnfoldUtils
-                    "${DISABLE_GIT_DOWNLOAD}"
+                    "Hey ----- ${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
-                    GIT_TAG ${MY_GIT_TAG}
+                    GIT_TAG UnfoldFix-hms
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
-                    UPDATE_DISCONNECTED true
+                    UPDATE_DISCONNECTED false
                     DEPENDS MAT MAT-MINERvA)
 
 #MParamFiles doesn't need to be built or installed.  It's a bunch of text and .root files that programs need to be able to find.
