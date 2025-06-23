@@ -38,7 +38,7 @@ endif()
 ExternalProject_Add(MAT
                     "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT.git
-                    GIT_TAG feature/anezkak_plotting
+                    GIT_TAG feature/anezkak_inclusiveAntinuML
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true
