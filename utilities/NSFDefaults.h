@@ -92,9 +92,10 @@ namespace NSFDefaults {
   static const double StandardApothem = 850; // mm
 
 // ML vertex uncertainty
-   static const double NuVertexMLUnc = 0.01;
-   static const double AntinuVertexMLUnc = 0.03; // original based on studies 0.01; changed to 0.03 to try
-
+   static const double NuVertexMLTrkUnc = 0.01;
+   static const double NuVertexMLTarUnc = 0.02;
+   static const double AntinuVertexMLTrkUnc = 0.01; // original based on studies 0.01; 
+   static const double AntinuVertexMLTarUnc = 0.02;
 }  // end of NSFDefaults namespace
 
 #endif

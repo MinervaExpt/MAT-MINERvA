@@ -6,6 +6,7 @@
 // Neutrino and antineutrino flat normalization uncertainty for ML vertexing
 
 #include "universes/MLVertexSystematics.h"
+#include "utilities/TargetUtils.h"
 #include <iostream>
 
 // Helper functions -- get Weighters, containers of systematics universes
@@ -45,12 +46,22 @@ double PlotUtils::MLVertexUniverse<T>::GetMLVertexWeight() const {
   double cv_wgt = T:: GetMLVertexWeight();
 
   double wgt_shift = 0;
-  // is neutrino? or antineutino
+  /// is neutrino? or antineutino
   if( T::GetInt("mc_incoming") == 14 ){
-    wgt_shift = NSFDefaults::NuVertexMLUnc; 
+    // NTR
+    if( PlotUtils::TargetUtils::Get().InNukeRegion( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::NuVertexMLTarUnc; 
+    //Tracker?
+    if( PlotUtils::TargetUtils::Get().InTracker( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::NuVertexMLTrkUnc; 
   }
   if( T::GetInt("mc_incoming") == -14 ){
-    wgt_shift = NSFDefaults::AntinuVertexMLUnc; 
+    // NTR
+    if( PlotUtils::TargetUtils::Get().InNukeRegion( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::AntinuVertexMLTarUnc; 
+    //Tracker?
+    if( PlotUtils::TargetUtils::Get().InTracker( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::AntinuVertexMLTrkUnc; 
   }
 
   return  cv_wgt + T::m_nsigma * wgt_shift;
@@ -64,10 +75,20 @@ double PlotUtils::MLVertexUniverse<T>::GetWeightRatioToCV() const {
   double wgt_shift = 0;
   // is neutrino? or antineutino
   if( T::GetInt("mc_incoming") == 14 ){
-    wgt_shift = NSFDefaults::NuVertexMLUnc; 
+    // NTR
+    if( PlotUtils::TargetUtils::Get().InNukeRegion( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::NuVertexMLTarUnc; 
+    //Tracker?
+    if( PlotUtils::TargetUtils::Get().InTracker( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::NuVertexMLTrkUnc; 
   }
   if( T::GetInt("mc_incoming") == -14 ){
-    wgt_shift = NSFDefaults::AntinuVertexMLUnc; 
+    // NTR
+    if( PlotUtils::TargetUtils::Get().InNukeRegion( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::AntinuVertexMLTarUnc; 
+    //Tracker?
+    if( PlotUtils::TargetUtils::Get().InTracker( T::GetVecElem("mc_vtx",0), 
+                    T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) wgt_shift = NSFDefaults::AntinuVertexMLTrkUnc; 
   }
 
   return  1. + T::m_nsigma*wgt_shift/cv_wgt;

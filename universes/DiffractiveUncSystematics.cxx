@@ -42,6 +42,9 @@ template<typename T>
 double PlotUtils::DiffractiveUncUniverse<T>::GetDiffractiveUncWeight() const {
   //Is this a coherent event?
   if( T::GetInt("mc_intType") != 4 ) return 1;
+  int id = T::GetInt("truth_targetID");
+  if (id == 1 || id == 2 || id == 3 || id == 4 || id == 5) return 1; //if target ID 1, 2, 3, 4, 5 no diffractive weight
+  // this shoudl really be done better but it works for my analysis, i.e. considers water target, scintillator planes in NTR and the tracker
 
   //Diffractive should really come off of hydrogen only, but this estimating from measurements we have
   double fracDiffUnc = 0;
