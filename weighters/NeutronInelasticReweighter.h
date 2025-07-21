@@ -278,8 +278,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
             // trajectory ended with an inelastic interaction.  If so, is it one of
             // the channels I'm reweighting?
 
-            if (intCode == 1 || intCode == 4)  // If there was an inelastic interaction
-            {
+            if (intCode == 1 || intCode == 4) {  // If there was an inelastic interaction
                 const auto foundChannel = std::find_if(fChannels.begin(), fChannels.end(),
                                                        [&inelasticChildren](const auto& channel) {
                                                            return channel.fInelasticChildren == inelasticChildren;
@@ -315,8 +314,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 
         const size_t nFSPart = fsPDGs.size();
         for (size_t whichFS = 0; whichFS < nFSPart; ++whichFS) {
-            if (fsPDGs[whichFS] == 2112)  // for each FS neutron
-            {
+            if (fsPDGs[whichFS] == 2112) {  // for each FS neutron
                 const double KE = fsEnergies[whichFS] - ::neutronMass;
                 const double cosTheta = fsPz[whichFS] / std::sqrt(fsPx[whichFS] * fsPx[whichFS] + fsPy[whichFS] * fsPy[whichFS]);
                 weight /= fKinENormalization->GetBinContent(fKinENormalization->FindBin(KE, cosTheta));
