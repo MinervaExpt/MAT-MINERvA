@@ -1,6 +1,7 @@
 #A CMakeLists.txt that automatically sets up all dependencies for this package.
 
-cmake_minimum_required(VERSION 3.2) #Requiring version 3.2
+# cmake_minimum_required(VERSION 3.2) #Requiring version 3.2
+cmake_minimum_required(VERSION 3.5) #Requiring version 3.5 necessary for newer versions of cmake
 
 include(ExternalProject)
 
