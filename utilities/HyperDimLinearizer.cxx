@@ -255,7 +255,7 @@ double PlotUtils::HyperDimLinearizer::GetBinVolume(std::vector<int> ps_bin_coord
 std::vector<TH2D *> PlotUtils::HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     //  std::cout <<"Entering Get2DHistos"  << std::endl;
     std::vector<TH2D *> expanded_results;
-    if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
+    if (m_analysis_type == k1D || m_analysis_type == k1D_lite) {  // This is only for 2D, so send it back if it's 1D type
         std::cout << "HyperDimLinearizer::Get2DHistos WARNING: you gave a 2D histogram, but have analysis type set to a 1D type. Returning blank list." << std::endl;
         return expanded_results;
     }
@@ -295,7 +295,7 @@ std::vector<TH2D *> PlotUtils::HyperDimLinearizer::Get2DHistos(PlotUtils::MnvH2D
 std::vector<PlotUtils::MnvH2D *> PlotUtils::HyperDimLinearizer::Get2DMnvHistos(PlotUtils::MnvH2D *result, bool IncludeSys = false) {
     std::cout << "Entering Get2DMnvHistos" << std::endl;
     std::vector<PlotUtils::MnvH2D *> expanded_results;
-    if (m_analysis_type != k2D || m_analysis_type != k2D_lite) {  // This is only for 2D, so send it back if it's 1D type
+    if (m_analysis_type == k1D || m_analysis_type == k1D_lite) {  // This is only for 2D, so send it back if it's 1D type
         std::cout << "HyperDimLinearizer::Get2DMnvHistos WARNING: you gave a 2D histogram, but have analysis type set to a 1D type. Returning blank list." << std::endl;
         return expanded_results;
     }
@@ -544,12 +544,12 @@ std::vector<TH1D *> PlotUtils::HyperDimLinearizer::Get1DHistos(PlotUtils::MnvH1D
         result_hist = result->GetCVHistoWithError();
 
     const int n_x_bins = m_invec[0].size() - 1;
-    const int n_y_bins = m_invec[1].size() - 1;
+    // const int n_y_bins = m_invec[1].size() - 1;
 
     const int x_cell_size = m_cell_size[1];
     const int n_x_cells = m_n_global_x_bins / m_cell_size[1];  // How many x cells are in your linearized histogram.
     int tmp_start = 1;                                         // Starting bin for each cell. Get's updated.
-    for (int i = 0; i < n_x_cells; i++) {                     // Loop over cells, making a 2D hist for each one
+    for (int i = 0; i < n_x_cells; i++) {                      // Loop over cells, making a 2D hist for each one
         TH1D *tmp_x_cell = new TH1D(Form("X_Cell_%d", i), Form("X_Cell_%d", i), n_x_bins, &m_invec[0][0]);
         for (int lin_bin = tmp_start; lin_bin < tmp_start + x_cell_size; lin_bin++) {  // Loop
             std::vector<int> ps_coords = GetValues(lin_bin);
