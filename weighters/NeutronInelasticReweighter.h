@@ -63,7 +63,7 @@ double antiderivative(TSpline3& spline, const double point, const int whichKnot)
     //          = (point*point*point - 3*point*point*knotX + 3*knotX*knotX*point - knotX*knotX*knotX)
 }
 
-double integral(TSpline3& spline, const double start, const double end) {
+double getintegral(TSpline3& spline, const double start, const double end) {
     // The knot for a given x always has a data point at fX < x.
     const auto startKnot = spline.FindX(start),
                endKnot = spline.FindX(end);
@@ -455,7 +455,7 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::evalSigmaRatio(TSpline3& sig
         // return ratioFunc.Eval(Ti);
         result = sigmaSpline.Eval(Ti);
     } else
-        result = integral(sigmaSpline, Tf, Ti) / (Ti - Tf);  // ratioFunc.Integral(Ti, Tf, 1e-6)/(Tf - Ti); //TF1::Integral() is supposedly a Gaussian quadrature algorithm in some cases
+        result = getintegral(sigmaSpline, Tf, Ti) / (Ti - Tf);  // ratioFunc.Integral(Ti, Tf, 1e-6)/(Tf - Ti); //TF1::Integral() is supposedly a Gaussian quadrature algorithm in some cases
 
     if (result < 0) std::cout << "result = " << result << " < 0!  Ti = " << Ti << ", Tf = " << Tf << " for spline " << sigmaSpline.GetTitle() << ".  Ti - Tf = " << Ti - Tf << "\n";
     assert(result >= 0);
