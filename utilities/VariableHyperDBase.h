@@ -102,7 +102,6 @@ class VariableHyperDBase {
 
     std::string m_lin_axis_label;  // Label for linearized x axis. Excludes y axis if doing a 2D (type 0) analysis
     std::string m_y_axis_label;    // y axis label if doing a 2D (k2D, k2D_lite) analysis
-   private:
     std::string m_name;  // Name of variable,  should be var1name_var2name_var3name... if you don't manually set
     bool m_is_named;     // Boolean hack so it knows if you named it (true) or it named itself/doesn't have a name (false);
 
