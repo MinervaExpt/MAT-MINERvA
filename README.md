@@ -1,5 +1,5 @@
 # MAT-MINERvA
-MINERvA-specific plugins to the MAT like FluxReweighter, MuonFunctions, and our CCInclusiveCuts.  Extends the [MAT](https://github.com/MinervaExpt/MAT)'s systematic uncertainty infrastructure with standard implementations of systematics across all MINERvA analyses.  Requires MAT, and best used with UnfoldUtils and MATFluxAndReweightFiles.
+MINERvA-specific plugins to the MAT like FluxReweighter, MuonFunctions, and our CCInclusiveCuts.  Extends the [MAT](https://github.com/MinervaExpt/MAT)'s systematic uncertainty infrastructure with standard implementations of systematics across all MINERvA analyses.  Requires MAT, and best used with UnfoldUtils and MATFluxAndReweightFiles. For instructions on how to get MATFluxAndReweightFiles and MParamFiles from the Open Data Product (minerva.fnal.gov/opendata), please refer to the installation section of the MINERvA 101 wiki installation page at this time. These instructions are in development to better support use of the Open Data Product.
 
 ## Installation (Installs MAT and UnfoldUtils too)
 On a MINERvA gpvm:
