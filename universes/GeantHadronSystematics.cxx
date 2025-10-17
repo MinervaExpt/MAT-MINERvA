@@ -139,7 +139,8 @@ GeantHadronUniverse<T>::GeantHadronUniverse(typename T::config_t chw,
 // Get weight
 template <class T>
 double GeantHadronUniverse<T>::GetGeantHadronWeight() const {
-  if( T::IsTruth() ) return 1; //No reweighting for truth events 
+  //Removing the following line after confirmation that it should not be the standard practice for this weight, and this should be applied to the efficiency denominator to combat biasing from the reweight. -David L. 10/09/2024
+  //if( T::IsTruth() ) return 1; //No reweighting for truth events 
   InelXSecWeights weights =
       weight_hadron<PlotUtils::TreeWrapper*>().getWeights(*this);
   double wgt = 1.;
@@ -151,7 +152,8 @@ double GeantHadronUniverse<T>::GetGeantHadronWeight() const {
 
 template <class T>
 double GeantHadronUniverse<T>::GetWeightRatioToCV() const {
-  if( T::IsTruth() ) return 1; //No reweighting for truth events 
+  //Removing the following line after confirmation that it should not be the standard practice for this weight, and this should be applied to the efficiency denominator to combat biasing from the reweight. -David L. 10/09/2024
+  //if( T::IsTruth() ) return 1; //No reweighting for truth events 
   InelXSecWeights weights =
       weight_hadron<PlotUtils::TreeWrapper*>().getWeights(*this);
   double wgt = 1.;
