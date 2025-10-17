@@ -504,15 +504,15 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
                                                });
         if(foundChannel != fChannels.end()){
 	  if (!doInelRatOnly){
-	    /**/std::cout << "Doing interacting weight" << std::endl;
-	    /**/std::cout << "Inelastic children: ";
-	    /**/for (auto child:inelasticChildren){
-	      /**/std::cout << child << ", ";
-	      /**/}
-	    /**/std::cout << " end." << std::endl;
-	    /**/std::cout << "kinetic energies: " << Ti << ", " << Tf << std::endl;
-	    /**/double tmpWeight = getInteractingWeight(*foundChannel, density, Ti, Tf);
-	    /**/std::cout << "Weight Factor: " << tmpWeight << std::endl;
+	    ////std::cout << "Doing interacting weight" << std::endl;
+	    ////std::cout << "Inelastic children: ";
+	    ////for (auto child:inelasticChildren){
+	      ////std::cout << child << ", ";
+	      ////}
+	    ////std::cout << " end." << std::endl;
+	    ////std::cout << "kinetic energies: " << Ti << ", " << Tf << std::endl;
+	    ////double tmpWeight = getInteractingWeight(*foundChannel, density, Ti, Tf);
+	    ////std::cout << "Weight Factor: " << tmpWeight << std::endl;
 	    ////std::cout << "GuessDens Weight Factor: " << getInteractingWeight(*foundChannel, guessDens, Ti, Tf) << std::endl;
 	    ////std::cout << "Fracweight Difference in %: " << 100.0*(getInteractingWeight(*foundChannel, guessDens, Ti, Tf)-getInteractingWeight(*foundChannel, density, Ti, Tf))/getInteractingWeight(*foundChannel, density, Ti, Tf) << std::endl;
 	    ////if (fabs(100.0*(getInteractingWeight(*foundChannel, guessDens, Ti, Tf)-getInteractingWeight(*foundChannel, density, Ti, Tf))/getInteractingWeight(*foundChannel, density, Ti, Tf)) > 5) std::cout << "Greater than 5%" << std::endl;
@@ -527,13 +527,13 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	  else weight *= getInelasticRatioWeight(*foundChannel, Ti, Tf);
 	}
         else if (!doInelRatOnly){
-	  /**/std::cout << "Other inelastic weight" << std::endl;
-	  /**/std::cout << "Inelastic children: ";
-	  /**/for (auto child:inelasticChildren){
-	    /**/std::cout << child << ", ";
-	  /**/}
-	  /**/std::cout << " end." << std::endl;
-	  /**/std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
+	  ////std::cout << "Other inelastic weight" << std::endl;
+	  ////std::cout << "Inelastic children: ";
+	  ////for (auto child:inelasticChildren){
+	    ////std::cout << child << ", ";
+	  ////}
+	  ////std::cout << " end." << std::endl;
+	  ////std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	  ////std::cout << "GuessDens Weight Factor: " << getConstantChannelWeight(guessDens, Ti, Tf) << std::endl;
 	  ////std::cout << "Fracweight Difference in %: " << 100.0*(getConstantChannelWeight(guessDens, Ti, Tf)-getConstantChannelWeight(density, Ti, Tf))/getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	  ////if (fabs(100.0*(getConstantChannelWeight(guessDens, Ti, Tf)-getConstantChannelWeight(density, Ti, Tf))/getConstantChannelWeight(density, Ti, Tf)) > 5) std::cout << "Greater than 5%" << std::endl;
@@ -549,8 +549,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	else weight *= getOtherInelasticRatioWeight(Ti, Tf);
       }
       else if(intCode == 3 && !doInelRatOnly){
-	/**/std::cout << "Elastic weight" << std::endl;
-	/**/std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
+	////std::cout << "Elastic weight" << std::endl;
+	////std::cout << "Weight Factor: " << getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	////std::cout << "GuessDens Weight Factor: " << getConstantChannelWeight(guessDens, Ti, Tf) << std::endl;
 	////std::cout << "Fracweight Difference in %: " << 100.0*(getConstantChannelWeight(guessDens, Ti, Tf)-getConstantChannelWeight(density, Ti, Tf))/getConstantChannelWeight(density, Ti, Tf) << std::endl;
 	////if (fabs(100.0*(getConstantChannelWeight(guessDens, Ti, Tf)-getConstantChannelWeight(density, Ti, Tf))/getConstantChannelWeight(density, Ti, Tf)) > 5) std::cout << "Greater than 5%" << std::endl;
@@ -563,8 +563,8 @@ double NeutronInelasticReweighter<UNIVERSE, EVENT>::GetWeight(const UNIVERSE& un
 	////weight *= std::min(3.5,getConstantChannelWeight(density, Ti, Tf)); //Trajectory ends with an elastic interaction //Cap on individual weights of 3.5
       }
       else if(!doInelRatOnly){
-	/**/std::cout << "Non-interacting weight" << std::endl;
-	/**/std::cout << "Weight Factor: " << getNoInteractionWeight(density, Ti, Tf) << std::endl;
+	////std::cout << "Non-interacting weight" << std::endl;
+	////std::cout << "Weight Factor: " << getNoInteractionWeight(density, Ti, Tf) << std::endl;
 	////std::cout << "GuessDens Weight Factor: " << getNoInteractionWeight(guessDens, Ti, Tf) << std::endl;
 	////std::cout << "Fracweight Difference in %: " << 100.0*(getNoInteractionWeight(guessDens, Ti, Tf)-getNoInteractionWeight(density, Ti, Tf))/getNoInteractionWeight(density, Ti, Tf) << std::endl;
 	////if (fabs(100.0*(getNoInteractionWeight(guessDens, Ti, Tf)-getNoInteractionWeight(density, Ti, Tf))/getNoInteractionWeight(density, Ti, Tf)) > 5) std::cout << "Greater than 5%" << std::endl;
