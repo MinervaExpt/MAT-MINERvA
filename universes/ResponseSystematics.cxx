@@ -406,7 +406,7 @@ double ResponseUniverse<T>::GetRecoilShift() const {
       }
     }
     else{
-      std::cout << "Legacy error recoil branches" << std::endl;
+      //std::cout << "Legacy error recoil branches" << std::endl; Comment added by Anezka presumably for debugging. Consider adding one at the setup point. Shocked I just realized that this swamps output files if you're not careful. -David L. 08/23/2024
       recoil_E_shift += T::GetDouble(m_branch_name.c_str());
     }
 
