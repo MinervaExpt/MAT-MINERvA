@@ -39,7 +39,7 @@ VariableHyperDBase<UNIVERSE>::VariableHyperDBase(const std::vector<VariableBase<
       m_analysis_type(type) {
     for (int i = 0; i < vars_vec.size(); i++)
         if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
-    Setup();
+    this->Setup();
 }
 
 // Constructor with user designated name & vector of input variables, will likely have issues if using derived Variable class
@@ -53,7 +53,7 @@ VariableHyperDBase<UNIVERSE>::VariableHyperDBase(std::string name,
       m_analysis_type(type) {
     for (int i = 0; i < vars_vec.size(); i++)
         if (vars_vec[i]->HasRecoBinning()) m_has_reco_binning = true;
-    Setup();
+    this->Setup();
 }
 
 //==============================================================================
@@ -73,7 +73,7 @@ void VariableHyperDBase<UNIVERSE>::SetAnalysisType(const EAnalysisType type) {
     m_analysis_type = type;
     std::cout << "VariableHyperDBase: WARNING you may be changing your analysis type to " << m_analysis_type << std::endl;
     // Reset everything given new analysis type.
-    Setup();
+    this->Setup();
 }
 
 // Add another variable, useful if using default constructor and derived Variable class
@@ -83,7 +83,7 @@ void VariableHyperDBase<UNIVERSE>::AddVariable(VariableBase<UNIVERSE> &var) {
     m_vars_vec.emplace_back(new VariableBase<UNIVERSE>(var));
     if (var.HasRecoBinning()) m_has_reco_binning = true;
     // Reset everything given new vars.
-    Setup();
+    this->Setup();
     std::cout << "PlotUtils::VariableHyperDBase: Added 1D Variable " << var.GetName() << std::endl;
 }
 
@@ -143,6 +143,11 @@ void VariableHyperDBase<UNIVERSE>::Setup() {
         for (int i = 0; i < n_lin_reco_bins + 1; i++) 
             lin_reco_binning.push_back(i);
         m_lin_reco_binning = lin_reco_binning;
+    } else {
+        // If you don't have reco binning, just set it all to the truth ones
+        m_vars_reco_binnings = m_vars_binnings;
+        m_reco_hyperdim = m_hyperdim;
+        m_lin_reco_binning = m_lin_binning;
     }
 }
 
@@ -452,9 +457,12 @@ double VariableHyperDBase<UNIVERSE>::GetRecoValue(const UNIVERSE &universe,
     std::vector<double> val_vec;
     for (int i = 0; i < m_dimension; i++) 
         val_vec.push_back(m_vars_vec[i]->GetRecoValue(universe, idx1, idx2));
-    if (!m_has_reco_binning) 
-        return ((m_hyperdim->GetBin(val_vec)).first) + 0.0001;  // 0.0001 offset to so value isn't exactly on a bin edge and fillers can put it in that bin
-    return ((m_reco_hyperdim->GetBin(val_vec)).first) + 0.0001;  // If there's reco binning, use that hyperdim
+
+    return ((m_reco_hyperdim->GetBin(val_vec)).first) + 0.0001;  // Set to the same as truth binning if reco binning is same
+
+    // if (!m_has_reco_binning) 
+    //     return ((m_hyperdim->GetBin(val_vec)).first) + 0.0001;  // 0.0001 offset to so value isn't exactly on a bin edge and fillers can put it in that bin
+    // return ((m_reco_hyperdim->GetBin(val_vec)).first) + 0.0001;  // If there's reco binning, use that hyperdim
 }
 
 // Return bin index value in linearized bin space, ie which an bin event goes in
