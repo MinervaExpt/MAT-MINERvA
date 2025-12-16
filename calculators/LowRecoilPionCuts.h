@@ -373,7 +373,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
       }
     }
     if (closestMichel.empty()) return false;
-    // closestMichel[0].GetPionAngle(univ);
+//    closestMichel[0].GetPionAngle(univ);
     double lowtpiinevent = closestMichel[0].pionKE;
     // if (closestMichel[0].Best3Ddist > 1200.) continue; //Mimicking Aaron's
     // cuts to remove high Tpi events > 350 MeV.
@@ -384,6 +384,7 @@ class GetClosestMichel : public PlotUtils::Cut<UNIVERSE, EVENT> {
     evt.lowTpi = lowtpiinevent;
     evt.m_nmichels.clear();
     evt.m_nmichels = closestMichel;
+    evt.m_bestthetaangle = evt.m_nmichels[evt.m_idx].best_angle; 
     // std::cout << "Get Closest Distance Michel Done looping over Michels.
     // Closest Distance is: " << closestMichel[0].Best3Ddist << std::endl;
 

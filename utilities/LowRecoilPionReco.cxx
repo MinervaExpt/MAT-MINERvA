@@ -8,7 +8,7 @@ namespace LowRecoilPion {
 // Setting the Michel data members directly from CV universe. No calculations
 // made at this stage
 template <class T>
-Michel<T>::Michel(const T& univ, int ci) {
+Michel<T>::Michel(const T& univ, int ci) : tuple_idx(ci) {
   energy = univ.GetVecElem("FittedMichel_michel_energy", ci);
   time = univ.GetVecElem("FittedMichel_michel_time", ci) / pow(10, 3);
   is_fitted = univ.GetVecElemInt("FittedMichel_michel_fitPass", ci);
@@ -28,8 +28,8 @@ Michel<T>::Michel(const T& univ, int ci) {
   m_x2 = univ.GetVecElem("FittedMichel_michel_x2", ci);
   m_y2 = univ.GetVecElem("FittedMichel_michel_y2", ci);
   m_u2 = univ.GetVecElem("FittedMichel_michel_u2", ci);
-  m_z2 = univ.GetVecElem("FittedMichel_michel_z2", ci);
   m_v2 = univ.GetVecElem("FittedMichel_michel_v2", ci);
+  m_z2 = univ.GetVecElem("FittedMichel_michel_z2", ci);
   nclusters = univ.GetInt("cluster_view_sz");
   overlay_fraction = univ.GetVecElem("FittedMichel_michel_datafraction", ci);
 
