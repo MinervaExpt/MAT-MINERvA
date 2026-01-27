@@ -5,6 +5,7 @@
 #include "weighters/weightRPA.h"
 #include "weighters/weightLowQ2Pi.h"
 #include "universes/MnvTuneSystematics.h"
+#include "MnvTuneSystematics.h"
 
 using namespace PlotUtils;
 
@@ -184,6 +185,23 @@ namespace PlotUtils{
       ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1));
       return ret;
     }
+
+    // Added to handle the channel for lowq2pion tunes
+    template <typename T>
+    std::vector<T*> GetLowQ2PiSystematics(typename T::config_t chain, const std::string& channel) {
+        std::vector<T*> ret;
+        ret.push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, -1, channel));
+        ret.push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1, channel));
+        return ret;
+    }
+
+    template <typename T>
+    std::map<std::string, std::vector<T*> > GetLowQ2PiSystematicsMap(typename T::config_t chain, const std::string& channel) {
+        std::map<std::string, std::vector<T*> > ret;
+        ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, -1, channel));
+        ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1, channel));
+        return ret;
+    }
 }
 
 
@@ -268,6 +286,13 @@ namespace PlotUtils{
       throw std::invalid_argument("LowQ2PionUniverse(): nsigma must be +/-1");
   }
 
+  template <typename T>
+  LowQ2PionUniverse<T>::LowQ2PionUniverse(typename T::config_t chw, double nsigma, std::string channel)
+      : T(chw, nsigma), m_channel(channel) {
+      if (abs(int(nsigma)) != 1)
+          throw std::invalid_argument("LowQ2PionUniverse(): nsigma must be +/-1");
+  }
+
   template<typename T>
   double LowQ2PionUniverse<T>::GetLowQ2PiWeight(std::string channel) const { 
     if(!PlotUtils::IsCCRes(*this)) 
@@ -276,10 +301,42 @@ namespace PlotUtils{
       return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True()*1e-6 /*GeV^2*/, channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
   }
 
+  template <typename T>
+  double LowQ2PionUniverse<T>::GetLowQ2PiWeight() const {
+      // int variation = 0;  // CV
+      if (m_channel == "MENU1PI") {
+          if (!PlotUtils::IsCCNucleonPion(*this)) return 1;
+          return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                       m_channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
+      } else {
+          if (!PlotUtils::IsCCRes(*this)) return 1;
+          return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                       m_channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
+      }
+  }
+
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
-  /*template <typename T>
-  double LowQ2PionUniverse<T>::GetWeightRatioToCV() {
-  }*/
+  template <typename T>
+  double LowQ2PionUniverse<T>::GetWeightRatioToCV() const {
+      if (m_channel == "MENU1PI") {
+          if (!PlotUtils::IsCCNucleonPion(*this)) return 1;
+          double cvwgt = PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                               m_channel, 0, T::GetInt("mc_targetNucleus"));
+          double weight = PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                                 m_channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
+          return weight / cvwgt;
+      } else {
+          if (!PlotUtils::IsCCRes(*this)) return 1;
+          double cvwgt = PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                                m_channel, 0, T::GetInt("mc_targetNucleus"));
+          double weight = PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                       m_channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
+          return weight / cvwgt;
+      }
+  }
+
+  template <typename T>
+  void LowQ2PionUniverse<T>::SetChannel(std::string channel) { m_channel = channel; }
 
   template<typename T>
   std::string LowQ2PionUniverse<T>::ShortName() const { return "LowQ2Pi"; }

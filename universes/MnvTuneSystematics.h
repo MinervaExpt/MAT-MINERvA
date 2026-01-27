@@ -61,13 +61,19 @@ namespace PlotUtils{
     {
       public:
         LowQ2PionUniverse(typename T::config_t chw, double nsigma);
+        LowQ2PionUniverse(typename T::config_t chw, double nsigma, std::string channel);
 
+        // virtual double GetLowQ2PiWeight(std::string channel) const /*override*/;
         virtual double GetLowQ2PiWeight(std::string channel) const /*override*/;
-        //double GetWeightRatioToCV() const; //TODO: Revisit this when I'm ready for Reweighters and Universes that are pre-configured with channel as a member variable.
+        virtual double GetLowQ2PiWeight() const /*override*/;
+        double GetWeightRatioToCV() const;  // TODO: Revisit this when I'm ready for Reweighters and Universes that are pre-configured with channel as a member variable.
 
         virtual std::string ShortName() const /*override*/;
         virtual std::string LatexName() const /*override*/;
         virtual bool IsVerticalOnly() const   { return true; }/*override*/;
+
+        void SetChannel(std::string channel);
+        std::string m_channel;
     };
 
   //=================================================================================
