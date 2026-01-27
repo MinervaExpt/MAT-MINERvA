@@ -26,7 +26,8 @@ namespace PlotUtils
 
       double GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const override
       {
-        if(univ.IsTruth()) return 1; // No efficiency reweighting for truth events
+	//Removing the following line after confirmation that it should not be the standard practice for this weight, and this should be applied to the efficiency denominator to combat biasing from the reweight. -David L. 10/09/2024
+        //if(univ.IsTruth()) return 1; // No efficiency reweighting for truth events
 
         univ.SetupMHRWeighter(); //TODO: do this once in the constructor
         return PlotUtils::weight_hadron<PlotUtils::TreeWrapper*>().reweightNeutronCV(univ);
