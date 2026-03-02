@@ -26,10 +26,18 @@ namespace PlotUtils
 
       double GetWeight(const UNIVERSE& univ, const EVENT& /*event*/) const override
       {
-        //variation 0 is the CV
-        if(!PlotUtils::IsCCRes(univ)) return 1;
-        return PlotUtils::weight_lowq2pi().getWeight(univ.GetQ2True() * 1e-6 /*GeV^2*/,
-                                                     fChannel, 0);
+	//David Last Modifications to allow for proper use of Aaron Bercellie's low Q2 weight
+	int variation = 0; //CV
+	if (fChannel == "MENU1PI"){
+	  if(!PlotUtils::IsCCNucleonPion(univ)) return 1;
+	  return PlotUtils::weight_lowq2pi().getWeight(univ.GetQ2True() * 1e-6 /*GeV^2*/,
+						       fChannel, variation, univ.GetInt("mc_targetNucleus"));
+	}
+	else{
+	  if(!PlotUtils::IsCCRes(univ)) return 1;
+	  return PlotUtils::weight_lowq2pi().getWeight(univ.GetQ2True() * 1e-6 /*GeV^2*/,
+						       fChannel, variation, univ.GetInt("mc_targetNucleus"));
+	}
       }
 
       std::string GetName() const override { return "LowQ2Pi_" + fChannel; }

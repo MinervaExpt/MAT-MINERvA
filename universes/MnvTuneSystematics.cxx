@@ -154,8 +154,12 @@ namespace PlotUtils{
       for (int i = 0; i< pdgsize; i++)
       {
         int pdg = universe.GetVecElem("mc_FSPartPDG", i);
+	/*
         if(universe.GetInt("mc_incoming") == 14 && pdg == 211) npion++;
         if(universe.GetInt("mc_incoming") == -14 && pdg == -211) npion++;  
+	*/
+	//David Last test modification to see about all pions since Aaron's signal was exactly one pion at all.
+	if (fabs(universe.GetInt("mc_incoming")) == 14 && (pdg == 211 || pdg == -211 || pdg == 111)) npion++;
       }
       bool is_ccpion = false;
       if (universe.GetInt("mc_w") < 1400. && npion == 1 ) {
