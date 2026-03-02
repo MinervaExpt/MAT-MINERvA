@@ -25,7 +25,7 @@ namespace PlotUtils
       {
         assert((useElastic || useAbsorption) && "Attempted to use the GENIE FSI bug fix reweight with neither elastic nor absorption reweighting!");
 
-        fCalculator.UseTrackingThreshold();
+        //fCalculator.UseTrackingThreshold(); Commented out by David Last for testing.
       }
 
       virtual ~FSIReweighter() = default;
