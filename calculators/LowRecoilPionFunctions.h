@@ -1,6 +1,8 @@
 #ifndef LOWRECOILPIONFUNCTIONS_H
 #define LOWRECOILPIONFUNCTIONS_H
 
+#include "PlotUtils/PlotUtilsPhysicalConstants.h"
+
 virtual int GetNMichels() const {
   return GetInt("FittedMichel_michel_fitPass_sz");
 }
@@ -13,8 +15,7 @@ ROOT::Math::XYZTVector GetVertex() const {
 
 // MeV
 virtual double NewRecoilE() const {
-  const double M_pi = 139.57039;  // in MeV
-  double recoil = NewEavail() + M_pi;
+  double recoil = NewEavail() + MinervaUnits::M_pion;
   double newrecoil = recoil;
   return newrecoil;
 }
@@ -43,7 +44,7 @@ virtual double NewEavail() const {
       GetDouble("blob_recoil_E_tracker") - GetTrackerECALMuFuzz()[0];
   double recoilEcal =
       GetDouble("blob_recoil_E_ecal") - GetTrackerECALMuFuzz()[1];
-  const double Eavailable_scale = 1.17;
+  const double Eavailable_scale = 1.17; // determined from a study by Phil
   double eavail = recoiltracker + recoilEcal;
   return eavail * Eavailable_scale;
 }
