@@ -5,6 +5,7 @@
 #include "weighters/weightRPA.h"
 #include "weighters/weightLowQ2Pi.h"
 #include "universes/MnvTuneSystematics.h"
+#include "utilities/TargetUtils.h"
 
 using namespace PlotUtils;
 
@@ -184,43 +185,47 @@ namespace PlotUtils{
       ret["LowQ2Pi"].push_back(new PlotUtils::LowQ2PionUniverse<T>(chain, +1));
       return ret;
     }
+
   //=================================================================================
   // UntrackedUniverses
   //=================================================================================
-    template <typename T>
-    std::vector<T*> GetUntrackedPionSystematics(typename T::config_t chain ) {
-      std::vector<T*> ret;
-      ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
-      ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
-      return ret;
-    }
+  template <typename T>
+  std::vector<T*> GetUntrackedPionSystematics(typename T::config_t chain ) {
+    std::vector<T*> ret;
+    ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
+    ret.push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
+    return ret;
+  }
 
-    template <typename T>
-    std::map< std::string, std::vector<T*> > GetUntrackedPionSystematicsMap(typename T::config_t chain ) {
-      std::map< std::string, std::vector<T*> > ret;
-      ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
-      ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
-      return ret;
-    }
-  //=================================================================================
-  // UntrackedUniverses tpi weight and q2 systematics
-  //=================================================================================
-    template <typename T>
-    std::vector<T*> GetChargedPionTuneSystematics(typename T::config_t chain ) {
-      std::vector<T*> ret;
-      //ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
-      ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
-      return ret;
-    }
+  template <typename T>
+  std::map< std::string, std::vector<T*> > GetUntrackedPionSystematicsMap(typename T::config_t chain ) {
+    std::map< std::string, std::vector<T*> > ret;
+    ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, -1));
+    ret["UntrackedPi"].push_back(new PlotUtils::UntrackedPionUniverse<T>(chain, +1));
+    return ret;
+  }
 
-    template <typename T>
-    std::map< std::string, std::vector<T*> > GetChargedPionTuneSystematicMap(typename T::config_t chain ) {
-      std::map< std::string, std::vector<T*> > ret;
-      //ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
-      ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
-      return ret;
-    }
+
+//=================================================================================
+// UntrackedUniverses tpi weight and q2 systematics
+//=================================================================================
+template <typename T>
+std::vector<T*> GetChargedPionTuneSystematics(typename T::config_t chain ) {
+  std::vector<T*> ret;
+  //ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
+  ret.push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
+  return ret;
 }
+
+template <typename T>
+std::map< std::string, std::vector<T*> > GetChargedPionTuneSystematicMap(typename T::config_t chain ) {
+  std::map< std::string, std::vector<T*> > ret;
+  //ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, -1));
+  ret["UntrackedPi"].push_back(new PlotUtils::ChargedPionTuneUniverse<T>(chain, +1));
+  return ret;
+}
+
+
 
 // Class Definitions
 //=================================================================================
@@ -305,6 +310,27 @@ namespace PlotUtils{
 
   template<typename T>
   double LowQ2PionUniverse<T>::GetLowQ2PiWeight(std::string channel) const { 
+    if( channel == "MENU1PI" ){
+      //std::cout<<"MENU1PI"<<std::endl; //debug
+    if( !PlotUtils::IsCCNucleonPion(*this) ) return 1.;
+    else{
+      double fracLowQ2PiUnc = 0;
+      //Are you in NTR?
+      if( PlotUtils::TargetUtils::Get().InNukeRegion( T::GetVecElem("mc_vtx",0), 
+                                T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) fracLowQ2PiUnc = 0.3; 
+      //Tracker?
+      if( PlotUtils::TargetUtils::Get().InTracker( T::GetVecElem("mc_vtx",0), 
+                                T::GetVecElem("mc_vtx",1), T::GetVecElem("mc_vtx",2) ) ) fracLowQ2PiUnc = 0.1; 
+
+    double shift_val = 1 + T::m_nsigma * fracLowQ2PiUnc;
+    return shift_val;
+    }
+
+
+    //return PlotUtils::weight_lowq2pi().getWeight(T::GetQ2True() * 1e-6 /*GeV^2*/,
+                                                   //channel, T::m_nsigma, T::GetInt("mc_targetNucleus"));
+    }
+
     if(!PlotUtils::IsCCRes(*this)) 
       return 1.;
     else
@@ -323,14 +349,13 @@ namespace PlotUtils{
   template<typename T>
   std::string LowQ2PionUniverse<T>::LatexName() const { return "LowQ2Pi"; }
 
-//=================================================================================
-// UntrackedUniverses
-//=================================================================================
+  //=================================================================================
+  // UntrackedUniverses
+  //=================================================================================
   // Constructor
   template<typename T>
   UntrackedPionUniverse<T>::UntrackedPionUniverse(typename T::config_t chw, double nsigma)
-    : T(chw, nsigma)
-  {}
+    : T(chw, nsigma){}
 
   // Reduce the size of the weight by factor of 2.
   // 0.9 --> 0.95
@@ -338,7 +363,8 @@ namespace PlotUtils{
   // In the future, study effect of weights even closer to nominal.
   template<typename T>
   double UntrackedPionUniverse<T>::GetUntrackedPionWeight() const {
-      return 1. + (T::GetUntrackedPionWeight() - T::m_nsigma*1.) * 0.5;
+    double shift_val = 1 + T::m_nsigma * 0.5;
+    return shift_val;
   }
 
   //TODO: Come back to this when I'm ready for Reweighters that provide systematics with a pre-configured channel member.
@@ -354,10 +380,10 @@ namespace PlotUtils{
   std::string UntrackedPionUniverse<T>::LatexName() const { return "UntrackedPi"; }
 
 
-//=================================================================================
-// Combined low-q2 / untracked pion universe (to replace the two above).
-// Systematic on the low-q2 pi weight and simultaneously the untracked pion weight.
-//=================================================================================
+  //=================================================================================
+  // Combined low-q2 / untracked pion universe (to replace the two above).
+  // Systematic on the low-q2 pi weight and simultaneously the untracked pion weight.
+  //=================================================================================
   // Constructor
   template<typename T>
   ChargedPionTuneUniverse<T>::ChargedPionTuneUniverse(typename T::config_t chw, double nsigma)
@@ -366,7 +392,7 @@ namespace PlotUtils{
   { 
     char* loc = std::getenv("TOPDIR");
     std::string f = std::string(loc) +
-                  "/MAT-MINERvA/universes/Ratio_Vij_mixtpi_vs_q2.root";
+                  "/MAT-MINERvA/universes/RatioOutput_mixtpi_vs_q2.root";
     read(f);
   }
 
@@ -391,11 +417,10 @@ namespace PlotUtils{
 
   // For now, just consider a single universe
   template<typename T>
-  double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight(double tpi,
-		                           double q2) const {
-//    int idx = (int)T::GetHighestEnergyTruePionIndex();
-//    double q2 = T::GetQ2True();
-//    double tpi = T::GetTpiTrue(idx);
+  double ChargedPionTuneUniverse<T>::GetChargedPionTuneWeight() const {
+    int idx = (int)T::GetHighestEnergyTruePionIndex();
+    double q2 = T::GetQ2True();
+    double tpi = T::GetTpiTrue(idx);
     double cv_weight = T::GetUntrackedPionWeight();
     double weight = get_weight(q2, tpi);
   //  std::cout << "q2 = " << q2 << " tpi = " << tpi << " cv_weight =" <<
@@ -422,7 +447,7 @@ namespace PlotUtils{
   template<typename T>
   std::string ChargedPionTuneUniverse<T>::LatexName() const { return "CCPi+ Tune"; }
 
-
+}
 
 
 

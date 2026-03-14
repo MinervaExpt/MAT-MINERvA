@@ -55,7 +55,8 @@ static bool SetCVMuonMomentumOffset(double muon_momentum_cv_offset) {
 // Muon momenta functions used under the hood to calculate GetPmu
 // Get total muon momentum w/o CV shift
 virtual double GetPmu_nominal() const {                       /* MeV */
-  std::string lepton_branch = GetAnaToolName() + "_leptonE";  // AnaTool
+  std::string lepton_branch = "muon_corrected_p"; // ML MasterAnaDev!!
+  //std::string lepton_branch = GetAnaToolName() + "_leptonE";  // AnaTool // ORIGINAL
   // std::string lepton_branch = "Muon_leptonE";
   double px = GetVecElem(lepton_branch.c_str(), 0);
   double py = GetVecElem(lepton_branch.c_str(), 1);

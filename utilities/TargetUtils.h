@@ -435,8 +435,8 @@ namespace PlotUtils
       bool InTracker( double vtx_x, double vtx_y, double vtx_z, double apothem = 850. ) const;
 
       //! In nuclear target region?
-      bool InNukeRegionZ( double vtx_z );
-      bool InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double apothem = 850. );
+      bool InNukeRegionZ( double vtx_z ) const;
+      bool InNukeRegion( double vtx_x, double vtx_y, double vtx_z, double apothem = 850. ) const;
 
       //==========================================
       // Functions for Passive Targets

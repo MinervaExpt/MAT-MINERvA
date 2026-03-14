@@ -38,7 +38,7 @@ endif()
 ExternalProject_Add(MAT
                     "${DISABLE_GIT_DOWNLOAD}"
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT.git
-                    GIT_TAG ${MY_GIT_TAG}
+                    GIT_TAG  ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT"
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true
@@ -46,7 +46,7 @@ ExternalProject_Add(MAT
 
 ExternalProject_Add(MAT-MINERvA
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/MAT-MINERvA.git
-                    GIT_TAG "low_recoil_michels_EverChanges"
+                    GIT_TAG ${MY_GIT_TAG}
                     DOWNLOAD_COMMAND "" #Let git updates work, but not downloads.  Otherwise, you'd overwrite your MAT-MINERvA area every time you tried to install it.  In reality, I think the install just stops and fails.
                     SOURCE_DIR "${SOURCE_CODE_DIR}/MAT-MINERvA"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -59,6 +59,16 @@ ExternalProject_Add(UnfoldUtils
                     GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/UnfoldUtils.git
                     GIT_TAG ${MY_GIT_TAG}
                     SOURCE_DIR "${SOURCE_CODE_DIR}/UnfoldUtils"
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+                    STEP_TARGETS update
+                    UPDATE_DISCONNECTED true
+                    DEPENDS MAT MAT-MINERvA)
+
+ExternalProject_Add(GENIEXSecExtract
+                    "${DISABLE_GIT_DOWNLOAD}"
+                    GIT_REPOSITORY ${GIT_CHECKOUT_PREFIX}MinervaExpt/GENIEXSecExtract.git
+                    GIT_TAG ${MY_GIT_TAG}
+                    SOURCE_DIR "${SOURCE_CODE_DIR}/GENIEXSecExtract"
                     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
                     STEP_TARGETS update
                     UPDATE_DISCONNECTED true

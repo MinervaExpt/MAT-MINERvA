@@ -20,8 +20,8 @@
 	style->SetFrameBorderMode(0);
 
 	// Line Widths
-	style->SetFrameLineWidth(2);
-	style->SetLineWidth(2);
+	style->SetFrameLineWidth(1);
+	style->SetLineWidth(1);
 	style->SetHistLineWidth(2);
 	style->SetLegendBorderSize(1);
 
@@ -50,6 +50,12 @@
 	// Errors
 	style->SetEndErrorSize(3);
 	style->SetErrorX(0.5);
+
+	style->SetAxisColor(1, "XYZ");
+    style->SetTickLength(0.03, "XYZ");
+    style->SetNdivisions(510, "XYZ");
+    style->SetPadTickX(1);
+    style->SetPadTickY(1);
 
 	// Finally...
 	gROOT->SetStyle("minerva");

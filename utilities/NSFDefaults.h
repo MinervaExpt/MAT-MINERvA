@@ -97,6 +97,11 @@ namespace NSFDefaults {
   static const double TrackerBack = 8408.91; // mm, module 80, plane 2
   static const double StandardApothem = 850; // mm
 
+// ML vertex uncertainty
+   static const double NuVertexMLTrkUnc = 0.01;
+   static const double NuVertexMLTarUnc = 0.02;
+   static const double AntinuVertexMLTrkUnc = 0.01; // original based on studies 0.01; 
+   static const double AntinuVertexMLTarUnc = 0.02;
 }  // end of NSFDefaults namespace
 
 #endif
