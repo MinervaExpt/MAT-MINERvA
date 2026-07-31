@@ -66,21 +66,22 @@ class Michel {
       const T& univ);  // WRT beam; angle btwn best mich endpt and vtx
 
   // Generic Info
-  std::vector<double> up_location;    // upstream location 0 X 1 U 2 V 3 Z
-  std::vector<double> down_location;  // downstream location
-  double m_x1 = 9999.;                // Michel Endpoint 1 x
-  double m_x2 = 9999.;                // Michel Endpoint 2 x
-  double m_y1 = 9999.;                // Michel Endpoint 1 y
-  double m_y2 = 9999.;                // Michel Endpoint 2 y
-  double m_u1 = 9999.;                // Michel Endpoint 1 u
-  double m_u2 = 9999.;                // Michel Endpoint 2 u
-  double m_v1 = 9999.;                // Michel Endpoint 1 v
-  double m_v2 = 9999.;                // Michel Endpoint 2 v
-  double m_z1 = 9999.;                // Mihel Endpoint z 1
-  double m_z2 = 9999.;                // Michel Endpoiint z2
+  int tuple_idx;  // index of this out of all the michels saved in the tuple
   double energy = -999.;              // Michel energy
   double time = -999.;                // Michel Time
   int is_fitted = -1;                 // Is the Michel fitted? 0 no. 1 yes.
+  std::vector<double> up_location;    // upstream location 0 X 1 U 2 V 3 Z
+  std::vector<double> down_location;  // downstream location
+  double m_x1 = 9999.;                // Michel Endpoint 1 x
+  double m_y1 = 9999.;                // Michel Endpoint 1 y
+  double m_u1 = 9999.;                // Michel Endpoint 1 u
+  double m_v1 = 9999.;                // Michel Endpoint 1 v
+  double m_z1 = 9999.;                // Mihel Endpoint z 1
+  double m_x2 = 9999.;                // Michel Endpoint 2 x
+  double m_y2 = 9999.;                // Michel Endpoint 2 y
+  double m_u2 = 9999.;                // Michel Endpoint 2 u
+  double m_v2 = 9999.;                // Michel Endpoint 2 v
+  double m_z2 = 9999.;                // Michel Endpoiint z2
 
   // Following are 2D distances (were stored in vectors but now as explicit data
   // members)
@@ -139,7 +140,6 @@ class Michel {
   // kDownClusMatch,
   int BestMatch = 0;
   int SecondBestMatch = 0;
-  int tuple_idx;  // index of this out of all the michels saved in the tuple
   double Best3Ddist = 9999.;  // Best 3D dist out of either vtx or clus match
 
   // best 2D distance for the best type of match
@@ -230,6 +230,7 @@ template <class T>
 struct MichelEvent {
   int m_idx = -1;                // Index for Best Michel in nmichels
   double m_bestdist = 9999.;     // in mm
+  double m_bestthetaangle = 9999.;
   std::vector<double> m_best2D;  // 0: XZ, 1: UZ, 2:VZ
   double m_best_XZ = 9999.;
   double m_best_UZ = 9999.;
