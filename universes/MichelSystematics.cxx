@@ -3,6 +3,7 @@
 
 #include "universes/MichelSystematics.h"
 #include <iostream>
+#include <cmath>
 
 // Helper functions -- get Weighters, containers of systematics universes
 namespace PlotUtils {

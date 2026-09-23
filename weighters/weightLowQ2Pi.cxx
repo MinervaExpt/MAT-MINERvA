@@ -1,4 +1,5 @@
 #include "weighters/weightLowQ2Pi.h"
+#include <cmath>
 
 using namespace PlotUtils;
 
