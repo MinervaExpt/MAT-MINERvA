@@ -217,6 +217,7 @@ weighters/weight_fsi.h
 weighters/weight_fsi_absorption.h
 weighters/weight_fsi_cai.h
 weighters/weight_minervaq2qe.h
+weighters/ZExpansionReweighter.h
 )
 
 # need to know about Boost on macs so check that you know where it is.
